@@ -549,16 +549,7 @@ const ToDoList = () => {
                                                     <td>
                                                         <Priority priority={item.priority} />
                                                     </td>
-                                                    <td>
-                                                        <div className="hstack gap-2">
-                                                            <button className="btn btn-sm btn-soft-danger remove-list" onClick={() => onClickTodoDelete(item)}>
-                                                                <i className="ri-delete-bin-5-fill align-bottom" />
-                                                            </button>
-                                                            <button className="btn btn-sm btn-soft-info edit-list" onClick={() => handleTodoClick(item)}>
-                                                                <i className="ri-pencil-fill align-bottom" />
-                                                            </button>
-                                                        </div>
-                                                    </td>
+
                                                 </tr>))}
 
                                             </tbody>

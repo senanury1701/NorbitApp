@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { Modal,CardBody, Col, Row, Table, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from "reactstrap";
+import { ModalFooter, ModalBody, ModalHeader, Modal,CardBody, Col, Row, Table, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from "reactstrap";
 import { Link } from "react-router-dom";
 import {
   Column,
@@ -15,7 +15,9 @@ import {
   PaginationState,
 } from '@tanstack/react-table';
 import { rankItem } from '@tanstack/match-sorter-utils';
-//import ModalCategory from '../Category/model'
+import CompanyEditModal from '../Company/CompanyEditModel'
+import CompanyAddModal from '../Company/CompanyAddModal'
+import CompanyViewModal from '../Company/CompanyViewModal'
 
 const Filter = ({
   column
@@ -89,7 +91,7 @@ interface TableContainerProps {
   isBordered?: any;
 }
 
-const TableContainer = ({
+const ComponyTable = ({
   columns,
   data,
   isGlobalFilter,
@@ -165,27 +167,37 @@ const TableContainer = ({
     }));
   };
 
-  const [modalOpen, setModalOpen] = useState(false);
+  const [modalEditOpen, setModalEditOpen] = useState(false);
+  const [modalAddOpen, setModalAddOpen] = useState(false);
+  const [modalViewOpen, setModalViewOpen] = useState(false);
+
+  const handleEdit = () => {
+    setModalEditOpen(true);
+  };
+
+  const toggleEdit = () => {
+    setModalEditOpen(!modalEditOpen);
+  };
 
   const handleAdd = () => {
-    setModalOpen(true);
+    setModalAddOpen(true);
   };
 
   const toggleModal = () => {
-    setModalOpen(!modalOpen);
+    setModalAddOpen(!modalAddOpen);
+  };
+  const handleView = () => {
+    setModalViewOpen(true);
+  };
+
+  const toggleView = () => {
+    setModalViewOpen(!modalViewOpen);
   };
 
   const onClickDelete = (id: any) => {
     console.log('delete' + id);
   };
 
-  const handleClickUpdate = (id: any) => {
-    console.log('update' + id);
-  };
-
-  const handleClickView = (id: any) => {
-    console.log('view' + id);
-  };
 
   useEffect(() => {
     Number(customPageSize) && setPageSize(Number(customPageSize));
@@ -291,10 +303,10 @@ const TableContainer = ({
                       <DropdownItem onClick={() => onClickDelete(row.id)}>
                         <i className="ri-delete-bin-5-fill align-bottom" /> Delete
                       </DropdownItem>
-                      <DropdownItem onClick={() => handleClickUpdate(row.id)}>
+                      <DropdownItem  onClick={handleEdit}>
                         <i className="ri-pencil-fill align-bottom" /> Edit
                       </DropdownItem>
-                      <DropdownItem onClick={() => handleClickView(row.id)}>
+                      <DropdownItem onClick={handleView}>
                         <i className="ri-eye-fill align-bottom" /> View
                       </DropdownItem>
                     </DropdownMenu>
@@ -336,11 +348,32 @@ const TableContainer = ({
           </ul>
         </div>
       </Row>
-      <Modal  isOpen={modalOpen} toggle={toggleModal} modalClassName="zoomIn" centered tabIndex={-1} >
-            idjid
+      <Modal  isOpen={modalEditOpen} toggle={toggleEdit} modalClassName="zoomIn" centered tabIndex={-1} >
+        <ModalHeader  className="p-3 bg-success-subtle"> Edit </ModalHeader>
+        <ModalBody className='z-2'>
+          <CompanyEditModal />
+        </ModalBody>
       </Modal>   
+
+
+      <Modal  isOpen={modalAddOpen} toggle={toggleModal}  centered tabIndex={-1} >
+        <ModalHeader  className="p-3 bg-success-subtle"> Add </ModalHeader>
+        <ModalBody>
+          <div>
+            <CompanyAddModal/>
+          </div>
+        </ModalBody>
+      </Modal>
+
+      <Modal  isOpen={modalViewOpen} toggle={toggleView} modalClassName="zoomIn" centered tabIndex={-1} >
+        <ModalHeader  className="p-3 bg-success-subtle"> View </ModalHeader>
+        <ModalBody style={{ minHeight: '500px' }}>
+          <CompanyViewModal />
+        </ModalBody>
+        <ModalFooter>skfjdhfd</ModalFooter>
+      </Modal>
     </Fragment>
   );
 };
 
-export default TableContainer;
+export default ComponyTable;

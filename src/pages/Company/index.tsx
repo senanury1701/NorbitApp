@@ -1,26 +1,12 @@
-import React, {  useMemo,  } from 'react';
+import React, {  useMemo, useEffect  } from 'react';
 import {  Container,  } from "reactstrap";
-
-// Import Content
 import UiContent from 'Components/Common/UiContent';
-//import Components
 import BreadCrumb from 'Components/Common/BreadCrumb';
 import CompanyTable from '../../Components/Company/CompanyTable'
-
+import { useDispatch, useSelector } from 'react-redux';
+import { fetchCompanies } from '../../slices/thunks';
 const Company = () => {
-    const searchTable =
-    [
-      { id: "10", name: "Tyrone", email: "tyrone@example.com", designation: "Senior Response Liaison", company: "Raynor, Rolfson and Daugherty", location: "Qatar" },
-      { id: "09", name: "Cathy", email: "cathy@example.com", designation: "Customer Data Director", company: "Ebert, Schamberger and Johnston", location: "Mexico" },
-      { id: "08", name: "Patsy", email: "patsy@example.com", designation: "Dynamic Assurance Director", company: "Streich Group", location: "Niue" },
-      { id: "07", name: "Kerry", email: "kerry@example.com", designation: "Lead Applications Associate", company: "Feeney, Langworth and Tremblay", location: "Niger" },
-      { id: "06", name: "Traci", email: "traci@example.com", designation: "Corporate Identity Director", company: "Koelpin - Goldner", location: "Vanuatu" },
-      { id: "05", name: "Noel", email: "noel@example.com", designation: "Customer Data Director", company: "Howell - Rippin", location: "Germany" },
-      { id: "04", name: "Robert", email: "robert@example.com", designation: "Product Accounts Technician", company: "Hoeger", location: "San Marino" },
-      { id: "03", name: "Shannon", email: "shannon@example.com", designation: "Legacy Functionality Associate", company: "Zemlak Group", location: "South Georgia" },
-      { id: "02", name: "Harold", email: "harold@example.com", designation: "Forward Creative Coordinator", company: "Metz Inc", location: "Iran" },
-      { id: "01", name: "Jonathan", email: "jonathan@example.com", designation: "Senior Implementation Architect", company: "Hauck Inc", location: "Holy See" }
-    ];
+  
 
   const columns = useMemo(
     () => [
@@ -34,38 +20,42 @@ const Company = () => {
         accessorKey: "id",
         enableColumnFilter: false,
       },
-
       {
-        header: "Name",
-        accessorKey: "name",
-        enableColumnFilter: false,
+          header: "Company Name",
+          accessorKey: "company_name",
+          enableColumnFilter: false,
       },
       {
-        header: "Email",
-        accessorKey: "email",
-        enableColumnFilter: false,
+          header: "Created At",
+          accessorKey: "created_at",
+          enableColumnFilter: false,
       },
       {
-        header: "Designation",
-        accessorKey: "designation",
-        enableColumnFilter: false,
-      },
-      {
-        header: "Company",
-        accessorKey: "company",
-        enableColumnFilter: false,
-      },
-      {
-        header: "Location",
-        accessorKey: "location",
-        enableColumnFilter: false,
+          header: "Updated At",
+          accessorKey: "updated_at",
+          enableColumnFilter: false,
       },
 
     ],
     []
   );
 
+  const dispatch = useDispatch<any>();
 
+  const { companies, status, error } = useSelector((state:any) => state.company);
+
+  
+  useEffect(() => {
+    dispatch(fetchCompanies());
+  }, [dispatch]);
+
+  if (status === 'idle') {
+    return <div>Loading...</div>; 
+  }
+
+  if (status === 'failed') {
+    return <div>{error}</div>; 
+  }
     return (
         <React.Fragment>
             <UiContent />
@@ -75,7 +65,7 @@ const Company = () => {
                     <div className='m-3'>
                       <CompanyTable
                             columns={(columns || [])}
-                            data={(searchTable || [])}
+                            data={(companies || [])}
                             isGlobalFilter={true}
                             customPageSize={5}
                             SearchPlaceholder='Search...'

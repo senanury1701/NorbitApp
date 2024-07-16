@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { ModalFooter, ModalBody, ModalHeader, Modal,CardBody, Col, Row, Table, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from "reactstrap";
+import { Modal, ModalFooter, ModalBody, ModalHeader, CardBody, Col, Row, Table, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from "reactstrap";
 import { Link } from "react-router-dom";
 import {
   Column,
@@ -15,9 +15,11 @@ import {
   PaginationState,
 } from '@tanstack/react-table';
 import { rankItem } from '@tanstack/match-sorter-utils';
-import CompanyEditModal from '../Company/CompanyEditModel'
-import CompanyAddModal from '../Company/CompanyAddModal'
-import CompanyViewModal from '../Company/CompanyViewModal'
+import CompanyEditModal from '../Company/CompanyEditModal'; 
+import CompanyAddModal from '../Company/CompanyAddModal';
+import CompanyViewModal from '../Company/CompanyViewModal';
+import { useAppDispatch } from '../hooks';
+import { deleteCompany } from '../../slices/company/thunks';
 
 const Filter = ({
   column
@@ -106,6 +108,7 @@ const ComponyTable = ({
 }: TableContainerProps) => {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState('');
+  const dispatch = useAppDispatch();
 
   const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
     const itemRank = rankItem(row.getValue(columnId), value);
@@ -114,12 +117,13 @@ const ComponyTable = ({
     });
     return itemRank.passed;
   };
+  
 
   const [pagination, setPagination] = useState<PaginationState>({
     pageIndex: 0,
     pageSize: 10,
   });
-
+  
   const table = useReactTable({
     columns,
     data,
@@ -170,8 +174,10 @@ const ComponyTable = ({
   const [modalEditOpen, setModalEditOpen] = useState(false);
   const [modalAddOpen, setModalAddOpen] = useState(false);
   const [modalViewOpen, setModalViewOpen] = useState(false);
+  const [selectedRowData, setSelectedRowData] = useState(null);
 
-  const handleEdit = () => {
+  const handleEdit = (rowData:any) => {
+    setSelectedRowData(rowData);
     setModalEditOpen(true);
   };
 
@@ -183,9 +189,10 @@ const ComponyTable = ({
     setModalAddOpen(true);
   };
 
-  const toggleModal = () => {
+  const toggleAdd = () => {
     setModalAddOpen(!modalAddOpen);
   };
+
   const handleView = () => {
     setModalViewOpen(true);
   };
@@ -195,7 +202,7 @@ const ComponyTable = ({
   };
 
   const onClickDelete = (id: any) => {
-    console.log('delete' + id);
+    dispatch(deleteCompany(id));
   };
 
 
@@ -295,15 +302,15 @@ const ComponyTable = ({
                   </td>
                 ))}
                 <td>
-                  <Dropdown isOpen={dropdownOpen[row.id]} toggle={() => toggleDropdown(row.id)}>
+                  <Dropdown isOpen={dropdownOpen[row.original.id]} toggle={() => toggleDropdown(row.original.id)}>
                     <DropdownToggle caret color='primary'>
                       <i className="ri-view-details align-bottom" />
                     </DropdownToggle>
                     <DropdownMenu>
-                      <DropdownItem onClick={() => onClickDelete(row.id)}>
-                        <i className="ri-delete-bin-5-fill align-bottom" /> Delete
+                      <DropdownItem onClick={() => onClickDelete(row.original.id)}>
+                        <i className="ri-delete-bin-5-fill align-bottom" /> Delete 
                       </DropdownItem>
-                      <DropdownItem  onClick={handleEdit}>
+                      <DropdownItem onClick={() => handleEdit(row.original)}>
                         <i className="ri-pencil-fill align-bottom" /> Edit
                       </DropdownItem>
                       <DropdownItem onClick={handleView}>
@@ -348,29 +355,37 @@ const ComponyTable = ({
           </ul>
         </div>
       </Row>
-      <Modal  isOpen={modalEditOpen} toggle={toggleEdit} modalClassName="zoomIn" centered tabIndex={-1} >
-        <ModalHeader  className="p-3 bg-success-subtle"> Edit </ModalHeader>
+
+      <Modal isOpen={modalEditOpen} toggle={toggleEdit} modalClassName="zoomIn" centered tabIndex={-1}>
+        <ModalHeader className="p-3 bg-success-subtle"> Edit </ModalHeader>
         <ModalBody className='z-2'>
-          <CompanyEditModal />
+          <CompanyEditModal rowData={selectedRowData} />
         </ModalBody>
-      </Modal>   
-
-
-      <Modal  isOpen={modalAddOpen} toggle={toggleModal}  centered tabIndex={-1} >
-        <ModalHeader  className="p-3 bg-success-subtle"> Add </ModalHeader>
-        <ModalBody>
-          <div>
-            <CompanyAddModal/>
-          </div>
-        </ModalBody>
+        <ModalFooter>
+          <button onClick={toggleEdit}>Close</button>
+        </ModalFooter>
       </Modal>
 
-      <Modal  isOpen={modalViewOpen} toggle={toggleView} modalClassName="zoomIn" centered tabIndex={-1} >
-        <ModalHeader  className="p-3 bg-success-subtle"> View </ModalHeader>
+      <Modal isOpen={modalAddOpen} toggle={toggleAdd} centered tabIndex={-1}>
+        <ModalHeader className="p-3 bg-success-subtle"> Add </ModalHeader>
+        <ModalBody>
+          <div>
+            <CompanyAddModal />
+          </div>
+        </ModalBody>
+        <ModalFooter>
+          <button onClick={toggleAdd}>Close</button>
+        </ModalFooter>
+      </Modal>
+
+      <Modal isOpen={modalViewOpen} toggle={toggleView} modalClassName="zoomIn" centered tabIndex={-1}>
+        <ModalHeader className="p-3 bg-success-subtle"> View </ModalHeader>
         <ModalBody style={{ minHeight: '500px' }}>
           <CompanyViewModal />
         </ModalBody>
-        <ModalFooter>skfjdhfd</ModalFooter>
+        <ModalFooter>
+          <button onClick={toggleView}>Close</button>
+        </ModalFooter>
       </Modal>
     </Fragment>
   );

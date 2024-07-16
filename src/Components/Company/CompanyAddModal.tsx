@@ -1,107 +1,62 @@
-import React, {  useState } from 'react';
+import React from 'react';
 import * as Yup from "yup";
 import { useFormik } from "formik";
-import { Input, Label,  Form, FormFeedback,  } from 'reactstrap';
-
+import { Input, Label, Form, FormFeedback, Button } from 'reactstrap';
+import { addCompany } from '../../slices/thunks';
+import { useAppDispatch } from '../hooks'; 
 
 const CompanyAddModal = () => {
-    
-    const [userLogin, setUserLogin] = useState<any>([]);
-    const [passwordShow, setPasswordShow] = useState<boolean>(false);    
-    console.log('addmodal acildi ');
-    
-    
-    const validation: any = useFormik({
-        // enableReinitialize : use this flag when initial values needs to be changed
-        enableReinitialize: true,
+    const dispatch = useAppDispatch();
 
+    const validation = useFormik({
+        enableReinitialize: true,
         initialValues: {
-            username: userLogin.username  || '',
-            password: userLogin.password  || '',
+            company_name: '',
         },
         validationSchema: Yup.object({
-            username: Yup.string().required("Please Enter Your Email"),
-            password: Yup.string().required("Please Enter Your Password"),
+            company_name: Yup.string().required("Please Enter Your Company Name"),
         }),
-        onSubmit: (values) => {
-            
-            console.log(values);
-            
-        }
+        onSubmit: async (company_name, { resetForm }) => {
+            try {
+                await dispatch(addCompany(company_name));
+                resetForm();
+            } catch (error) {
+                console.error('Failed to add company:', error);
+            }
+        },
     });
+    
 
-
-  return (
-    <div>
+    return (
         <div>
-            <div id="task-error-msg" className="alert alert-danger py-2">
-               <h1>
-                Edit Modal
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Iure in quae corporis nam, illo repudiandae tempore amet quam praesentium pariatur!
-               </h1>
-               <Form
-                    onSubmit={(e) => {
-                        e.preventDefault();
-                        validation.handleSubmit();
-                        return false;
-                    }}
-                    action="#">
-
-                    <div className="mb-3">
-                        <Label htmlFor="username" className="form-label">Email</Label>
-                        <Input
-                            name="username"
-                            className="form-control"
-                            placeholder="Enter username"
-
-                            onChange={validation.handleChange}
-                            onBlur={validation.handleBlur}
-                            value={validation.values.username || ""}
-                            invalid={
-                                validation.touched.username && validation.errors.username ? true : false
-                            }
-                        />
-                        {validation.touched.username && validation.errors.username ? (
-                            <FormFeedback type="invalid">{validation.errors.username}</FormFeedback>
-                        ) : null}
-                    </div>
-
-                    <div className="mb-3">
-
-                        <Label className="form-label" htmlFor="password-input">Password</Label>
-                        <div className="position-relative auth-pass-inputgroup mb-3">
-                            <Input
-                                name="password"
-                                value={validation.values.password || ""}
-                                type={passwordShow ? "text" : "password"}
-                                className="form-control pe-5"
-                                placeholder="Enter Password"
-                                onChange={validation.handleChange}
-                                onBlur={validation.handleBlur}
-                                invalid={
-                                    validation.touched.password && validation.errors.password ? true : false
-                                }
-                            />
-                            {validation.touched.password && validation.errors.password ? (
-                                <FormFeedback type="invalid">{validation.errors.password}</FormFeedback>
-                            ) : null}
-                            <button className="btn btn-link position-absolute end-0 top-0 text-decoration-none text-muted" onClick={() => setPasswordShow(!passwordShow)} type="button" id="password-addon"><i className="ri-eye-fill align-middle"></i></button>
-                        </div>
-                    </div>
-
-                    <div className="form-check">
-                        <Input className="form-check-input" type="checkbox" value="" id="auth-remember-check" />
-                        <Label className="form-check-label" htmlFor="auth-remember-check">Remember me</Label>
-                    </div>
-
-
-                </Form>
-            </div>
-
-        </div>        
-    </div>
-
-  )
+            <Form
+                onSubmit={(e) => {
+                    e.preventDefault();
+                    validation.handleSubmit();
+                    return false;
+                }}
+                action="#"
+            >
+                <div className="mb-3">
+                    <Label htmlFor="company_name" className="form-label">Company Name</Label>
+                    <Input
+                        name="company_name"
+                        className="form-control"
+                        placeholder="Enter company name"
+                        type="text"
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        value={validation.values.company_name}
+                        invalid={validation.touched.company_name && !!validation.errors.company_name}
+                    />
+                    {validation.touched.company_name && validation.errors.company_name && (
+                        <FormFeedback type="invalid">{validation.errors.company_name}</FormFeedback>
+                    )}
+                </div>
+                <Button type="submit" color="primary">Add Company</Button>
+            </Form>
+        </div>
+    );
 };
 
 export default CompanyAddModal;

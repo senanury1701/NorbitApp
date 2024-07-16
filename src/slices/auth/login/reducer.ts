@@ -2,10 +2,10 @@ import { createSlice } from "@reduxjs/toolkit";
 
 export const initialState = {
   user: {},
-  error: "", // for error message
+  error: "", 
   loading: false,
   isUserLogout: false,
-  errorMsg: false, // for error
+  errorMsg: false, 
 };
 
 const loginSlice  = createSlice({
@@ -22,7 +22,6 @@ const loginSlice  = createSlice({
       state.user = action.payload
       state.loading = false;
       state.errorMsg = false;
-      console.log(state.user);
     },
     logoutUserSuccess(state, action) {
       state.isUserLogout = true

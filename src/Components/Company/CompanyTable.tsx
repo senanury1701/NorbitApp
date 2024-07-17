@@ -20,6 +20,7 @@ import CompanyAddModal from '../Company/CompanyAddModal';
 import CompanyViewModal from '../Company/CompanyViewModal';
 import { useAppDispatch } from '../hooks';
 import { deleteCompany } from '../../slices/company/thunks';
+import {  useSelector } from 'react-redux';
 
 const Filter = ({
   column
@@ -109,6 +110,8 @@ const ComponyTable = ({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState('');
   const dispatch = useAppDispatch();
+  const { count, } = useSelector((state:any) => state.company);
+
 
   const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
     const itemRank = rankItem(row.getValue(columnId), value);
@@ -328,7 +331,7 @@ const ComponyTable = ({
       <Row className="align-items-center mt-2 g-3 text-center text-sm-start">
         <div className="col-sm">
           <div className="text-muted">
-            Showing <span className="fw-semibold ms-1">{getState().pagination.pageSize}</span> of <span className="fw-semibold">{data.length}</span> Results
+            Showing <span className="fw-semibold ms-1">{count}</span> of <span className="fw-semibold">{data.length}</span> Results
           </div>
         </div>
         <div className="col-sm-auto">

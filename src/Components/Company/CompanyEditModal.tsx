@@ -7,17 +7,15 @@ import { useAppDispatch } from '../hooks';
 
 const CompanyEditModal = (rowData:any) => {
   const dispatch = useAppDispatch();
-
-  const props = rowData.value
-  console.log(props);
+  const props = rowData.rowData
   
 
 
   const validation = useFormik({
       enableReinitialize: true,
       initialValues: {
-          company_name: rowData.company_name || '',
-          id: rowData.id
+          company_name: props.company_name || '',
+          id: props.id
       },
       validationSchema: Yup.object({
           company_name: Yup.string().required("Please Enter Your Company Name"),
@@ -63,7 +61,7 @@ const CompanyEditModal = (rowData:any) => {
                     </FormFeedback>
                   )}   
               </div>
-              <Button type="submit" color="primary">Add Company</Button>
+              <Button type="submit" color="primary">Edit  Compony</Button>
           </Form>
       </div>
   );

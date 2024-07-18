@@ -110,7 +110,7 @@ const ComponyTable = ({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState('');
   const dispatch = useAppDispatch();
-  const { count, } = useSelector((state:any) => state.company);
+  const { count } = useSelector((state:any) => state.company);
 
 
   const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
@@ -335,7 +335,7 @@ const ComponyTable = ({
       <Row className="align-items-center mt-2 g-3 text-center text-sm-start">
         <div className="col-sm">
           <div className="text-muted">
-            Showing <span className="fw-semibold ms-1">{count}</span> of <span className="fw-semibold">{data.length}</span> Results
+          Total result <span className="fw-semibold ms-1">{count}</span>
           </div>
         </div>
         <div className="col-sm-auto">

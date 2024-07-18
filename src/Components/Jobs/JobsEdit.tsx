@@ -2,10 +2,10 @@ import React from "react";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Input, Label, Form, FormFeedback, Button } from 'reactstrap';
-import { editCategory } from '../../slices/thunks';
+import { editJobs } from '../../slices/thunks';
 import { useAppDispatch } from '../hooks'; 
 
-const CategoryEdit = (rowData:any) => {
+const JobsEdit = (rowData:any) => {
   const dispatch = useAppDispatch();
   const data = rowData.rowData
   
@@ -14,18 +14,18 @@ const CategoryEdit = (rowData:any) => {
   const validation = useFormik({
       enableReinitialize: true,
       initialValues: {
-          name: data.name || '',
+          job_title: data.job_title || '',
           id: data.id
       },
       validationSchema: Yup.object({
-        name: Yup.string().required("Please Enter Your category Name"),
+        job_title: Yup.string().required("Please Enter Your Jobs Name"),
       }),
       onSubmit: async (values, { resetForm }) => {
           try {
-              await dispatch(editCategory(values));
+              await dispatch(editJobs(values));
               resetForm();
           } catch (error) {
-              console.error('Failed to update category:', error);
+              console.error('Failed to update Jobs:', error);
           }
       },
   });
@@ -42,29 +42,29 @@ const CategoryEdit = (rowData:any) => {
               action="#"
           >
               <div className="mb-3">
-                  <Label htmlFor="name" className="form-label">Category Name</Label>
+                  <Label htmlFor="name" className="form-label">Jobs Name</Label>
                   <Input
-                      name="name"
+                      name="job_title"
                       className="form-control"
-                      placeholder="Enter category name"
+                      placeholder="Enter Jobs name"
                       type="text"
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
-                      value={validation.values.name }
-                      invalid={validation.touched.name && !!validation.errors.name}
+                      value={validation.values.job_title }
+                      invalid={validation.touched.job_title && !!validation.errors.job_title}
                   />
-                  {validation.touched.name && validation.errors.name && (
+                  {validation.touched.job_title && validation.errors.job_title && (
                     <FormFeedback>
-                      {typeof validation.errors.name === 'object'
-                        ? Object.values(validation.errors.name).join(', ')
-                        : validation.errors.name}
+                      {typeof validation.errors.job_title === 'object'
+                        ? Object.values(validation.errors.job_title).join(', ')
+                        : validation.errors.job_title}
                     </FormFeedback>
                   )}   
               </div>
-              <Button type="submit" color="primary">Edit  Category</Button>
+              <Button type="submit" color="primary">Edit  Jobs</Button>
           </Form>
       </div>
   );
 };
 
-export default CategoryEdit;
+export default JobsEdit;

@@ -54,7 +54,7 @@ const Category = () => {
   useEffect(() => {
     dispatch(fetchCategory());
   }, [dispatch]);
-
+  
   if (status === 'idle') {
     return <div>Loading...</div>; 
   }
@@ -71,7 +71,7 @@ const Category = () => {
                     <div className='m-3'>
                       <CategoryTable
                             columns={(columns )}
-                            data={(categories.results)}
+                            data={(categories)}
                             isGlobalFilter={true}
                             customPageSize={5}
                             SearchPlaceholder='Search...'

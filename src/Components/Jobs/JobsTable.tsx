@@ -15,11 +15,11 @@ import {
   PaginationState,
 } from '@tanstack/react-table';
 import { rankItem } from '@tanstack/match-sorter-utils';
-import CategoryEditModal from '../Category/CategoryEdit'; 
-import CategoryAddModal from '../Category/CategoryAdd';
-import CategoryViewModal from '../Category/CategoryView';
+import JobsEdit from '../Jobs/JobsEdit'; 
+import JobsAdd from '../Jobs/JobsAdd';
+import JobsView from '../Jobs/JobsView';
 import { useAppDispatch } from '../hooks';
-import { deleteCategory } from '../../slices/category/thunks';
+import { deleteJobs } from '../../slices/jobs/thunks';
 import {  useSelector } from 'react-redux';
 
 const Filter = ({
@@ -94,7 +94,7 @@ interface TableContainerProps {
   isBordered?: any;
 }
 
-const CategoryTable = ({
+const JobsTable = ({
   columns,
   data,
   isGlobalFilter,
@@ -110,7 +110,7 @@ const CategoryTable = ({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState('');
   const dispatch = useAppDispatch();
-  const { count, } = useSelector((state:any) => state.category);
+  const { count, } = useSelector((state:any) => state.jobs);
   
 
   const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
@@ -208,7 +208,7 @@ const CategoryTable = ({
 
   const onClickDelete = (id: any) => {
 
-    dispatch(deleteCategory(id));
+    dispatch(deleteJobs(id));
   };
 
 
@@ -365,7 +365,7 @@ const CategoryTable = ({
       <Modal isOpen={modalEditOpen} toggle={toggleEdit} modalClassName="zoomIn" centered tabIndex={-1}>
         <ModalHeader className="p-3 bg-success-subtle"> Edit </ModalHeader>
         <ModalBody className='z-2'>
-          <CategoryEditModal rowData={selectedRowData} />
+          <JobsEdit rowData={selectedRowData} />
         </ModalBody>
         <ModalFooter>
           <button onClick={toggleEdit}>Close</button>
@@ -376,7 +376,7 @@ const CategoryTable = ({
         <ModalHeader className="p-3 bg-success-subtle"> Add </ModalHeader>
         <ModalBody>
           <div>
-            <CategoryAddModal />
+            <JobsAdd />
           </div>
         </ModalBody>
         <ModalFooter>
@@ -387,7 +387,7 @@ const CategoryTable = ({
       <Modal isOpen={modalViewOpen} toggle={toggleView} modalClassName="zoomIn" centered tabIndex={-1}>
         <ModalHeader className="p-3 bg-success-subtle"> View </ModalHeader>
         <ModalBody style={{ minHeight: '500px' }}>
-          <CategoryViewModal rowId={selectedRowId}/>
+          <JobsView rowId={selectedRowId}/>
         </ModalBody>
         <ModalFooter>
           <button onClick={toggleView}>Close</button>
@@ -397,4 +397,4 @@ const CategoryTable = ({
   );
 };
 
-export default CategoryTable;
+export default JobsTable;

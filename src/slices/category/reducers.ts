@@ -17,10 +17,14 @@ const categorySlice = createSlice({
     reducers: {
         getCategories(state, action) {
             state.status = 'success';
-            state.categories = action.payload;
-            state.count = action.payload.count;
-            state.previous = action.payload.previous;
-            state.next = action.payload.next;
+            if (state.count > 5) {
+                state.categories = action.payload;
+            }else{
+                state.categories = action.payload.results;
+                state.count = action.payload.count;
+                state.previous = action.payload.previous;
+                state.next = action.payload.next;                
+            }
             
         },
         updateStatus(state) {

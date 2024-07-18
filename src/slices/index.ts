@@ -11,6 +11,7 @@ import ProfileReducer from "./auth/profile/reducer";
 import companyReducer from "./company/reducers";
 import datasheetReducer from "./datasheet/reducers";
 import categoryReducer from "./category/reducers";
+import jobsReducer from "./jobs/reducers";
 
 
 const rootReducer = combineReducers({
@@ -21,7 +22,8 @@ const rootReducer = combineReducers({
     Profile: ProfileReducer,
     company: companyReducer,
     datasheet: datasheetReducer,
-    category: categoryReducer
+    category: categoryReducer,
+    jobs: jobsReducer,
 
 });
 

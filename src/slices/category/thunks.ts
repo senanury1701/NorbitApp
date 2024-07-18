@@ -6,7 +6,6 @@ import {getCategories, updateStatus , setError,} from './reducers'
 export const fetchCategory = (page = 1) => async (dispatch: any) => {
   try {
       const response = await axiosInstance.get(`category/?page=${page}`);
-      
       dispatch(getCategories(response.data));
       return response.data.results;
   } catch (error: any) {
@@ -57,9 +56,9 @@ export const addCategory = (Category_name:any) => async (dispatch: any)  => {
     const { id, ...updatedCategory } = values; 
     try {
       console.log(updatedCategory);
+      console.log(id);
       
       const response = await axiosInstance.put(`/category/${id}/`, updatedCategory);
-      console.log(response);
       
       dispatch(fetchCategory());
       return response.data;

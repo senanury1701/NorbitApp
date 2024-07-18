@@ -56,10 +56,8 @@ export const addCompany = (company_name:any) => async (dispatch: any)  => {
   export const editCompany = (values: any) => async (dispatch: any, getState: any) => {
     const { id, ...updatedCompany } = values; 
     try {
-      console.log(updatedCompany);
       
       const response = await axiosInstance.put(`/company/${id}/`, updatedCompany);
-      console.log(response);
       
       dispatch(fetchCompanies());
       return response.data;

@@ -7,3 +7,4 @@ export * from "./auth/register/thunk";
 export * from "./auth/forgetpwd/thunk";
 export * from "./auth/profile/thunk";
 export * from "./company/thunks";
+export * from "./category/thunks";

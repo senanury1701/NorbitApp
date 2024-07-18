@@ -9,6 +9,8 @@ import AccountReducer from "./auth/register/reducer";
 import ForgetPasswordReducer from "./auth/forgetpwd/reducer";
 import ProfileReducer from "./auth/profile/reducer";
 import companyReducer from "./company/reducers";
+import datasheetReducer from "./datasheet/reducers";
+import categoryReducer from "./category/reducers";
 
 
 const rootReducer = combineReducers({
@@ -18,6 +20,8 @@ const rootReducer = combineReducers({
     ForgetPassword: ForgetPasswordReducer,
     Profile: ProfileReducer,
     company: companyReducer,
+    datasheet: datasheetReducer,
+    category: categoryReducer
 
 });
 

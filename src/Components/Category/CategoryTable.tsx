@@ -15,11 +15,11 @@ import {
   PaginationState,
 } from '@tanstack/react-table';
 import { rankItem } from '@tanstack/match-sorter-utils';
-import CompanyEditModal from '../Company/CompanyEditModal'; 
-import CompanyAddModal from '../Company/CompanyAddModal';
-import CompanyViewModal from '../Company/CompanyViewModal';
+import CategoryEditModal from '../Category/CategoryEdit'; 
+import CategoryAddModal from '../Category/CategoryAdd';
+import CategoryViewModal from '../Category/CategoryView';
 import { useAppDispatch } from '../hooks';
-import { deleteCompany } from '../../slices/company/thunks';
+import { deleteCategory } from '../../slices/category/thunks';
 import {  useSelector } from 'react-redux';
 
 const Filter = ({
@@ -88,13 +88,13 @@ interface TableContainerProps {
   divClass?: any;
   SearchPlaceholder?: any;
   handleLeadClick?: any;
-  handleCompanyClick?: any;
+  handleCamponyClick?: any;
   handleContactClick?: any;
   handleTicketClick?: any;
   isBordered?: any;
 }
 
-const ComponyTable = ({
+const CategoryTable = ({
   columns,
   data,
   isGlobalFilter,
@@ -110,8 +110,8 @@ const ComponyTable = ({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState('');
   const dispatch = useAppDispatch();
-  const { count, } = useSelector((state:any) => state.company);
-
+  const { count, } = useSelector((state:any) => state.category);
+  
 
   const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
     const itemRank = rankItem(row.getValue(columnId), value);
@@ -179,7 +179,7 @@ const ComponyTable = ({
   const [modalViewOpen, setModalViewOpen] = useState(false);
   const [selectedRowData, setSelectedRowData] = useState(null);
   const [selectedRowId, setSelectedRowId] = useState(null);
-
+  console.log('Data passed to CategoryTable:', data);
 
   const handleEdit = (rowData:any) => {
     setSelectedRowData(rowData);
@@ -209,7 +209,7 @@ const ComponyTable = ({
 
   const onClickDelete = (id: any) => {
 
-    dispatch(deleteCompany(id));
+    dispatch(deleteCategory(id));
   };
 
 
@@ -366,7 +366,7 @@ const ComponyTable = ({
       <Modal isOpen={modalEditOpen} toggle={toggleEdit} modalClassName="zoomIn" centered tabIndex={-1}>
         <ModalHeader className="p-3 bg-success-subtle"> Edit </ModalHeader>
         <ModalBody className='z-2'>
-          <CompanyEditModal rowData={selectedRowData} />
+          <CategoryEditModal rowData={selectedRowData} />
         </ModalBody>
         <ModalFooter>
           <button onClick={toggleEdit}>Close</button>
@@ -377,7 +377,7 @@ const ComponyTable = ({
         <ModalHeader className="p-3 bg-success-subtle"> Add </ModalHeader>
         <ModalBody>
           <div>
-            <CompanyAddModal />
+            <CategoryAddModal />
           </div>
         </ModalBody>
         <ModalFooter>
@@ -388,7 +388,7 @@ const ComponyTable = ({
       <Modal isOpen={modalViewOpen} toggle={toggleView} modalClassName="zoomIn" centered tabIndex={-1}>
         <ModalHeader className="p-3 bg-success-subtle"> View </ModalHeader>
         <ModalBody style={{ minHeight: '500px' }}>
-          <CompanyViewModal rowId={selectedRowId}/>
+          <CategoryViewModal rowId={selectedRowId}/>
         </ModalBody>
         <ModalFooter>
           <button onClick={toggleView}>Close</button>
@@ -398,4 +398,4 @@ const ComponyTable = ({
   );
 };
 
-export default ComponyTable;
+export default CategoryTable;

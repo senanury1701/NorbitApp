@@ -2,10 +2,10 @@ import React, {  useMemo, useEffect  } from 'react';
 import {  Container,  } from "reactstrap";
 import UiContent from 'Components/Common/UiContent';
 import BreadCrumb from 'Components/Common/BreadCrumb';
-import CategoryTable from '../../Components/Category/CategoryTable'
+import CompanyTable from '../../Components/Company/CompanyTable'
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchCategory, fetchAllCategory } from '../../slices/thunks';
-const Category = () => {
+import { fetchCompanies,fetchAllCompanies } from '../../slices/thunks';
+const Company = () => {
   
 
   const columns = useMemo(
@@ -21,8 +21,8 @@ const Category = () => {
         enableColumnFilter: false,
       },
       {
-          header: "Category Name",
-          accessorKey: "name",
+          header: "Company Name",
+          accessorKey: "company_name",
           enableColumnFilter: false,
       },
       {
@@ -42,17 +42,17 @@ const Category = () => {
 
   const dispatch = useDispatch<any>();
 
-  const { categories, status, error, count } = useSelector((state:any) => state.category);
+  const { companies, status, error, count } = useSelector((state:any) => state.datasheet);
 
   useEffect(() => {
     if (count > 5){
-      dispatch(fetchAllCategory(count))
+      dispatch(fetchAllCompanies(count))
     }
   
   }, [count, dispatch])
   
   useEffect(() => {
-    dispatch(fetchCategory());
+    dispatch(fetchCompanies());
   }, [dispatch]);
 
   if (status === 'idle') {
@@ -67,11 +67,11 @@ const Category = () => {
             <UiContent />
             <div className="page-content">
                 <Container fluid>
-                    <BreadCrumb title="Category"  />
+                    <BreadCrumb title="Company"  />
                     <div className='m-3'>
-                      <CategoryTable
-                            columns={(columns )}
-                            data={(categories.results)}
+                      <CompanyTable
+                            columns={(columns || [])}
+                            data={(companies || [])}
                             isGlobalFilter={true}
                             customPageSize={5}
                             SearchPlaceholder='Search...'
@@ -85,4 +85,4 @@ const Category = () => {
     );
 };
 
-export default Category;
+export default Company;

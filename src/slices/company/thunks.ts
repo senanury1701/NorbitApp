@@ -24,14 +24,12 @@ export const fetchAllCompanies = (count:any) => async (dispatch: any) => {
     try {
       const data = await fetchCompanies(page)(dispatch);
       allData = [...allData, ...data];
-      console.log(allData);
       
     } catch (error: any) {
-      // Hata durumu zaten fetchCompanies içinde ele alınıyor
+
       break;
     }
   }
-  console.log(allData);
   
   dispatch(getCompanies(allData));
 };

@@ -12,6 +12,7 @@ import companyReducer from "./company/reducers";
 import datasheetReducer from "./datasheet/reducers";
 import categoryReducer from "./category/reducers";
 import jobsReducer from "./jobs/reducers";
+import inventoriesReducer from "./inventory/reducers";
 
 
 const rootReducer = combineReducers({
@@ -24,6 +25,7 @@ const rootReducer = combineReducers({
     datasheet: datasheetReducer,
     category: categoryReducer,
     jobs: jobsReducer,
+    inventories: inventoriesReducer,
 
 });
 

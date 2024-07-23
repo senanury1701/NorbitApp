@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 export const initialState = {
-    companies: [],
+    inventories: [],
     count: 0,
     previous: null,
     next: null,
@@ -11,17 +11,21 @@ export const initialState = {
     editStatus: ''
 };
 
-const companySlice = createSlice({
-    name: 'company',
+const inventoriesSlice = createSlice({
+    name: 'inventories',
     initialState,
     reducers: {
-        getCompanies(state, action) {
+        getInventories(state, action) {
             state.status = 'success';
-            state.companies = action.payload.results;
-            state.count = action.payload.count;
-            state.previous = action.payload.previous;
-            state.next = action.payload.next;                
-            
+            if (state.count > 5) {
+                state.inventories = action.payload;
+            }else{
+                state.inventories = action.payload.results;
+                state.count = action.payload.count;
+                state.previous = action.payload.previous;
+                state.next = action.payload.next;                
+            }
+
             
         },
         updateStatus(state) {
@@ -37,10 +41,10 @@ const companySlice = createSlice({
 });
 
 export const {
-    getCompanies,
+    getInventories,
     updateStatus,
     setError,
     editStatus,
-} = companySlice.actions;
+} = inventoriesSlice.actions;
 
-export default companySlice.reducer;
+export default inventoriesSlice.reducer;

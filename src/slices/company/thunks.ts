@@ -3,9 +3,10 @@ import {getCompanies, updateStatus , setError,} from './reducers'
 
 
 
-export const fetchCompanies = (page = 1) => async (dispatch: any) => {
+export const fetchCompanies = (page = 1, search = '') => async (dispatch: any) => {
   try {
-      const response = await axiosInstance.get(`company/list?page=${page}`);
+      const response = await axiosInstance.get(`company/list?page=${page}&search=${search}`);
+      console.log(search);
       
       dispatch(getCompanies(response.data));
       return response.data.results;
@@ -15,24 +16,6 @@ export const fetchCompanies = (page = 1) => async (dispatch: any) => {
   }
 };
 
-export const fetchAllCompanies = (count:any) => async (dispatch: any) => {
-  const limit = 5;
-  const totalPages = Math.ceil(count / limit);
-  let allData:any = [];
-
-  for (let page = 1; page <= totalPages; page++) {
-    try {
-      const data = await fetchCompanies(page)(dispatch);
-      allData = [...allData, ...data];
-      
-    } catch (error: any) {
-
-      break;
-    }
-  }
-  
-  dispatch(getCompanies(allData));
-};
   
 export const addCompany = (company_name:any) => async (dispatch: any)  => {
   try {

@@ -1,9 +1,6 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { Modal, ModalFooter, ModalBody, ModalHeader, CardBody, Col, Row, Table, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from "reactstrap";
 import { Link } from "react-router-dom";
-import {  InputGroup, InputGroupText, Input } from "reactstrap";
-import { fetchCompanies } from '../../slices/thunks';
-
 import {
   Column,
   Table as ReactTable,
@@ -18,11 +15,11 @@ import {
   PaginationState,
 } from '@tanstack/react-table';
 import { rankItem } from '@tanstack/match-sorter-utils';
-import CompanyEditModal from '../Company/CompanyEditModal'; 
-import CompanyAddModal from '../Company/CompanyAddModal';
-import CompanyViewModal from '../Company/CompanyViewModal';
+import InventoryEdit from './InventoryEdit'; 
+import InventoryAdd from './InventoryAdd';
+import InventoryView from './InventoryView';
 import { useAppDispatch } from '../hooks';
-import { deleteCompany } from '../../slices/company/thunks';
+import { deleteInventories } from '../../slices/inventory/thunks';
 import {  useSelector } from 'react-redux';
 
 const Filter = ({
@@ -91,13 +88,13 @@ interface TableContainerProps {
   divClass?: any;
   SearchPlaceholder?: any;
   handleLeadClick?: any;
-  handleCompanyClick?: any;
+  handleCamponyClick?: any;
   handleContactClick?: any;
   handleTicketClick?: any;
   isBordered?: any;
 }
 
-const ComponyTable = ({
+const InventoryTable = ({
   columns,
   data,
   isGlobalFilter,
@@ -113,8 +110,8 @@ const ComponyTable = ({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState('');
   const dispatch = useAppDispatch();
-  const { count } = useSelector((state:any) => state.company);
-
+  const { count, } = useSelector((state:any) => state.inventories);
+  
 
   const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
     const itemRank = rankItem(row.getValue(columnId), value);
@@ -182,16 +179,6 @@ const ComponyTable = ({
   const [modalViewOpen, setModalViewOpen] = useState(false);
   const [selectedRowData, setSelectedRowData] = useState(null);
   const [selectedRowId, setSelectedRowId] = useState(null);
-  const [search ,setSearch] = useState('')
-
-    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearch(e.target.value);
-  };
-
-  useEffect(() => {
-    dispatch(fetchCompanies(1, search));
-  }, [search, dispatch]);
-  
 
   const handleEdit = (rowData:any) => {
     setSelectedRowData(rowData);
@@ -221,7 +208,7 @@ const ComponyTable = ({
 
   const onClickDelete = (id: any) => {
 
-    dispatch(deleteCompany(id));
+    dispatch(deleteInventories(id));
   };
 
 
@@ -237,18 +224,29 @@ const ComponyTable = ({
             <form>
               <Row className="align-items-center">
                 <Col xs={6} md={6} className='d-flex'>
-                <InputGroup className="me-2 mb-2 shadow w-100">
-                    <InputGroupText className="input-group-text">
-                      <i className="bx bx-search-alt search-icon"></i>
-                    </InputGroupText>
-                    <Input
-                      className="form-control-sm"
-                      type="text"
-                      value={search}
-                      onChange={handleSearchChange}
-                      placeholder="Search..."
+                  <div >
+                    <select
+                      className='p-2 border-0 shadow'
+                      value={table.getState().pagination.pageSize}
+                      onChange={e => {
+                        table.setPageSize(Number(e.target.value))
+                      }}
+                    >
+                      {[5, 10, 20, 30, 40, 50].map(pageSize => (
+                        <option key={pageSize} value={pageSize}>
+                          Show {pageSize}
+                        </option>
+                      ))}
+                    </select>                  
+                  </div>
+                  <div className="search-box me-2 mb-2 shadow w-100" >
+                    <DebouncedInput
+                      value={globalFilter ?? ''}
+                      onChange={value => setGlobalFilter(String(value))}
+                      placeholder={SearchPlaceholder}
                     />
-                    </InputGroup>
+                    <i className="bx bx-search-alt search-icon"></i>
+                  </div>
                 </Col>
                 <Col xs={6} md={6} className="text-md-end text-center">
                   <button
@@ -336,7 +334,7 @@ const ComponyTable = ({
       <Row className="align-items-center mt-2 g-3 text-center text-sm-start">
         <div className="col-sm">
           <div className="text-muted">
-          Total result <span className="fw-semibold ms-1">{count}</span>
+            Total result <span className="fw-semibold ms-1">{count}</span>
           </div>
         </div>
         <div className="col-sm-auto">
@@ -365,9 +363,9 @@ const ComponyTable = ({
       </Row>
 
       <Modal isOpen={modalEditOpen} toggle={toggleEdit} modalClassName="zoomIn" centered tabIndex={-1}>
-        <ModalHeader className="p-3 bg-success-subtle"> Edit </ModalHeader>
+        <ModalHeader toggle={toggleEdit} className="p-3 bg-success-subtle"> Edit </ModalHeader>
         <ModalBody className='z-2'>
-          <CompanyEditModal rowData={selectedRowData} />
+          <InventoryEdit rowData={selectedRowData} />
         </ModalBody>
         <ModalFooter>
           <button onClick={toggleEdit}>Close</button>
@@ -375,10 +373,10 @@ const ComponyTable = ({
       </Modal>
 
       <Modal isOpen={modalAddOpen} toggle={toggleAdd} centered tabIndex={-1}>
-        <ModalHeader className="p-3 bg-success-subtle"> Add </ModalHeader>
+        <ModalHeader toggle={toggleAdd} className="p-3 bg-success-subtle"> Add </ModalHeader>
         <ModalBody>
           <div>
-            <CompanyAddModal />
+            <InventoryAdd />
           </div>
         </ModalBody>
         <ModalFooter>
@@ -387,9 +385,9 @@ const ComponyTable = ({
       </Modal>
 
       <Modal isOpen={modalViewOpen} toggle={toggleView} modalClassName="zoomIn" centered tabIndex={-1}>
-        <ModalHeader className="p-3 bg-success-subtle"> View </ModalHeader>
+        <ModalHeader toggle={toggleView} className="p-3 bg-success-subtle"> View </ModalHeader>
         <ModalBody style={{ minHeight: '500px' }}>
-          <CompanyViewModal rowId={selectedRowId}/>
+          <InventoryView rowId={selectedRowId}/>
         </ModalBody>
         <ModalFooter>
           <button onClick={toggleView}>Close</button>
@@ -399,4 +397,4 @@ const ComponyTable = ({
   );
 };
 
-export default ComponyTable;
+export default InventoryTable;

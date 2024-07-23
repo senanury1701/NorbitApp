@@ -9,3 +9,4 @@ export * from "./auth/profile/thunk";
 export * from "./company/thunks";
 export * from "./category/thunks";
 export * from "./jobs/thunks";
+export * from "./inventory/thunks";

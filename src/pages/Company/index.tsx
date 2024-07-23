@@ -4,7 +4,8 @@ import UiContent from 'Components/Common/UiContent';
 import BreadCrumb from 'Components/Common/BreadCrumb';
 import CompanyTable from '../../Components/Company/CompanyTable'
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchCompanies,fetchAllCompanies } from '../../slices/thunks';
+import { fetchCompanies } from '../../slices/thunks';
+
 const Company = () => {
   
 
@@ -41,15 +42,10 @@ const Company = () => {
   );
 
   const dispatch = useDispatch<any>();
+  const { companies, status, error, } = useSelector((state:any) => state.company);
 
-  const { companies, status, error, count } = useSelector((state:any) => state.company);
 
-  useEffect(() => {
-    if (count > 5){
-      dispatch(fetchAllCompanies(count))
-    }
-  
-  }, [count, dispatch])
+
   
   useEffect(() => {
     dispatch(fetchCompanies());

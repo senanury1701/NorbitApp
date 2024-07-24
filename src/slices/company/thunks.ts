@@ -3,10 +3,11 @@ import {getCompanies, updateStatus , setError,} from './reducers'
 
 
 
-export const fetchCompanies = (page = 1, search = '') => async (dispatch: any) => {
+export const fetchCompanies = (page:any = 1, search = '') => async (dispatch: any) => {
   try {
+      console.log(page);
       const response = await axiosInstance.get(`company/list?page=${page}&search=${search}`);
-      console.log(search);
+      
       
       dispatch(getCompanies(response.data));
       return response.data.results;

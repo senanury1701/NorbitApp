@@ -154,14 +154,7 @@ const ComponyTable = ({
   const {
     getHeaderGroups,
     getRowModel,
-    getCanPreviousPage,
-    getCanNextPage,
-    getPageOptions,
-    setPageIndex,
-    nextPage,
-    previousPage,
     setPageSize,
-    getState
   } = table;
 
   interface DropdownState {
@@ -182,16 +175,38 @@ const ComponyTable = ({
   const [modalViewOpen, setModalViewOpen] = useState(false);
   const [selectedRowData, setSelectedRowData] = useState(null);
   const [selectedRowId, setSelectedRowId] = useState(null);
-  const [search ,setSearch] = useState('')
+  const [page, setPage] = useState(0);
+  const [search, setSearch] = useState('');
+ const pageSize = 5; // Sayfa başına öğe sayısı
+  // Toplam sayfa sayısını hesapla
+  const totalPages = Math.ceil(count / pageSize);
 
-    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  // Pagination işlevleri
+  const getCanPreviousPage = () => page > 0;
+  const getCanNextPage = () => page < totalPages - 1;
+
+  const previousPage = () => {
+    if (getCanPreviousPage()) setPage(prev => prev - 1);
+  };
+
+  const nextPage = () => {
+    if (getCanNextPage()) setPage(prev => prev + 1);
+  };
+
+  const goToPage = (pageIndex: any) => {
+    if (pageIndex >= 0 && pageIndex < totalPages) setPage(pageIndex);
+  };
+
+  // Veriyi çek
+  useEffect(() => { 
+    dispatch(fetchCompanies( page+1, search));
+  }, [dispatch, page,search]);
+  
+  
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(e.target.value);
   };
 
-  useEffect(() => {
-    dispatch(fetchCompanies(1, search));
-  }, [search, dispatch]);
-  
 
   const handleEdit = (rowData:any) => {
     setSelectedRowData(rowData);
@@ -334,34 +349,32 @@ const ComponyTable = ({
       </div>
 
       <Row className="align-items-center mt-2 g-3 text-center text-sm-start">
-        <div className="col-sm">
+        <Col sm>
           <div className="text-muted">
-          Total result <span className="fw-semibold ms-1">{count}</span>
+            Total result <span className="fw-semibold ms-1">{count}</span>
           </div>
-        </div>
-        <div className="col-sm-auto">
+        </Col>
+        <Col sm="auto">
           <ul className="pagination pagination-separated pagination-md justify-content-center justify-content-sm-start mb-0">
             <li className={!getCanPreviousPage() ? "page-item disabled" : "page-item"}>
               <Link to="#" className="page-link" onClick={previousPage}>Previous</Link>
             </li>
-            {getPageOptions().map((item: any, key: number) => (
-              <React.Fragment key={key}>
-                <li className="page-item">
-                  <Link
-                    to="#"
-                    className={getState().pagination.pageIndex === item ? "page-link active" : "page-link"}
-                    onClick={() => setPageIndex(item)}
-                  >
-                    {item + 1}
-                  </Link>
-                </li>
-              </React.Fragment>
+            {Array.from({ length: totalPages }, (_, index) => (
+              <li className="page-item" key={index}>
+                <Link
+                  to="#"
+                  className={page === index ? "page-link active" : "page-link"}
+                  onClick={() => goToPage(index)}
+                >
+                  {index + 1}
+                </Link>
+              </li>
             ))}
             <li className={!getCanNextPage() ? "page-item disabled" : "page-item"}>
               <Link to="#" className="page-link" onClick={nextPage}>Next</Link>
             </li>
           </ul>
-        </div>
+        </Col>
       </Row>
 
       <Modal isOpen={modalEditOpen} toggle={toggleEdit} modalClassName="zoomIn" centered tabIndex={-1}>

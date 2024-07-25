@@ -1,7 +1,7 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { Modal, ModalFooter, ModalBody, ModalHeader, CardBody, Col, Row, Table, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from "reactstrap";
 import { Link } from "react-router-dom";
-import {  InputGroup, InputGroupText, Input } from "reactstrap";
+import {   InputGroupText } from "reactstrap";
 import { fetchCompanies } from '../../slices/thunks';
 
 import {
@@ -51,7 +51,7 @@ const Filter = ({
 const DebouncedInput = ({
   value: initialValue,
   onChange,
-  debounce = 500,
+  debounce = 1000, 
   ...props
 }: {
   value: string | number;
@@ -73,9 +73,10 @@ const DebouncedInput = ({
   }, [debounce, onChange, value]);
 
   return (
-    <input {...props} value={value} id="search-bar-0" className="form-control border-0 search" onChange={e => setValue(e.target.value)} />
+    <input {...props} value={value} onChange={e => setValue(e.target.value)} />
   );
 };
+
 
 interface TableContainerProps {
   columns?: any;
@@ -177,11 +178,9 @@ const ComponyTable = ({
   const [selectedRowId, setSelectedRowId] = useState(null);
   const [page, setPage] = useState(0);
   const [search, setSearch] = useState('');
- const pageSize = 5; // Sayfa başına öğe sayısı
-  // Toplam sayfa sayısını hesapla
+ const pageSize = 5; 
   const totalPages = Math.ceil(count / pageSize);
 
-  // Pagination işlevleri
   const getCanPreviousPage = () => page > 0;
   const getCanNextPage = () => page < totalPages - 1;
 
@@ -197,16 +196,19 @@ const ComponyTable = ({
     if (pageIndex >= 0 && pageIndex < totalPages) setPage(pageIndex);
   };
 
-  // Veriyi çek
-  useEffect(() => { 
-    dispatch(fetchCompanies( page+1, search));
-  }, [dispatch, page,search]);
-  
-  
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearch(e.target.value);
-  };
 
+  useEffect(() => {
+    dispatch(fetchCompanies(page + 1, search));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch, page]);
+
+  useEffect(() => {
+    setPage(0);
+  }, [search]);
+
+  const handleSearchChange = (value: string | number) => {
+    setSearch(value.toString());
+  };
 
   const handleEdit = (rowData:any) => {
     setSelectedRowData(rowData);
@@ -235,7 +237,6 @@ const ComponyTable = ({
   };
 
   const onClickDelete = (id: any) => {
-
     dispatch(deleteCompany(id));
   };
 
@@ -251,19 +252,16 @@ const ComponyTable = ({
           <CardBody className="border border-dashed border-end-0 border-start-0">
             <form>
               <Row className="align-items-center">
-                <Col xs={6} md={6} className='d-flex'>
-                <InputGroup className="me-2 mb-2 shadow w-100">
+                <Col xs={6} md={6} className='d-flex'>              
                     <InputGroupText className="input-group-text">
                       <i className="bx bx-search-alt search-icon"></i>
                     </InputGroupText>
-                    <Input
-                      className="form-control-sm"
+                    <DebouncedInput
                       type="text"
                       value={search}
                       onChange={handleSearchChange}
                       placeholder="Search..."
-                    />
-                    </InputGroup>
+                    />                
                 </Col>
                 <Col xs={6} md={6} className="text-md-end text-center">
                   <button

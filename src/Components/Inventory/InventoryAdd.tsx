@@ -3,61 +3,44 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Input, Label, Form, FormFeedback, Button } from 'reactstrap';
 import { addInventories } from '../../slices/thunks';
-import { useAppDispatch } from '../hooks'; 
+import { useAppDispatch } from '../hooks';
 
 const InventoriesAdd = () => {
     const dispatch = useAppDispatch();
 
     const validation = useFormik({
-        enableReinitialize: true,
         initialValues: {
+            project: [],
+            category: [],
             product_name: '',
-            project: '',
-            category: '',
-            price: 0,
+            satin_alinan_tarih: new Date().toISOString(),
+            count: '',
+            price: '',
+            description: '',
             account: '',
-            where_in_the_office: '',
             e_commerce_site: '',
             company: '',
-            ordering_person: '',
+            where_in_the_office: '',
             responsible_person: '',
-            description: '',
-            count: 0,
-            satin_alinan_tarih: new Date().toISOString()
+            ordering_person: [],
         },
         validationSchema: Yup.object({
             product_name: Yup.string().required("Please Enter Product Name"),
-            project: Yup.string().required("Please Enter Project Name"),
+            project: Yup.array().of(Yup.number()).required("Please Enter Project Name"),
             price: Yup.number().required("Please Enter Price"),
             where_in_the_office: Yup.string().required("Please Enter Where in the Office"),
             account: Yup.string().required("Please Enter Account"),
             e_commerce_site: Yup.string().url('Enter a valid URL').required("Please Enter E-commerce Site"),
             company: Yup.string().required("Please Enter Company"),
-            ordering_person: Yup.string().required("Please Enter Owner"),
-            responsible_person: Yup.string().required("Please Enter Responsible Person"),
+            ordering_person: Yup.array().of(Yup.number()).required("Please Enter Owner"),
+            responsible_person: Yup.number().required("Please Enter Responsible Person"),
+            category: Yup.array().of(Yup.number()).required("Please Enter Category"),
+            description: Yup.string().required("Please Enter Description"),
+            count: Yup.number().required("Please Enter Count"),
         }),
         onSubmit: async (values, { resetForm }) => {
-            try {
-                const payload = {
-                    project: [values.project],
-                    category: values.category ? [values.category] : [0],
-                    product_name: values.product_name,
-                    satin_alinan_tarih: values.satin_alinan_tarih,
-                    count: values.count,
-                    price: values.price,
-                    description: values.description,
-                    account: values.account,
-                    e_commerce_site: values.e_commerce_site,
-                    company: values.company,
-                    where_in_the_office: values.where_in_the_office,
-                    responsible_person: Number(values.responsible_person),
-                    ordering_person: [values.ordering_person],
-                };
-                await dispatch(addInventories(payload));
-                resetForm();
-            } catch (error) {
-                console.error('Failed to add inventory:', error);
-            }
+            console.log(values);
+            dispatch(addInventories(values));
         },
     });
 
@@ -79,30 +62,29 @@ const InventoriesAdd = () => {
                         type="text"
                         onChange={validation.handleChange}
                         onBlur={validation.handleBlur}
-                        value={validation.values.product_name}
+                        value={validation.values.product_name || ''}
                         invalid={validation.touched.product_name && !!validation.errors.product_name}
                     />
                     {validation.touched.product_name && validation.errors.product_name && (
                         <FormFeedback type="invalid">{validation.errors.product_name}</FormFeedback>
                     )}
                 </div>
-                
+
                 <div className="mb-3">
                     <Label htmlFor="ordering_person" className="form-label">Owner</Label>
                     <Input
                         name="ordering_person"
                         className="form-control"
                         type="select"
-                        onChange={validation.handleChange}
+                        onChange={e => validation.setFieldValue('ordering_person', [parseInt(e.target.value)])}
                         onBlur={validation.handleBlur}
-                        value={validation.values.ordering_person}
+                        value={validation.values.ordering_person[0] || ''}
                         invalid={validation.touched.ordering_person && !!validation.errors.ordering_person}
                     >
-                        <option value="">Select Owner</option>
-                        <option value="SenaNur">SenaNur</option>
-                        <option value="NeslihanUcum">NeslihanUcum</option>
-                        <option value="Norbit">Norbit</option>
-                        <option value="SudenurCoban">SudenurCoban</option>
+                        <option value="">---------</option>
+                        <option value="5">sudenurcoban</option>
+                        <option value="4">neslihanucum</option>
+                        <option value="1">norbit</option>
                     </Input>
                     {validation.touched.ordering_person && validation.errors.ordering_person && (
                         <FormFeedback type="invalid">{validation.errors.ordering_person}</FormFeedback>
@@ -115,16 +97,15 @@ const InventoriesAdd = () => {
                         name="responsible_person"
                         className="form-control"
                         type="select"
-                        onChange={validation.handleChange}
+                        onChange={e => validation.setFieldValue('responsible_person', parseInt(e.target.value))}
                         onBlur={validation.handleBlur}
-                        value={validation.values.responsible_person}
+                        value={validation.values.responsible_person || ''}
                         invalid={validation.touched.responsible_person && !!validation.errors.responsible_person}
                     >
-                        <option value="">Select Responsible Person</option>
-                        <option value="SenaNur">SenaNur</option>
-                        <option value="NeslihanUcum">NeslihanUcum</option>
-                        <option value="Norbit">Norbit</option>
-                        <option value="SudenurCoban">SudenurCoban</option>
+                        <option value="">---------</option>
+                        <option value="5">sudenurcoban</option>
+                        <option value="4">neslihanucum</option>
+                        <option value="1">norbit</option>
                     </Input>
                     {validation.touched.responsible_person && validation.errors.responsible_person && (
                         <FormFeedback type="invalid">{validation.errors.responsible_person}</FormFeedback>
@@ -132,17 +113,19 @@ const InventoriesAdd = () => {
                 </div>
 
                 <div className="mb-3">
-                    <Label htmlFor="project" className="form-label">Project Name</Label>
+                    <Label htmlFor="project" className="form-label">project</Label>
                     <Input
                         name="project"
                         className="form-control"
-                        placeholder="Enter Project Name"
-                        type="textarea"
-                        onChange={validation.handleChange}
+                        type="select"
+                        onChange={e => validation.setFieldValue('project', [parseInt(e.target.value)])}
                         onBlur={validation.handleBlur}
-                        value={validation.values.project}
+                        value={validation.values.project[0] || ''}
                         invalid={validation.touched.project && !!validation.errors.project}
-                    />
+                    >
+                        <option >---------</option>
+                        <option value="1">sec2</option>
+                    </Input>
                     {validation.touched.project && validation.errors.project && (
                         <FormFeedback type="invalid">{validation.errors.project}</FormFeedback>
                     )}
@@ -157,7 +140,7 @@ const InventoriesAdd = () => {
                         type="number"
                         onChange={validation.handleChange}
                         onBlur={validation.handleBlur}
-                        value={validation.values.price}
+                        value={validation.values.price || ''}
                         invalid={validation.touched.price && !!validation.errors.price}
                     />
                     {validation.touched.price && validation.errors.price && (
@@ -174,7 +157,7 @@ const InventoriesAdd = () => {
                         type="text"
                         onChange={validation.handleChange}
                         onBlur={validation.handleBlur}
-                        value={validation.values.where_in_the_office}
+                        value={validation.values.where_in_the_office || ''}
                         invalid={validation.touched.where_in_the_office && !!validation.errors.where_in_the_office}
                     />
                     {validation.touched.where_in_the_office && validation.errors.where_in_the_office && (
@@ -191,7 +174,7 @@ const InventoriesAdd = () => {
                         type="text"
                         onChange={validation.handleChange}
                         onBlur={validation.handleBlur}
-                        value={validation.values.account}
+                        value={validation.values.account || ''}
                         invalid={validation.touched.account && !!validation.errors.account}
                     />
                     {validation.touched.account && validation.errors.account && (
@@ -208,14 +191,14 @@ const InventoriesAdd = () => {
                         type="text"
                         onChange={validation.handleChange}
                         onBlur={validation.handleBlur}
-                        value={validation.values.e_commerce_site}
+                        value={validation.values.e_commerce_site || ''}
                         invalid={validation.touched.e_commerce_site && !!validation.errors.e_commerce_site}
                     />
                     {validation.touched.e_commerce_site && validation.errors.e_commerce_site && (
                         <FormFeedback type="invalid">{validation.errors.e_commerce_site}</FormFeedback>
                     )}
                 </div>
-                
+
                 <div className="mb-3">
                     <Label htmlFor="company" className="form-label">Company</Label>
                     <Input
@@ -225,7 +208,7 @@ const InventoriesAdd = () => {
                         type="text"
                         onChange={validation.handleChange}
                         onBlur={validation.handleBlur}
-                        value={validation.values.company}
+                        value={validation.values.company || ''}
                         invalid={validation.touched.company && !!validation.errors.company}
                     />
                     {validation.touched.company && validation.errors.company && (
@@ -233,17 +216,25 @@ const InventoriesAdd = () => {
                     )}
                 </div>
 
+
                 <div className="mb-3">
                     <Label htmlFor="category" className="form-label">Category</Label>
                     <Input
                         name="category"
                         className="form-control"
-                        placeholder="Enter Category"
-                        type="text"
-                        onChange={validation.handleChange}
+                        type="select"
+                        onChange={e => validation.setFieldValue('category', [parseInt(e.target.value)])}
                         onBlur={validation.handleBlur}
-                        value={validation.values.category}
-                    />
+                        value={validation.values.category[0] || ''}
+                        invalid={validation.touched.category && !!validation.errors.category}
+                    >
+                        <option value="">---------</option>
+                        <option value="2">sec</option>
+                        <option value="3">sec2</option>
+                    </Input>
+                    {validation.touched.category && validation.errors.category && (
+                        <FormFeedback type="invalid">{validation.errors.category}</FormFeedback>
+                    )}
                 </div>
 
                 <div className="mb-3">
@@ -255,8 +246,12 @@ const InventoriesAdd = () => {
                         type="text"
                         onChange={validation.handleChange}
                         onBlur={validation.handleBlur}
-                        value={validation.values.description}
+                        value={validation.values.description || ''}
+                        invalid={validation.touched.description && !!validation.errors.description}
                     />
+                    {validation.touched.description && validation.errors.description && (
+                        <FormFeedback type="invalid">{validation.errors.description}</FormFeedback>
+                    )}
                 </div>
 
                 <div className="mb-3">
@@ -268,8 +263,12 @@ const InventoriesAdd = () => {
                         type="number"
                         onChange={validation.handleChange}
                         onBlur={validation.handleBlur}
-                        value={validation.values.count}
+                        value={validation.values.count || ''}
+                        invalid={validation.touched.count && !!validation.errors.count}
                     />
+                    {validation.touched.count && validation.errors.count && (
+                        <FormFeedback type="invalid">{validation.errors.count}</FormFeedback>
+                    )}
                 </div>
 
                 <Button type="submit" color="primary">Add Inventory</Button>

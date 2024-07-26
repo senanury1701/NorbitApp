@@ -207,7 +207,6 @@ const InventoryTable = ({
   };
 
   const onClickDelete = (id: any) => {
-
     dispatch(deleteInventories(id));
   };
 

@@ -1,8 +1,17 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
 
-//Dashboard
-import DashboardEcommerce from "../pages/DashboardEcommerce";
+//Pages
+import DashboardEcommerce from "../pages/DashboardEcommerce/index";
+import UserProfile from "../pages/Authentication/user-profile";
+import EmployeeManangement from '../pages/EmployeeManagement/index'
+import Permissions from '../pages/Permissions/index'
+import AccountInformation from '../pages/AccountInformation/index'
+import Company from '../pages/Company/index'
+import Jobs from '../pages/Jobs/index'
+import Inventories from '../pages/Inventories/index'
+import Purchases from '../pages/Purchases/index'
+import Category from '../pages/Category/index'
 
 //AuthenticationInner pages
 import Basic404 from '../pages/AuthenticationInner/Errors/Basic404';
@@ -19,22 +28,12 @@ import ForgetPasswordPage from "../pages/Authentication/ForgetPassword";
 import Logout from "../pages/Authentication/Logout";
 import Register from "../pages/Authentication/Register";
 
-// User Profile
-import UserProfile from "../pages/Authentication/user-profile";
-import EmployeeManangement from '../pages/EmployeeManagement/index'
-import Permissions from '../pages/Permissions/index'
-import AccountInformation from '../pages/AccountInformation/index'
-import Company from '../pages/Company/index'
-import Jobs from '../pages/Jobs/index'
-import Inventories from '../pages/Inventories/index'
-import Purchases from '../pages/Purchases/index'
-import Category from '../pages/Category/index'
+
 
 
 
 const authProtectedRoutes = [
   { path: "/dashboard", component: <DashboardEcommerce /> },
-  { path: "/index", component: <DashboardEcommerce /> },
   { path: "/employeeManangement", component: <EmployeeManangement /> },
   { path: "/permissions", component: <Permissions /> },
   { path: "/accountInformation", component: <AccountInformation /> },

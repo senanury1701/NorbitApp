@@ -10,3 +10,4 @@ export * from "./company/thunks";
 export * from "./category/thunks";
 export * from "./jobs/thunks";
 export * from "./inventory/thunks";
+export * from "./employeeManangement/thunks";

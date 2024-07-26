@@ -19,7 +19,6 @@ import {
 } from '@tanstack/react-table';
 import { rankItem } from '@tanstack/match-sorter-utils';
 import EmployeeManangementEditModal from './EmployeeManangementEdit'; 
-import EmployeeManangementAddModal from './EmployeeManangementAdd';
 import EmployeeManangementViewModal from './EmployeeManangementView';
 import { useAppDispatch } from '../hooks';
 import { deleteEmployeeManangement } from '../../slices/employeeManangement/thunks';
@@ -172,7 +171,6 @@ const EmployeeManangementTable = ({
   };
 
   const [modalEditOpen, setModalEditOpen] = useState(false);
-  const [modalAddOpen, setModalAddOpen] = useState(false);
   const [modalViewOpen, setModalViewOpen] = useState(false);
   const [selectedRowData, setSelectedRowData] = useState(null);
   const [selectedRowId, setSelectedRowId] = useState(null);
@@ -206,9 +204,7 @@ const EmployeeManangementTable = ({
     setPage(0);
   }, [search]);
 
-  const pageZero = () => {
-    setPage(0)
-  }
+
   const handleSearchChange = (value: string | number) => {
     setSearch(value.toString());
   };
@@ -222,13 +218,7 @@ const EmployeeManangementTable = ({
     setModalEditOpen(!modalEditOpen);
   };
 
-  const handleAdd = () => {
-    setModalAddOpen(true);
-  };
 
-  const toggleAdd = () => {
-    setModalAddOpen(!modalAddOpen);
-  };
 
   const handleView = (id:any) => {
     setSelectedRowId(id);
@@ -266,15 +256,6 @@ const EmployeeManangementTable = ({
                       onChange={handleSearchChange}
                       placeholder="Search..."
                     />                
-                </Col>
-                <Col xs={6} md={6} className="text-md-end text-center">
-                  <button
-                    className="btn btn-primary createTask"
-                    type="button"
-                    onClick={handleAdd}
-                  >
-                    <i className="ri-add-fill align-bottom" /> Add
-                  </button>
                 </Col>
 
               </Row>
@@ -386,18 +367,6 @@ const EmployeeManangementTable = ({
         </ModalBody>
         <ModalFooter>
           <button onClick={toggleEdit}>Close</button>
-        </ModalFooter>
-      </Modal>
-
-      <Modal isOpen={modalAddOpen} toggle={toggleAdd} centered tabIndex={-1}>
-        <ModalHeader className="p-3 bg-success-subtle"> Add </ModalHeader>
-        <ModalBody>
-          <div>
-            <EmployeeManangementAddModal toggleAdd={toggleAdd} pageZero={pageZero}/>
-          </div>
-        </ModalBody>
-        <ModalFooter>
-          <button onClick={toggleAdd}>Close</button>
         </ModalFooter>
       </Modal>
 

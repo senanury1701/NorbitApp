@@ -5,7 +5,12 @@ import { Input, Label, Form, FormFeedback, Button } from 'reactstrap';
 import { addCompany } from '../../slices/thunks';
 import { useAppDispatch } from '../hooks'; 
 
-const CompanyAddModal = () => {
+interface CompanyAddModalProps {
+    toggleAdd: () => void;
+    pageZero: () => void;
+}
+
+const CompanyAddModal: React.FC<CompanyAddModalProps> = ({ toggleAdd ,pageZero}) => {
     const dispatch = useAppDispatch();
 
     const validation = useFormik({
@@ -20,6 +25,8 @@ const CompanyAddModal = () => {
             try {
                 await dispatch(addCompany(company_name));
                 resetForm();
+                pageZero()
+                toggleAdd()
             } catch (error) {
                 console.error('Failed to add company:', error);
             }

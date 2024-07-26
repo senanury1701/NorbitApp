@@ -5,9 +5,15 @@ import { Input, Label, Form, FormFeedback, Button } from 'reactstrap';
 import { editCompany } from '../../slices/thunks';
 import { useAppDispatch } from '../hooks'; 
 
-const CompanyEditModal = (rowData:any) => {
+interface CompanyEditModalProps {
+    rowData: any;
+    toggleEdit: () => void;
+  }
+  
+  const CompanyEditModal: React.FC<CompanyEditModalProps> = ({ rowData, toggleEdit }) => {
   const dispatch = useAppDispatch();
-  const props = rowData.rowData
+  const props = rowData
+
   
 
 
@@ -23,7 +29,8 @@ const CompanyEditModal = (rowData:any) => {
       onSubmit: async (values, { resetForm }) => {
           try {
               await dispatch(editCompany(values));
-              resetForm();
+                resetForm();
+                toggleEdit();
           } catch (error) {
               console.error('Failed to update company:', error);
           }
@@ -61,7 +68,7 @@ const CompanyEditModal = (rowData:any) => {
                     </FormFeedback>
                   )}   
               </div>
-              <Button type="submit" color="primary">Edit  Compony</Button>
+              <Button  type="submit" color="primary">Edit  Compony</Button>
           </Form>
       </div>
   );

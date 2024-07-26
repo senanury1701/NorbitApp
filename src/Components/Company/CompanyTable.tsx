@@ -206,6 +206,9 @@ const ComponyTable = ({
     setPage(0);
   }, [search]);
 
+  const pageZero = () => {
+    setPage(0)
+  }
   const handleSearchChange = (value: string | number) => {
     setSearch(value.toString());
   };
@@ -238,6 +241,7 @@ const ComponyTable = ({
 
   const onClickDelete = (id: any) => {
     dispatch(deleteCompany(id));
+    setPage(0)
   };
 
 
@@ -378,7 +382,7 @@ const ComponyTable = ({
       <Modal isOpen={modalEditOpen} toggle={toggleEdit} modalClassName="zoomIn" centered tabIndex={-1}>
         <ModalHeader className="p-3 bg-success-subtle"> Edit </ModalHeader>
         <ModalBody className='z-2'>
-          <CompanyEditModal rowData={selectedRowData} />
+          <CompanyEditModal rowData={selectedRowData} toggleEdit={toggleEdit} />
         </ModalBody>
         <ModalFooter>
           <button onClick={toggleEdit}>Close</button>
@@ -389,7 +393,7 @@ const ComponyTable = ({
         <ModalHeader className="p-3 bg-success-subtle"> Add </ModalHeader>
         <ModalBody>
           <div>
-            <CompanyAddModal />
+            <CompanyAddModal toggleAdd={toggleAdd} pageZero={pageZero}/>
           </div>
         </ModalBody>
         <ModalFooter>

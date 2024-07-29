@@ -18,7 +18,7 @@ export const fetchEmployeeManangement = (page:any = 1, search = '') => async (di
   
 export const addEmployeeManangement = (EmployeeManangement_name:any) => async (dispatch: any)  => {
   try {
-      const response = await axiosInstance.post('EmployeeManangement/create/', EmployeeManangement_name);
+      const response = await axiosInstance.post('ems/create/', EmployeeManangement_name);
       dispatch(updateStatus());      
       dispatch(fetchEmployeeManangement()); 
       return response.data;

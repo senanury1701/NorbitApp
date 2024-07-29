@@ -204,6 +204,8 @@ const ComponyTable = ({
 
   useEffect(() => {
     setPage(0);
+    dispatch(fetchCompanies(page + 1, search));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search]);
 
   const pageZero = () => {

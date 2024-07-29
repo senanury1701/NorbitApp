@@ -2,19 +2,31 @@ import axiosInstance from '../../config/axiosConfig'
 import React, { useEffect, useState } from "react";
 
 interface EmployeeManangement {
-  id: number;
-  EmployeeManangement_name: string;
+  job_title: number[];
+  company_name: number[];
+  username: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  user: string;
+  profile_pic: string | null;
+  skills: string;
+  about: string;
+  files: string | null;
+  links: string;
+  job_start_date: string | null;
+  job_end_date: string | null;
   created_at: string;
   updated_at: string;
 }
 
-const EmployeeManangementViewModal = (id:any) => {
+const EmployeeManangementViewModal = (id: any) => {
   const [EmployeeManangement, setEmployeeManangement] = useState<EmployeeManangement | null>(null);
   
   useEffect(() => {
     const fetchEmployeeManangement = async () => {
       try {
-        const response = await axiosInstance.get(`/EmployeeManangement/${id.rowId}`);
+        const response = await axiosInstance.get(`/ems/employee/${id.rowId}`);
         setEmployeeManangement(response.data); 
       } catch (error) {
         console.log("Error fetching EmployeeManangement:", error);
@@ -29,16 +41,24 @@ const EmployeeManangementViewModal = (id:any) => {
     return <div>Loading...</div>;
   }
 
-
-
   return (
-    <div >
-      <p>EmployeeManangement Name: {EmployeeManangement.EmployeeManangement_name}</p>
+    <div>
+      <p>Job Titles: {EmployeeManangement.job_title.join(', ')}</p>
+      <p>Company Names: {EmployeeManangement.company_name.join(', ')}</p>
+      <p>Username: {EmployeeManangement.username}</p>
+      <p>First Name: {EmployeeManangement.first_name}</p>
+      <p>Last Name: {EmployeeManangement.last_name}</p>
+      <p>Email: {EmployeeManangement.email}</p>
+      <p>User Type: {EmployeeManangement.user}</p>
+      <p>Profile Picture: {EmployeeManangement.profile_pic || 'No picture available'}</p>
+      <p>Skills: {EmployeeManangement.skills}</p>
+      <p>About: {EmployeeManangement.about}</p>
+      <p>Links: {EmployeeManangement.links}</p>
+      <p>Job Start Date: {EmployeeManangement.job_start_date}</p>
+      <p>Job End Date: {EmployeeManangement.job_end_date}</p>
       <p>Created At: {EmployeeManangement.created_at}</p>
       <p>Updated At: {EmployeeManangement.updated_at}</p>
-      {/* Add other fields as needed */}
     </div>
-                
   );
 };
 

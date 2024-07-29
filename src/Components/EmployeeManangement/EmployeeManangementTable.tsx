@@ -97,6 +97,26 @@ interface TableContainerProps {
   isBordered?: any;
 }
 
+interface EmployeeManangement {
+  id: number;
+  job_title: number[];
+  company_name: number[];
+  username: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  user: string;
+  profile_pic: string | null;
+  skills: string;
+  about: string;
+  files: string | null;
+  links: string;
+  job_start_date: string | null;
+  job_end_date: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 const EmployeeManangementTable = ({
   columns,
   data,
@@ -202,6 +222,8 @@ const EmployeeManangementTable = ({
 
   useEffect(() => {
     setPage(0);
+    dispatch(fetchEmployeeManangement(page + 1, search));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search]);
 
 
@@ -359,7 +381,7 @@ const EmployeeManangementTable = ({
           </ul>
         </Col>
       </Row>
-
+      {selectedRowData && (
       <Modal isOpen={modalEditOpen} toggle={toggleEdit} modalClassName="zoomIn" centered tabIndex={-1}>
         <ModalHeader className="p-3 bg-success-subtle"> Edit </ModalHeader>
         <ModalBody className='z-2'>
@@ -369,7 +391,7 @@ const EmployeeManangementTable = ({
           <button onClick={toggleEdit}>Close</button>
         </ModalFooter>
       </Modal>
-
+      )}
       <Modal isOpen={modalViewOpen} toggle={toggleView} modalClassName="zoomIn" centered tabIndex={-1}>
         <ModalHeader className="p-3 bg-success-subtle"> View </ModalHeader>
         <ModalBody style={{ minHeight: '500px' }}>

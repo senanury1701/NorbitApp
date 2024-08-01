@@ -1,13 +1,22 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Input, Label, Form, FormFeedback, Button } from 'reactstrap';
-import { addInventories } from '../../slices/thunks';
-import { useAppDispatch } from '../hooks';
+import { addInventories,fetchCompanies, fetchCategory,fetchEmployeeManangement  } from '../../slices/thunks';
+import { useAppDispatch  } from '../hooks';
+import { useSelector } from 'react-redux';
 
 const InventoriesAdd = () => {
     const dispatch = useAppDispatch();
-
+    const { companies } = useSelector((state:any) => state.company);
+    const { categories } = useSelector((state:any) => state.category)
+    const { employeeManangement } = useSelector((state:any) => state.employeeManangement)
+    useEffect(() => {
+        dispatch(fetchCompanies());
+        dispatch(fetchCategory());
+        dispatch(fetchEmployeeManangement());
+    }, [dispatch]);
+    
     const validation = useFormik({
         initialValues: {
             project: [],
@@ -81,10 +90,10 @@ const InventoriesAdd = () => {
                         value={validation.values.ordering_person[0] || ''}
                         invalid={validation.touched.ordering_person && !!validation.errors.ordering_person}
                     >
-                        <option value="">---------</option>
-                        <option value="5">sudenurcoban</option>
-                        <option value="4">neslihanucum</option>
-                        <option value="1">norbit</option>
+                        <option  value="">Select a Owner</option>
+                        {employeeManangement.map((employeeManangement:any) => (
+                            <option key={employeeManangement.id} value={employeeManangement.id}>{employeeManangement.username}</option>
+                        ))}
                     </Input>
                     {validation.touched.ordering_person && validation.errors.ordering_person && (
                         <FormFeedback type="invalid">{validation.errors.ordering_person}</FormFeedback>
@@ -102,10 +111,10 @@ const InventoriesAdd = () => {
                         value={validation.values.responsible_person || ''}
                         invalid={validation.touched.responsible_person && !!validation.errors.responsible_person}
                     >
-                        <option value="">---------</option>
-                        <option value="5">sudenurcoban</option>
-                        <option value="4">neslihanucum</option>
-                        <option value="1">norbit</option>
+                        <option  value="">Select a Responsible Person</option>
+                        {employeeManangement.map((employeeManangement:any) => (
+                            <option key={employeeManangement.id} value={employeeManangement.id}>{employeeManangement.username}</option>
+                        ))}
                     </Input>
                     {validation.touched.responsible_person && validation.errors.responsible_person && (
                         <FormFeedback type="invalid">{validation.errors.responsible_person}</FormFeedback>
@@ -200,17 +209,22 @@ const InventoriesAdd = () => {
                 </div>
 
                 <div className="mb-3">
-                    <Label htmlFor="company" className="form-label">Company</Label>
+                    <Label htmlFor="company" className="form-label">Company Name</Label>
                     <Input
+                        id="company"
                         name="company"
+                        type="select"
                         className="form-control"
-                        placeholder="Enter Company"
-                        type="text"
                         onChange={validation.handleChange}
                         onBlur={validation.handleBlur}
-                        value={validation.values.company || ''}
+                        value={validation.values.company || ""}
                         invalid={validation.touched.company && !!validation.errors.company}
-                    />
+                    >
+                        <option  value="">Select a company</option>
+                        {companies.map((company:any) => (
+                            <option key={company.id} value={company.id}>{company.company_name}</option>
+                        ))}
+                    </Input>
                     {validation.touched.company && validation.errors.company && (
                         <FormFeedback type="invalid">{validation.errors.company}</FormFeedback>
                     )}
@@ -218,19 +232,21 @@ const InventoriesAdd = () => {
 
 
                 <div className="mb-3">
-                    <Label htmlFor="category" className="form-label">Category</Label>
+                    <Label htmlFor="category" className="form-label">category Name</Label>
                     <Input
+                        id="category"
                         name="category"
-                        className="form-control"
                         type="select"
-                        onChange={e => validation.setFieldValue('category', [parseInt(e.target.value)])}
+                        className="form-control"
+                        onChange={validation.handleChange}
                         onBlur={validation.handleBlur}
-                        value={validation.values.category[0] || ''}
+                        value={validation.values.category || ""}
                         invalid={validation.touched.category && !!validation.errors.category}
                     >
-                        <option value="">---------</option>
-                        <option value="2">sec</option>
-                        <option value="3">sec2</option>
+                        <option  value="">Select a category</option>
+                        {categories.map((category:any) => (
+                            <option key={category.id} value={category.id}>{category.name}</option>
+                        ))}
                     </Input>
                     {validation.touched.category && validation.errors.category && (
                         <FormFeedback type="invalid">{validation.errors.category}</FormFeedback>

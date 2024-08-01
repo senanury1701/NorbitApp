@@ -142,6 +142,12 @@ const Navdata = () => {
             link: "/company",
         },
         {
+            id: "project",
+            label: "project",
+            icon: <FeatherIcon icon="briefcase" className="icon-project" />,
+            link: "/project",
+        },
+        {
             id: "jobs",
             label: "Jobs",
             icon: <FeatherIcon icon="clipboard" className="icon-dual" />,

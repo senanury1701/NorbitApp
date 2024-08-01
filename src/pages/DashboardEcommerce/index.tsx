@@ -18,25 +18,25 @@ const Dashboard = () => {
     const [jobTitleOptions, setJobTitleOptions] = useState<{ id: number, title: string }[]>([]);
     const history = useNavigate();
     const dispatch = useDispatch<any>();
-    const [loading, setLoading] = useState<boolean>(true); // Yüklenme durumunu yönetmek için state
+    const [loading, setLoading] = useState<boolean>(true); 
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                setLoading(true); // Yüklenmeye başladığını işaretle
+                setLoading(true); 
 
                 // Şirketleri API'den çek
                 const companyResponse = await axiosInstance.get('company/list');
                 setCompanyOptions(companyResponse.data.results.map((company: any) => ({
                     id: company.id,
-                    name: company.company_name // Burada company_name ile 'name' olarak eşleştiriyoruz
+                    name: company.company_name 
                 })));
 
                 // İş unvanlarını API'den çek
                 const jobResponse = await axiosInstance.get('/jobs/list');
                 setJobTitleOptions(jobResponse.data.results.map((job: any) => ({
                     id: job.id,
-                    title: job.job_title // Burada job_title ile 'title' olarak eşleştiriyoruz
+                    title: job.job_title 
                 })));
 
             } catch (error) {
@@ -77,13 +77,19 @@ const Dashboard = () => {
           job_title: Yup.number().required("Please select your job title"),
           job_start_date: Yup.date().required("Please enter your job start date"),
       }),
-        onSubmit: (values) => {
-            const formattedDate = new Date(values.job_start_date).toISOString();
-            values.job_start_date = formattedDate;
-            console.log(values);
-            dispatch(registerUser(values, history));
-            setLoader(true);
-        }
+      onSubmit: (values) => {
+        const jobStartDate = new Date(values.job_start_date);
+        const formattedDate = jobStartDate.toISOString();
+        
+        const formattedValues = {
+          ...values,
+          job_start_date: formattedDate
+        };
+        
+        console.log(formattedValues);
+        dispatch(registerUser(formattedValues));
+        setLoader(true);
+      }
     });
 
     const selectLayoutState = (state: any) => state.Account;

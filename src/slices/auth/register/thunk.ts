@@ -1,4 +1,3 @@
-// action
 import {
   registerUserSuccessful,
   registerUserFailed,
@@ -7,25 +6,26 @@ import {
 import axiosInstance from '../../../config/axiosConfig'
 
 
-export const registerUser = (user : any, history : any) => async (dispatch : any) => {
+export const registerUser = (user : any) => async (dispatch : any) => {
   try {
+    console.log(user);
 
     const response = await axiosInstance.post('accounts/registration/', {
       username: user.username,
       email: user.email,
-      password1: user.password,
-      password2: user.confirm_password,
+      password1: user.password1,
+      password2: user.password2,
       user_type: user.user_type,
       first_name: user.first_name,
       last_name: user.last_name,
       company_name: user.company_name,
-      job_title: user.job_title
-    
+      job_title: user.job_title,
+      job_start_date: user.job_start_date
     });
+    
     if (response.status === 200) {
       
       dispatch(registerUserSuccessful(response.data));
-      history('/login')
     } else {
       dispatch(registerUserFailed(response.data));
     }

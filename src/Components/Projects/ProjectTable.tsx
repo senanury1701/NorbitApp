@@ -1,8 +1,8 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { Modal, ModalFooter, ModalBody, ModalHeader, CardBody, Col, Row, Table, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from "reactstrap";
 import { Link } from "react-router-dom";
-import {   InputGroupText } from "reactstrap";
-import { fetchCompanies } from '../../slices/thunks';
+import { InputGroupText } from "reactstrap";
+import { fetchProjects } from '../../slices/thunks';
 
 import {
   Column,
@@ -198,13 +198,13 @@ const ProjectTable = ({
 
 
   useEffect(() => {
-    dispatch(fetchCompanies(page + 1, search));
+    dispatch(fetchProjects(page + 1, search));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, page]);
 
   useEffect(() => {
     setPage(0);
-    dispatch(fetchCompanies(page + 1, search));
+    dispatch(fetchProjects(page + 1, search));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search]);
 

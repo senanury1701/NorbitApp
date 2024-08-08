@@ -4,50 +4,50 @@ import * as Yup from "yup";
 import { useFormik } from "formik";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { registerUser, resetRegisterFlag } from "../../slices/thunks";
+import { registerUser, resetRegisterFlag, fetchCompanies, fetchJobs } from "../../slices/thunks";
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import axiosInstance from '../../config/axiosConfig';
 import BreadCrumb from 'Components/Common/BreadCrumb';
 import UiContent from 'Components/Common/UiContent';
-import { createSelector } from "reselect";
+import AsyncSelect from 'react-select/async';
 
 const Dashboard = () => {
     const [loader, setLoader] = useState<boolean>(false);
-    const [companyOptions, setCompanyOptions] = useState<{ id: number, name: string }[]>([]);
-    const [jobTitleOptions, setJobTitleOptions] = useState<{ id: number, title: string }[]>([]);
     const history = useNavigate();
     const dispatch = useDispatch<any>();
-    const [loading, setLoading] = useState<boolean>(true); 
+    const { companies } = useSelector((state: any) => state.company);
+    const { jobs } = useSelector((state: any) => state.jobs);
+    const [searchInput, setSearchInput] = useState<string>();
+    const [searchInputJobs, setSearchInputJobs] = useState<string>('');
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                setLoading(true); 
 
-                // Şirketleri API'den çek
-                const companyResponse = await axiosInstance.get('company/list');
-                setCompanyOptions(companyResponse.data.results.map((company: any) => ({
-                    id: company.id,
-                    name: company.company_name 
-                })));
 
-                // İş unvanlarını API'den çek
-                const jobResponse = await axiosInstance.get('/jobs/list');
-                setJobTitleOptions(jobResponse.data.results.map((job: any) => ({
-                    id: job.id,
-                    title: job.job_title 
-                })));
+    const handleCompanySearchChange = async (inputValue: string) => {
+        setSearchInput(inputValue);
+        return companies.map((company: any) => ({
+          value: company.id,
+          label: company.company_name,
+        }));
+    };
 
-            } catch (error) {
-                console.error("Error fetching data:", error);
-            } finally {
-                setLoading(false); 
-            }
-        };
-        
-        fetchData();
-    }, []);
+    const handleJobsSearchChange = async (inputValue: string) => {
+        setSearchInputJobs(inputValue);
+        dispatch(fetchJobs(1, searchInputJobs));
+        return jobs.map((job: any) => ({
+          value: job.id,
+          label: job.job_title,
+        }));
+    };
+
+    const promiseCompanyOptions = (inputValue: string) =>
+        new Promise<any[]>((resolve) => {
+          handleCompanySearchChange(inputValue).then((options) => resolve(options));
+        });
+
+    const promiseJobsOptions = (inputValue: string) =>
+        new Promise<any[]>((resolve) => {
+          handleJobsSearchChange(inputValue).then((options) => resolve(options));
+        });
 
     const validation = useFormik({
         enableReinitialize: true,
@@ -76,32 +76,23 @@ const Dashboard = () => {
           company_name: Yup.number().required("Please select your company name"),
           job_title: Yup.number().required("Please select your job title"),
           job_start_date: Yup.date().required("Please enter your job start date"),
-      }),
-      onSubmit: (values) => {
-        const jobStartDate = new Date(values.job_start_date);
-        const formattedDate = jobStartDate.toISOString();
-        
-        const formattedValues = {
-          ...values,
-          job_start_date: formattedDate
-        };
-        
-        console.log(formattedValues);
-        dispatch(registerUser(formattedValues));
-        setLoader(true);
-      }
+        }),
+        onSubmit: (values) => {
+          const jobStartDate = new Date(values.job_start_date);
+          const formattedDate = jobStartDate.toISOString();
+
+          const formattedValues = {
+            ...values,
+            job_start_date: formattedDate
+          };
+
+          console.log(formattedValues);
+          dispatch(registerUser(formattedValues));
+          setLoader(true);
+        }
     });
 
-    const selectLayoutState = (state: any) => state.Account;
-    const registerdatatype = createSelector(
-        selectLayoutState,
-        (account) => ({
-            success: account.success,
-            error: account.error
-        })
-    );
-
-    const { error, success } = useSelector(registerdatatype);
+    const { error, success } = useSelector((state: any) => state.Account);
 
     useEffect(() => {
         if (success) {
@@ -111,15 +102,21 @@ const Dashboard = () => {
         setTimeout(() => {
             dispatch(resetRegisterFlag());
         }, 3000);
-
     }, [dispatch, success, error, history]);
 
+    useEffect(() => {
+        dispatch(fetchCompanies(1, searchInput));
+    }, [dispatch, searchInput]);
+
+    useEffect(() => {
+        dispatch(fetchJobs(1, searchInputJobs));
+    }, [dispatch, searchInputJobs]);
     return (
         <React.Fragment>
             <UiContent />
             <div className="page-content">
                 <Container fluid>
-                    <BreadCrumb title="Dashboard" />
+                    <BreadCrumb title="Add Account" />
                     <div className="auth-page-content">
                         <Container>
                             <Row className="justify-content-center">
@@ -128,7 +125,6 @@ const Dashboard = () => {
                                         <CardBody className="p-4">
                                             <div className="text-center mt-2">
                                                 <h5 className="text-primary">Create New Account</h5>
-                                                <p className="text-muted">Get your free velzon account now</p>
                                             </div>
                                             <div className="p-2 mt-4">
                                                 <Form
@@ -283,47 +279,49 @@ const Dashboard = () => {
                                                     </div>
 
                                                     <div className="mb-3">
-                                                        <Label htmlFor="company_name" className="form-label">Company Name <span className="text-danger">*</span></Label>
-                                                        <Input
-                                                            id="company_name"
-                                                            name="company_name"
-                                                            type="select"
-                                                            className="form-control"
-                                                            onChange={validation.handleChange}
-                                                            onBlur={validation.handleBlur}
-                                                            value={validation.values.company_name || ""}
-                                                            invalid={validation.touched.company_name && validation.errors.company_name ? true : false}
-                                                        >
-                                                            <option value="">Select a company</option>
-                                                            {companyOptions.map((company) => (
-                                                                <option key={company.id} value={company.id}>{company.name}</option>
-                                                            ))}
-                                                        </Input>
-                                                        {validation.touched.company_name && validation.errors.company_name && (
-                                                            <FormFeedback type="invalid">{validation.errors.company_name}</FormFeedback>
-                                                        )}
+                                                      <Label htmlFor="company_name" className="form-label">
+                                                        Company Name
+                                                      </Label>
+                                                      <AsyncSelect
+                                                        cacheOptions
+                                                        defaultOptions
+                                                        loadOptions={promiseCompanyOptions}
+                                                        onChange={(selectedOption) => validation.setFieldValue('company_name', selectedOption ? selectedOption.value : '')}
+                                                        onBlur={validation.handleBlur}
+                                                        value={validation.values.company_name 
+                                                          ? {
+                                                              value: validation.values.company_name,
+                                                              label: companies.find((company: any) => company.id === validation.values.company_name)?.company_name || ''
+                                                            }
+                                                          : null
+                                                        }
+                                                      />
+                                                      {validation.touched.company_name && validation.errors.company_name && (
+                                                        <FormFeedback>{validation.errors.company_name}</FormFeedback>
+                                                      )}
                                                     </div>
 
                                                     <div className="mb-3">
-                                                        <Label htmlFor="job_title" className="form-label">Job Title <span className="text-danger">*</span></Label>
-                                                        <Input
-                                                            id="job_title"
-                                                            name="job_title"
-                                                            type="select"
-                                                            className="form-control"
-                                                            onChange={validation.handleChange}
-                                                            onBlur={validation.handleBlur}
-                                                            value={validation.values.job_title || ""}
-                                                            invalid={validation.touched.job_title && validation.errors.job_title ? true : false}
-                                                        >
-                                                            <option value="">Select a job title</option>
-                                                            {jobTitleOptions.map((job) => (
-                                                                <option key={job.id} value={job.id}>{job.title}</option>
-                                                            ))}
-                                                        </Input>
-                                                        {validation.touched.job_title && validation.errors.job_title && (
-                                                            <FormFeedback type="invalid">{validation.errors.job_title}</FormFeedback>
-                                                        )}
+                                                      <Label htmlFor="job_title" className="form-label">
+                                                        Job Title
+                                                      </Label>
+                                                      <AsyncSelect
+                                                        cacheOptions
+                                                        defaultOptions
+                                                        loadOptions={promiseJobsOptions}
+                                                        onChange={(selectedOption) => validation.setFieldValue('job_title', selectedOption ? selectedOption.value : '')}
+                                                        onBlur={validation.handleBlur}
+                                                        value={validation.values.job_title 
+                                                          ? {
+                                                              value: validation.values.job_title,
+                                                              label: jobs.find((job: any) => job.id === validation.values.job_title)?.job_title || ''
+                                                            }
+                                                          : null
+                                                        }
+                                                      />
+                                                      {validation.touched.job_title && validation.errors.job_title && (
+                                                        <FormFeedback>{validation.errors.job_title}</FormFeedback>
+                                                      )}
                                                     </div>
 
                                                     <div className="mb-3">
@@ -344,7 +342,7 @@ const Dashboard = () => {
                                                     </div>
 
                                                     <div className="mt-4">
-                                                        <Button color="success" className="w-100" type="submit" >
+                                                        <Button color="success" className="w-100" type="submit">
                                                             {loader && <Spinner size="sm" className='me-2'> Loading... </Spinner>}
                                                             Save
                                                         </Button>

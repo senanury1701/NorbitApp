@@ -1,11 +1,11 @@
-import React, { useEffect, useRef, useState  } from "react";
+import React, { useEffect, useState } from "react";
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Input, Label, Form, Button, FormFeedback } from 'reactstrap';
 import { useAppDispatch } from '../hooks'; 
-import { editProjects, fetchCompanies, fetchCategory, fetchEmployeeManangement } from '../../slices/thunks';
+import { editProjects, fetchCompanies, fetchEmployeeManangement } from '../../slices/thunks';
 import { useSelector } from 'react-redux';
-import Select from 'react-select';
+import Select, { components } from 'react-select';
 import AsyncSelect from 'react-select/async';
 
 interface ProjectEditModalProps {
@@ -16,32 +16,37 @@ interface ProjectEditModalProps {
 const ProjectEditModal: React.FC<ProjectEditModalProps> = ({ rowData, toggleEdit }) => {
   const dispatch = useAppDispatch();
   const props = rowData;
+  const [page, setPage] = useState<number>(1);
+  const [isFetching, setIsFetching] = useState<boolean>(false);
   const [searchInput, setSearchInput] = useState<string>('');
-  const { companies } = useSelector((state: any) => state.company);
+  const { companies, count } = useSelector((state: any) => state.company);
   const { employeeManangement } = useSelector((state: any) => state.employeeManangement);
-  console.log(props.id);
-  
+
+  const maxPage = Math.ceil(count / 5);
+
   const handleCompanySearchChange = async (inputValue: string) => {
-    dispatch(fetchCompanies(1, inputValue));
-    const companiess = companies
-  
-    return companiess.map((company: any) => ({
+    setSearchInput(inputValue);
+    setPage(1);
+    const fetchedCompanies = await dispatch(fetchCompanies(1, inputValue));
+    return fetchedCompanies.map((company: any) => ({
       value: company.id,
       label: company.company_name,
     }));
   };
-  
-  
-  useEffect(() => {
-    
-    dispatch(fetchCompanies(1, searchInput));
-    
-    console.log(companies);
-    
-  }, [searchInput, dispatch]);
+
+  const loadCompanies = async (page: number) => {
+    if (isFetching) return;
+    setIsFetching(true);
+    await dispatch(fetchCompanies(page, searchInput));
+    setIsFetching(false);
+  };
 
   useEffect(() => {
-    dispatch(fetchCategory());
+    loadCompanies(page);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [page, searchInput, dispatch]);
+
+  useEffect(() => {
     dispatch(fetchEmployeeManangement());
   }, [dispatch]);
 
@@ -93,7 +98,6 @@ const ProjectEditModal: React.FC<ProjectEditModalProps> = ({ rowData, toggleEdit
 
       try {
         console.log(formattedValues);
-        
         await dispatch(editProjects(formattedValues));
         resetForm();
         toggleEdit();
@@ -103,11 +107,13 @@ const ProjectEditModal: React.FC<ProjectEditModalProps> = ({ rowData, toggleEdit
     },
   });
 
-  const promiseCompanyOptions = (inputValue: string) =>
-    new Promise<any[]>((resolve) => {
-      handleCompanySearchChange(inputValue).then((companies) => resolve(companies));
-    });
-  
+  const handleEmployeeSearchChange = async (inputValue: string) => {
+    await dispatch(fetchEmployeeManangement(1, inputValue));
+    return employeeManangement.map((employee: any) => ({
+      value: employee.id,
+      label: employee.username,
+    }));
+  };
 
   const handleEmployeeChange = (selectedOptions: any) => {
     validation.setFieldValue(
@@ -121,6 +127,30 @@ const ProjectEditModal: React.FC<ProjectEditModalProps> = ({ rowData, toggleEdit
     return employee ? { value: employee.id, label: employee.username } : null;
   }).filter(Boolean);
 
+  const Menu = (props: any) => {
+    return (
+      <components.Menu {...props}>
+        {page > 1 && (
+          <div
+            style={{ cursor: 'pointer', padding: '8px', textAlign: 'center' }}
+            onClick={() => setPage(prevPage => Math.max(prevPage - 1, 1))}
+          >
+            ▲ 
+          </div>
+        )}
+        {props.children}
+        {page < maxPage && (
+          <div
+            style={{ cursor: 'pointer', padding: '8px', textAlign: 'center' }}
+            onClick={() => setPage(prevPage => Math.min(prevPage + 1, maxPage))}
+          >
+            ▼ 
+          </div>
+        )}
+      </components.Menu>
+    );
+  };
+
   return (
     <div>
       <Form
@@ -131,7 +161,6 @@ const ProjectEditModal: React.FC<ProjectEditModalProps> = ({ rowData, toggleEdit
         }}
         action="#"
       >
-
         <div className="mb-3">
           <Label htmlFor="project_name" className="form-label">
             Project Name
@@ -225,8 +254,12 @@ const ProjectEditModal: React.FC<ProjectEditModalProps> = ({ rowData, toggleEdit
           </Label>
           <AsyncSelect
             cacheOptions
-            defaultOptions
-            loadOptions={promiseCompanyOptions}
+            defaultOptions={companies.map((company: any) => ({
+              value: company.id,
+              label: company.company_name,
+            }))}
+            loadOptions={handleCompanySearchChange}
+            components={{ Menu }}
             onChange={(selectedOption) => validation.setFieldValue('company', selectedOption ? selectedOption.value : '')}
             onBlur={validation.handleBlur}
             value={validation.values.company 
@@ -236,12 +269,18 @@ const ProjectEditModal: React.FC<ProjectEditModalProps> = ({ rowData, toggleEdit
                 }
               : null
             }
+            styles={{
+              menu: (provided:any) => ({
+                ...provided,
+                maxHeight: '200px',  
+                overflowY: 'auto',   
+              }),
+            }}
           />
           {validation.touched.company && validation.errors.company && (
             <FormFeedback>{String(validation.errors.company)}</FormFeedback>
           )}
         </div>
-
 
         <div className="mb-3">
           <Label htmlFor="employess" className="form-label">
@@ -256,15 +295,24 @@ const ProjectEditModal: React.FC<ProjectEditModalProps> = ({ rowData, toggleEdit
               label: employee.username,
             }))}
             classNamePrefix="select"
+            loadOptions={handleEmployeeSearchChange}
             onChange={handleEmployeeChange}
             onBlur={validation.handleBlur}
             defaultValue={defaultEmployeeOptions}
+            styles={{
+              menu: (provided:any) => ({
+                ...provided,
+                maxHeight: '200px',  
+                overflowY: 'auto',   
+              }),
+            }}
           />
           {validation.touched.employess && validation.errors.employess && (
             <FormFeedback>{String(validation.errors.employess)}</FormFeedback>
           )}
         </div>
-        <Button type="submit" color="primary">
+
+        <Button type="submit" color="primary" className="mt-3">
           Edit Project
         </Button>
       </Form>

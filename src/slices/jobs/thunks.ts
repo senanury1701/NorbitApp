@@ -3,9 +3,9 @@ import {getJobs, updateStatus , setError,} from './reducers'
 
 
 
-export const fetchJobs = (page = 1) => async (dispatch: any) => {
+export const fetchJobs = (page:any = 1, search = '') => async (dispatch: any) => {
   try {
-      const response = await axiosInstance.get(`jobs/list/?page=${page}`);
+      const response = await axiosInstance.get(`jobs/list/?search=${search}&page=${page}`);
       dispatch(getJobs(response.data));
       
       return response.data.results;

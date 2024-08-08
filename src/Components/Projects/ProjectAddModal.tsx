@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
 import { Input, Label, Form, FormFeedback, Button } from 'reactstrap';
@@ -7,6 +7,7 @@ import { useAppDispatch } from '../hooks';
 import { fetchEmployeeManangement, fetchCompanies } from '../../slices/thunks';
 import { useSelector } from 'react-redux';
 import Select from 'react-select';
+import AsyncSelect from 'react-select/async';
 
 interface ProjectAddModalProps {
   toggleAdd: () => void;
@@ -17,9 +18,23 @@ const ProjectAddModal: React.FC<ProjectAddModalProps> = ({ toggleAdd, pageZero }
   const dispatch = useAppDispatch();
   const { employeeManangement } = useSelector((state: any) => state.employeeManangement);
   const { companies } = useSelector((state: any) => state.company);
+  const [searchInput, setSearchInput] = useState<string>('');
+
+  const handleCompanySearchChange = async (inputValue: string) => {
+    dispatch(fetchCompanies(1, inputValue));
+    const companiess = companies
+  
+    return companiess.map((company: any) => ({
+      value: company.id,
+      label: company.company_name,
+    }));
+  };
 
   useEffect(() => {
-    dispatch(fetchCompanies());
+    dispatch(fetchCompanies(1, searchInput));      
+  }, [searchInput, dispatch]);
+
+  useEffect(() => {
     dispatch(fetchEmployeeManangement());
   }, [dispatch]);
 
@@ -76,6 +91,21 @@ const ProjectAddModal: React.FC<ProjectAddModalProps> = ({ toggleAdd, pageZero }
       }
     },
   });
+
+  const promiseCompanyOptions = (inputValue: string) =>
+    new Promise<any[]>((resolve) => {
+      handleCompanySearchChange(inputValue).then((companies) => resolve(companies));
+    });
+  
+    const handleEmployeeSearchChange = async (inputValue: string) => {
+      await dispatch(fetchEmployeeManangement(1 , inputValue));
+      
+      return employeeManangement.map((employee: any) => ({
+        value: employee.id,
+        label: employee.username,
+      }));
+    };
+
 
   const handleEmployeeChange = (selectedOptions: any) => {
     validation.setFieldValue(
@@ -149,60 +179,58 @@ const ProjectAddModal: React.FC<ProjectAddModalProps> = ({ toggleAdd, pageZero }
           )}
         </div>
         <div className="mb-3">
-                    <Label htmlFor="project_start_date" className="form-label">project Start Date</Label>
-                    <Input
-                        name="project_start_date"
-                        className="form-control"
-                        placeholder="Enter project Start Date"
-                        type="date"
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.project_start_date}
-                        invalid={validation.touched.project_start_date && !!validation.errors.project_start_date}
-                    />
-                    <FormFeedback>{validation.errors.project_start_date}</FormFeedback>
-                </div>
+            <Label htmlFor="project_start_date" className="form-label">project Start Date</Label>
+            <Input
+                name="project_start_date"
+                className="form-control"
+                placeholder="Enter project Start Date"
+                type="date"
+                onChange={validation.handleChange}
+                onBlur={validation.handleBlur}
+                value={validation.values.project_start_date}
+                invalid={validation.touched.project_start_date && !!validation.errors.project_start_date}
+            />
+            <FormFeedback>{validation.errors.project_start_date}</FormFeedback>
+        </div>
 
-                {/* project End Date */}
-                <div className="mb-3">
-                    <Label htmlFor="project_end_date" className="form-label">project End Date</Label>
-                    <Input
-                        name="project_end_date"
-                        className="form-control"
-                        placeholder="Enter project End Date"
-                        type="date"
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.project_end_date}
-                        invalid={validation.touched.project_end_date && !!validation.errors.project_end_date}
-                    />
-                    <FormFeedback>{validation.errors.project_end_date}</FormFeedback>
-                </div>
+        <div className="mb-3">
+            <Label htmlFor="project_end_date" className="form-label">project End Date</Label>
+            <Input
+                name="project_end_date"
+                className="form-control"
+                placeholder="Enter project End Date"
+                type="date"
+                onChange={validation.handleChange}
+                onBlur={validation.handleBlur}
+                value={validation.values.project_end_date}
+                invalid={validation.touched.project_end_date && !!validation.errors.project_end_date}
+            />
+            <FormFeedback>{validation.errors.project_end_date}</FormFeedback>
+        </div>
+
         <div className="mb-3">
           <Label htmlFor="company" className="form-label">
             Company Name
           </Label>
-          <Input
-            id="company"
-            name="company"
-            type="select"
-            className="form-control"
-            onChange={validation.handleChange}
+          <AsyncSelect
+            cacheOptions
+            defaultOptions
+            loadOptions={promiseCompanyOptions}
+            onChange={(selectedOption) => validation.setFieldValue('company', selectedOption ? selectedOption.value : '')}
             onBlur={validation.handleBlur}
-            value={validation.values.company || ""}
-            invalid={validation.touched.company && !!validation.errors.company}
-          >
-            <option value="">Select a company</option>
-            {companies.map((company: any) => (
-              <option key={company.id} value={company.id}>
-                {company.company_name}
-              </option>
-            ))}
-          </Input>
+            value={validation.values.company 
+              ? {
+                  value: validation.values.company,
+                  label: companies.find((company: any) => company.id === validation.values.company)?.company_name || ''
+                }
+              : null
+            }
+          />
           {validation.touched.company && validation.errors.company && (
-            <FormFeedback type="invalid">{validation.errors.company}</FormFeedback>
+            <FormFeedback>{String(validation.errors.company)}</FormFeedback>
           )}
         </div>
+
         <div className="mb-3">
           <Label htmlFor="employess" className="form-label">
             employess
@@ -217,6 +245,7 @@ const ProjectAddModal: React.FC<ProjectAddModalProps> = ({ toggleAdd, pageZero }
             }))}
             classNamePrefix="select"
             className="form-control"
+            loadOptions={handleEmployeeSearchChange}
             onChange={handleEmployeeChange}
             onBlur={validation.handleBlur}
             value={validation.values.employess.map((employeeId: any) => ({

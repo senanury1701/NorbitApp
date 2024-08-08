@@ -16,9 +16,12 @@ export const fetchProjects = (page:any = 1, search = '') => async (dispatch: any
 };
 
   
-export const addProjects = (project_name:any) => async (dispatch: any)  => {
+export const addProjects = (project:any) => async (dispatch: any)  => {
+  console.log(project);
   try {
-      const response = await axiosInstance.post('projects/create/', project_name);
+    
+    
+      const response = await axiosInstance.post('projects/create/', project);
       dispatch(updateStatus());      
       dispatch(fetchProjects()); 
       return response.data;
@@ -37,7 +40,9 @@ export const addProjects = (project_name:any) => async (dispatch: any)  => {
   
   export const editProjects = (values: any) => async (dispatch: any, getState: any) => {
     const { id, ...updatedproject } = values; 
+
     try {
+      console.log(values);
       
       const response = await axiosInstance.put(`/projects/${id}/`, updatedproject);
       

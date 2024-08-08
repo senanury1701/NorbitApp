@@ -50,7 +50,6 @@ const Project = () => {
   useEffect(() => {
     dispatch(fetchProjects());
   }, [dispatch]);
-  console.log(projects);
   
   if (status === 'idle') {
     return <div>Loading...</div>; 
@@ -64,7 +63,7 @@ const Project = () => {
             <UiContent />
             <div className="page-content">
                 <Container fluid>
-                    <BreadCrumb title="Company"  />
+                    <BreadCrumb title="Projects"  />
                     <div className='m-3'>
                       <ProjectTable
                             columns={(columns || [])}

@@ -19,10 +19,11 @@ const ProjectEditModal: React.FC<ProjectEditModalProps> = ({ rowData, toggleEdit
   const [page, setPage] = useState<number>(1);
   const [isFetching, setIsFetching] = useState<boolean>(false);
   const [searchInput, setSearchInput] = useState<string>('');
-  const { companies, count } = useSelector((state: any) => state.company);
+  const [defaultCompany, setDefaultCompany] = useState<any>(null); // Store the default company
+  const { companies, count: companyCount } = useSelector((state: any) => state.company);
   const { employeeManangement } = useSelector((state: any) => state.employeeManangement);
 
-  const maxPage = Math.ceil(count / 5);
+  const maxPage = Math.ceil(companyCount / 5);
 
   const handleCompanySearchChange = async (inputValue: string) => {
     setSearchInput(inputValue);
@@ -49,6 +50,18 @@ const ProjectEditModal: React.FC<ProjectEditModalProps> = ({ rowData, toggleEdit
   useEffect(() => {
     dispatch(fetchEmployeeManangement());
   }, [dispatch]);
+
+  useEffect(() => {
+    if (props.company) {
+      const selectedCompany = companies.find((company: any) => company.id === props.company);
+      if (selectedCompany) {
+        setDefaultCompany({
+          value: selectedCompany.id,
+          label: selectedCompany.company_name,
+        });
+      }
+    }
+  }, [props.company, companies]);
 
   const formatDate = (dateString: any) => {
     if (!dateString) return '';
@@ -135,7 +148,7 @@ const ProjectEditModal: React.FC<ProjectEditModalProps> = ({ rowData, toggleEdit
             style={{ cursor: 'pointer', padding: '8px', textAlign: 'center' }}
             onClick={() => setPage(prevPage => Math.max(prevPage - 1, 1))}
           >
-            ▲ 
+            ▲ Previous Page
           </div>
         )}
         {props.children}
@@ -144,7 +157,7 @@ const ProjectEditModal: React.FC<ProjectEditModalProps> = ({ rowData, toggleEdit
             style={{ cursor: 'pointer', padding: '8px', textAlign: 'center' }}
             onClick={() => setPage(prevPage => Math.min(prevPage + 1, maxPage))}
           >
-            ▼ 
+            ▼ Next Page
           </div>
         )}
       </components.Menu>
@@ -262,13 +275,7 @@ const ProjectEditModal: React.FC<ProjectEditModalProps> = ({ rowData, toggleEdit
             components={{ Menu }}
             onChange={(selectedOption) => validation.setFieldValue('company', selectedOption ? selectedOption.value : '')}
             onBlur={validation.handleBlur}
-            value={validation.values.company 
-              ? {
-                  value: validation.values.company,
-                  label: companies.find((company: any) => company.id === validation.values.company)?.company_name || ''
-                }
-              : null
-            }
+            value={defaultCompany}
             styles={{
               menu: (provided:any) => ({
                 ...provided,
@@ -284,7 +291,7 @@ const ProjectEditModal: React.FC<ProjectEditModalProps> = ({ rowData, toggleEdit
 
         <div className="mb-3">
           <Label htmlFor="employess" className="form-label">
-            employess
+            Employees
           </Label>
           <Select
             id="employess"
@@ -311,7 +318,6 @@ const ProjectEditModal: React.FC<ProjectEditModalProps> = ({ rowData, toggleEdit
             <FormFeedback>{String(validation.errors.employess)}</FormFeedback>
           )}
         </div>
-
         <Button type="submit" color="primary" className="mt-3">
           Edit Project
         </Button>

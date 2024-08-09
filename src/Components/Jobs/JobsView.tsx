@@ -1,5 +1,7 @@
 import axiosInstance from '../../config/axiosConfig'
 import React, { useEffect, useState } from "react";
+import {Row,Col,} from "reactstrap";
+
 
 interface Jobs {
   id: number;
@@ -35,12 +37,22 @@ const JobsView = (id:any) => {
 
   return (
     <div >
-      <p>Jobs Name: {jobs.job_title}</p>
-      <p>Created At: {jobs.created_at}</p>
-      <p>Updated At: {jobs.updated_at}</p>
-      {/* Add other fields as needed */}
-    </div>
-                
+      <Row>
+        <Col>
+          <p><strong>Jobs Name:</strong> {jobs.job_title}</p>
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <p><strong>Created At:</strong> {new Date(jobs.created_at).toLocaleString()}</p>
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <p><strong>Updated At:</strong> {new Date(jobs.updated_at).toLocaleString()}</p>
+        </Col>
+      </Row>
+    </div>            
   );
 };
 

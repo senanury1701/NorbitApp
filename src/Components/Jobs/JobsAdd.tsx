@@ -5,7 +5,12 @@ import { Input, Label, Form, FormFeedback, Button } from 'reactstrap';
 import { addJobs } from '../../slices/thunks';
 import { useAppDispatch } from '../hooks'; 
 
-const JobsAdd = () => {
+interface JobsAddModalProps {
+    toggleAdd: () => void;
+    pageZero: () => void;
+}
+
+const JobsAdd: React.FC<JobsAddModalProps> = ({ toggleAdd ,pageZero}) => {
     const dispatch = useAppDispatch();
 
     const validation = useFormik({
@@ -20,6 +25,8 @@ const JobsAdd = () => {
             try {
                 await dispatch(addJobs(job_title));
                 resetForm();
+                pageZero()
+                toggleAdd()
             } catch (error) {
                 console.error('Failed to add Jobs:', error);
             }

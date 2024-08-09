@@ -1,5 +1,6 @@
 import axiosInstance from '../../config/axiosConfig'
 import React, { useEffect, useState } from "react";
+import {Row,Col,} from "reactstrap";
 
 interface Company {
   id: number;
@@ -33,10 +34,21 @@ const CompanyViewModal = (id:any) => {
 
   return (
     <div >
-      <p>Company Name: {company.company_name}</p>
-      <p>Created At: {company.created_at}</p>
-      <p>Updated At: {company.updated_at}</p>
-      {/* Add other fields as needed */}
+      <Row>
+        <Col>
+          <p><strong>Company Name:</strong> {company.company_name}</p>
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <p><strong>Created At:</strong> {new Date(company.created_at).toLocaleString()}</p>
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <p><strong>Updated At:</strong> {new Date(company.updated_at).toLocaleString()}</p>
+        </Col>
+      </Row>
     </div>
                 
   );

@@ -5,17 +5,22 @@ import { Input, Label, Form, FormFeedback, Button } from 'reactstrap';
 import { editJobs } from '../../slices/thunks';
 import { useAppDispatch } from '../hooks'; 
 
-const JobsEdit = (rowData:any) => {
+interface JobsEditModalProps {
+    rowData: any;
+    toggleEdit: () => void;
+  }
+
+const JobsEdit: React.FC<JobsEditModalProps> = ({ rowData, toggleEdit }) => {
   const dispatch = useAppDispatch();
-  const data = rowData.rowData
+  const props = rowData
   
 
 
   const validation = useFormik({
       enableReinitialize: true,
       initialValues: {
-          job_title: data.job_title || '',
-          id: data.id
+          job_title: props.job_title || '',
+          id: props.id
       },
       validationSchema: Yup.object({
         job_title: Yup.string().required("Please Enter Your Jobs Name"),
@@ -24,6 +29,8 @@ const JobsEdit = (rowData:any) => {
           try {
               await dispatch(editJobs(values));
               resetForm();
+              toggleEdit();
+
           } catch (error) {
               console.error('Failed to update Jobs:', error);
           }

@@ -10,7 +10,7 @@ interface CompanyEditModalProps {
     toggleEdit: () => void;
   }
   
-  const CompanyEditModal: React.FC<CompanyEditModalProps> = ({ rowData, toggleEdit }) => {
+const CompanyEditModal: React.FC<CompanyEditModalProps> = ({ rowData, toggleEdit }) => {
   const dispatch = useAppDispatch();
   const props = rowData
 

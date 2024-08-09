@@ -19,10 +19,9 @@ const ProjectEditModal: React.FC<ProjectEditModalProps> = ({ rowData, toggleEdit
   const [page, setPage] = useState<number>(1);
   const [isFetching, setIsFetching] = useState<boolean>(false);
   const [searchInput, setSearchInput] = useState<string>('');
-  const [defaultCompany, setDefaultCompany] = useState<any>(null); // Store the default company
+  const [defaultCompany, setDefaultCompany] = useState<any>(null); 
   const { companies, count: companyCount } = useSelector((state: any) => state.company);
   const { employeeManangement } = useSelector((state: any) => state.employeeManangement);
-
   const maxPage = Math.ceil(companyCount / 5);
 
   const handleCompanySearchChange = async (inputValue: string) => {

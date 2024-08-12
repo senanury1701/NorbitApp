@@ -4,7 +4,7 @@ import UiContent from 'Components/Common/UiContent';
 import BreadCrumb from 'Components/Common/BreadCrumb';
 import JobsTable from '../../Components/Jobs/JobsTable'
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchJobs, fetchAllJobs } from '../../slices/thunks';
+import { fetchJobs } from '../../slices/thunks';
 const Jobs = () => {
   
 
@@ -42,15 +42,9 @@ const Jobs = () => {
 
   const dispatch = useDispatch<any>();
 
-  const { jobs, status, error, count } = useSelector((state:any) => state.jobs);
+  const { jobs, status, error } = useSelector((state:any) => state.jobs);
 
-  useEffect(() => {
-    if (count > 5){
-      dispatch(fetchAllJobs(count))
-    }
-  
-  }, [count, dispatch])
-  
+
   useEffect(() => {
     dispatch(fetchJobs());
   }, [dispatch]);
@@ -67,7 +61,7 @@ const Jobs = () => {
             <UiContent />
             <div className="page-content">
                 <Container fluid>
-                    <BreadCrumb title="Jobs"  />
+                    <BreadCrumb title="Jobs Page API Problems 2"  />
                     <div className='m-3'>
                       <JobsTable
                             columns={(columns )}

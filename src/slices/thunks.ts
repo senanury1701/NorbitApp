@@ -12,3 +12,5 @@ export * from "./jobs/thunks";
 export * from "./inventory/thunks";
 export * from "./employeeManangement/thunks";
 export * from "./project/thunks";
+export * from "./accountInformation/thunks";
+export * from "./permission/thunks";

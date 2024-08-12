@@ -1,6 +1,8 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { Modal, ModalFooter, ModalBody, ModalHeader, CardBody, Col, Row, Table, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from "reactstrap";
 import { Link } from "react-router-dom";
+import { fetchCategory } from '../../slices/thunks';
+
 import {
   Column,
   Table as ReactTable,
@@ -48,7 +50,7 @@ const Filter = ({
 const DebouncedInput = ({
   value: initialValue,
   onChange,
-  debounce = 500,
+  debounce = 1000, 
   ...props
 }: {
   value: string | number;
@@ -70,9 +72,10 @@ const DebouncedInput = ({
   }, [debounce, onChange, value]);
 
   return (
-    <input {...props} value={value} id="search-bar-0" className="form-control border-0 search" onChange={e => setValue(e.target.value)} />
+    <input {...props} value={value} onChange={e => setValue(e.target.value)} />
   );
 };
+
 
 interface TableContainerProps {
   columns?: any;
@@ -88,7 +91,7 @@ interface TableContainerProps {
   divClass?: any;
   SearchPlaceholder?: any;
   handleLeadClick?: any;
-  handleCamponyClick?: any;
+  handleCompanyClick?: any;
   handleContactClick?: any;
   handleTicketClick?: any;
   isBordered?: any;
@@ -110,8 +113,8 @@ const CategoryTable = ({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState('');
   const dispatch = useAppDispatch();
-  const { count, } = useSelector((state:any) => state.category);
-  
+  const { count } = useSelector((state:any) => state.category);
+
 
   const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
     const itemRank = rankItem(row.getValue(columnId), value);
@@ -151,14 +154,7 @@ const CategoryTable = ({
   const {
     getHeaderGroups,
     getRowModel,
-    getCanPreviousPage,
-    getCanNextPage,
-    getPageOptions,
-    setPageIndex,
-    nextPage,
-    previousPage,
     setPageSize,
-    getState
   } = table;
 
   interface DropdownState {
@@ -179,6 +175,36 @@ const CategoryTable = ({
   const [modalViewOpen, setModalViewOpen] = useState(false);
   const [selectedRowData, setSelectedRowData] = useState(null);
   const [selectedRowId, setSelectedRowId] = useState(null);
+  const [page, setPage] = useState(0);
+  const pageSize = 5; 
+  const totalPages = Math.ceil(count / pageSize);
+
+  const getCanPreviousPage = () => page > 0;
+  const getCanNextPage = () => page < totalPages - 1;
+
+  const previousPage = () => {
+    if (getCanPreviousPage()) setPage(prev => prev - 1);
+  };
+
+  const nextPage = () => {
+    if (getCanNextPage()) setPage(prev => prev + 1);
+  };
+
+  const goToPage = (pageIndex: any) => {
+    if (pageIndex >= 0 && pageIndex < totalPages) setPage(pageIndex);
+  };
+
+
+  useEffect(() => {
+    dispatch(fetchCategory(page + 1));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dispatch, page]);
+
+
+  const pageZero = () => {
+    setPage(0)
+  }
+
 
   const handleEdit = (rowData:any) => {
     setSelectedRowData(rowData);
@@ -207,8 +233,8 @@ const CategoryTable = ({
   };
 
   const onClickDelete = (id: any) => {
-
     dispatch(deleteCategory(id));
+    setPage(0)
   };
 
 
@@ -223,31 +249,7 @@ const CategoryTable = ({
           <CardBody className="border border-dashed border-end-0 border-start-0">
             <form>
               <Row className="align-items-center">
-                <Col xs={6} md={6} className='d-flex'>
-                  <div >
-                    <select
-                      className='p-2 border-0 shadow'
-                      value={table.getState().pagination.pageSize}
-                      onChange={e => {
-                        table.setPageSize(Number(e.target.value))
-                      }}
-                    >
-                      {[5, 10, 20, 30, 40, 50].map(pageSize => (
-                        <option key={pageSize} value={pageSize}>
-                          Show {pageSize}
-                        </option>
-                      ))}
-                    </select>                  
-                  </div>
-                  <div className="search-box me-2 mb-2 shadow w-100" >
-                    <DebouncedInput
-                      value={globalFilter ?? ''}
-                      onChange={value => setGlobalFilter(String(value))}
-                      placeholder={SearchPlaceholder}
-                    />
-                    <i className="bx bx-search-alt search-icon"></i>
-                  </div>
-                </Col>
+                <Col xs={6} md={6}/>
                 <Col xs={6} md={6} className="text-md-end text-center">
                   <button
                     className="btn btn-primary createTask"
@@ -332,40 +334,38 @@ const CategoryTable = ({
       </div>
 
       <Row className="align-items-center mt-2 g-3 text-center text-sm-start">
-        <div className="col-sm">
+        <Col sm>
           <div className="text-muted">
             Total result <span className="fw-semibold ms-1">{count}</span>
           </div>
-        </div>
-        <div className="col-sm-auto">
+        </Col>
+        <Col sm="auto">
           <ul className="pagination pagination-separated pagination-md justify-content-center justify-content-sm-start mb-0">
             <li className={!getCanPreviousPage() ? "page-item disabled" : "page-item"}>
               <Link to="#" className="page-link" onClick={previousPage}>Previous</Link>
             </li>
-            {getPageOptions().map((item: any, key: number) => (
-              <React.Fragment key={key}>
-                <li className="page-item">
-                  <Link
-                    to="#"
-                    className={getState().pagination.pageIndex === item ? "page-link active" : "page-link"}
-                    onClick={() => setPageIndex(item)}
-                  >
-                    {item + 1}
-                  </Link>
-                </li>
-              </React.Fragment>
+            {Array.from({ length: totalPages }, (_, index) => (
+              <li className="page-item" key={index}>
+                <Link
+                  to="#"
+                  className={page === index ? "page-link active" : "page-link"}
+                  onClick={() => goToPage(index)}
+                >
+                  {index + 1}
+                </Link>
+              </li>
             ))}
             <li className={!getCanNextPage() ? "page-item disabled" : "page-item"}>
               <Link to="#" className="page-link" onClick={nextPage}>Next</Link>
             </li>
           </ul>
-        </div>
+        </Col>
       </Row>
 
       <Modal isOpen={modalEditOpen} toggle={toggleEdit} modalClassName="zoomIn" centered tabIndex={-1}>
         <ModalHeader className="p-3 bg-success-subtle"> Edit </ModalHeader>
         <ModalBody className='z-2'>
-          <CategoryEditModal rowData={selectedRowData} />
+          <CategoryEditModal rowData={selectedRowData} toggleEdit={toggleEdit} />
         </ModalBody>
         <ModalFooter>
           <button onClick={toggleEdit}>Close</button>
@@ -376,7 +376,7 @@ const CategoryTable = ({
         <ModalHeader className="p-3 bg-success-subtle"> Add </ModalHeader>
         <ModalBody>
           <div>
-            <CategoryAddModal />
+            <CategoryAddModal toggleAdd={toggleAdd} pageZero={pageZero}/>
           </div>
         </ModalBody>
         <ModalFooter>

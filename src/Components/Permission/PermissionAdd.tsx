@@ -2,33 +2,33 @@ import React from 'react';
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Input, Label, Form, FormFeedback, Button } from 'reactstrap';
-import { addCategory } from '../../slices/thunks';
+import { addPermission } from '../../slices/thunks';
 import { useAppDispatch } from '../hooks'; 
 
-interface CategoryAddModalProps {
+interface PermissionAddModalProps {
     toggleAdd: () => void;
     pageZero: () => void;
 }
 
-const CategoryAdd: React.FC<CategoryAddModalProps> = ({ toggleAdd ,pageZero}) => {
+const PermissionAddModal: React.FC<PermissionAddModalProps> = ({ toggleAdd ,pageZero}) => {
     const dispatch = useAppDispatch();
 
     const validation = useFormik({
         enableReinitialize: true,
         initialValues: {
-            name: '',
+            Permission_name: '',
         },
         validationSchema: Yup.object({
-            name: Yup.string().required("Please Enter Your Category Name"),
+            Permission_name: Yup.string().required("Please Enter Your Permission Name"),
         }),
-        onSubmit: async (name, { resetForm }) => {
+        onSubmit: async (Permission_name, { resetForm }) => {
             try {
-                await dispatch(addCategory(name));
+                await dispatch(addPermission(Permission_name));
                 resetForm();
                 pageZero()
                 toggleAdd()
             } catch (error) {
-                console.error('Failed to add category:', error);
+                console.error('Failed to add Permission:', error);
             }
         },
     });
@@ -45,25 +45,25 @@ const CategoryAdd: React.FC<CategoryAddModalProps> = ({ toggleAdd ,pageZero}) =>
                 action="#"
             >
                 <div className="mb-3">
-                    <Label htmlFor="name" className="form-label">Category Name</Label>
+                    <Label htmlFor="Permission_name" className="form-label">Permission Name</Label>
                     <Input
-                        name="name"
+                        name="Permission_name"
                         className="form-control"
-                        placeholder="Enter category name"
+                        placeholder="Enter Permission name"
                         type="text"
                         onChange={validation.handleChange}
                         onBlur={validation.handleBlur}
-                        value={validation.values.name}
-                        invalid={validation.touched.name && !!validation.errors.name}
+                        value={validation.values.Permission_name}
+                        invalid={validation.touched.Permission_name && !!validation.errors.Permission_name}
                     />
-                    {validation.touched.name && validation.errors.name && (
-                        <FormFeedback type="invalid">{validation.errors.name}</FormFeedback>
+                    {validation.touched.Permission_name && validation.errors.Permission_name && (
+                        <FormFeedback type="invalid">{validation.errors.Permission_name}</FormFeedback>
                     )}
                 </div>
-                <Button type="submit" color="primary">Add Category</Button>
+                <Button type="submit" color="primary">Add Permission</Button>
             </Form>
         </div>
     );
 };
 
-export default CategoryAdd;
+export default PermissionAddModal;

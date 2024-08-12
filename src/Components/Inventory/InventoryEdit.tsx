@@ -5,7 +5,12 @@ import { Input, Label, Form, FormFeedback, Button } from 'reactstrap';
 import { editJobs } from '../../slices/thunks';
 import { useAppDispatch } from '../hooks'; 
 
-const JobsEdit = (rowData:any) => {
+interface InventoryEditModalProps {
+    rowData: any;
+    toggleEdit: () => void;
+  }
+  
+const InventoryEditModal: React.FC<InventoryEditModalProps> = ({ rowData, toggleEdit }) => {
   const dispatch = useAppDispatch();
   const data = rowData.rowData
   
@@ -14,11 +19,11 @@ const JobsEdit = (rowData:any) => {
   const validation = useFormik({
       enableReinitialize: true,
       initialValues: {
-          job_title: data.job_title || '',
+          username: data.username || '',
           id: data.id
       },
       validationSchema: Yup.object({
-        job_title: Yup.string().required("Please Enter Your Jobs Name"),
+        username: Yup.string().required("Please Enter Your Jobs Name"),
       }),
       onSubmit: async (values, { resetForm }) => {
           try {
@@ -44,20 +49,20 @@ const JobsEdit = (rowData:any) => {
               <div className="mb-3">
                   <Label htmlFor="name" className="form-label">Jobs Name</Label>
                   <Input
-                      name="job_title"
+                      name="username"
                       className="form-control"
                       placeholder="Enter Jobs name"
                       type="text"
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
-                      value={validation.values.job_title }
-                      invalid={validation.touched.job_title && !!validation.errors.job_title}
+                      value={validation.values.username }
+                      invalid={validation.touched.username && !!validation.errors.username}
                   />
-                  {validation.touched.job_title && validation.errors.job_title && (
+                  {validation.touched.username && validation.errors.username && (
                     <FormFeedback>
-                      {typeof validation.errors.job_title === 'object'
-                        ? Object.values(validation.errors.job_title).join(', ')
-                        : validation.errors.job_title}
+                      {typeof validation.errors.username === 'object'
+                        ? Object.values(validation.errors.username).join(', ')
+                        : validation.errors.username}
                     </FormFeedback>
                   )}   
               </div>
@@ -67,4 +72,4 @@ const JobsEdit = (rowData:any) => {
   );
 };
 
-export default JobsEdit;
+export default InventoryEditModal;

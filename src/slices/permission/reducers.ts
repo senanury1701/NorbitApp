@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 export const initialState = {
-    inventories: [],
+    permissions: [],
     count: 0,
     previous: null,
     next: null,
@@ -11,17 +11,17 @@ export const initialState = {
     editStatus: ''
 };
 
-const inventoriesSlice = createSlice({
-    name: 'inventories',
+const permissionSlice = createSlice({
+    name: 'permission',
     initialState,
     reducers: {
-        getInventories(state, action) {
+        getPermission(state, action) {
             state.status = 'success';
-            state.inventories = action.payload.results;
+            state.permissions = action.payload.results;
             state.count = action.payload.count;
             state.previous = action.payload.previous;
-            state.next = action.payload.next;
-
+            state.next = action.payload.next;                
+            
             
         },
         updateStatus(state) {
@@ -29,6 +29,8 @@ const inventoriesSlice = createSlice({
         },
         setError(state, action) {
             state.error = action.payload;
+            console.log(state.error);
+            
         },
         editStatus(state) {
             state.editStatus = 'success';
@@ -37,10 +39,10 @@ const inventoriesSlice = createSlice({
 });
 
 export const {
-    getInventories,
+    getPermission,
     updateStatus,
     setError,
     editStatus,
-} = inventoriesSlice.actions;
+} = permissionSlice.actions;
 
-export default inventoriesSlice.reducer;
+export default permissionSlice.reducer;

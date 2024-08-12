@@ -17,15 +17,10 @@ const jobsSlice = createSlice({
     reducers: {
         getJobs(state, action) {
             state.status = 'success';
-            if (state.count > 5) {
-                state.jobs = action.payload;
-            }else{
-                state.jobs = action.payload.results;
-                state.count = action.payload.count;
-                state.previous = action.payload.previous;
-                state.next = action.payload.next;                
-            }
-
+            state.jobs = action.payload.results;
+            state.count = action.payload.count;
+            state.previous = action.payload.previous;
+            state.next = action.payload.next;
             
         },
         updateStatus(state) {

@@ -3,7 +3,7 @@ import {getCategories, updateStatus , setError,} from './reducers'
 
 
 
-export const fetchCategory = (page = 1) => async (dispatch: any) => {
+export const fetchCategory = (page:any = 1) => async (dispatch: any) => {
   try {
       const response = await axiosInstance.get(`category/?page=${page}`);
       dispatch(getCategories(response.data));

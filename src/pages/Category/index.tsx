@@ -4,7 +4,7 @@ import UiContent from 'Components/Common/UiContent';
 import BreadCrumb from 'Components/Common/BreadCrumb';
 import CategoryTable from '../../Components/Category/CategoryTable'
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchCategory, fetchAllCategory } from '../../slices/thunks';
+import { fetchCategory } from '../../slices/thunks';
 const Category = () => {
   
 
@@ -42,17 +42,11 @@ const Category = () => {
 
   const dispatch = useDispatch<any>();
 
-  const { categories, status, error, count } = useSelector((state:any) => state.category);
+  const { categories, status, error } = useSelector((state:any) => state.category);
+
 
   useEffect(() => {
-    if (count > 5){
-      dispatch(fetchAllCategory(count))
-    }
-  
-  }, [count, dispatch])
-  
-  useEffect(() => {
-    dispatch(fetchCategory());
+    dispatch(fetchCategory());    
   }, [dispatch]);
   
   if (status === 'idle') {
@@ -67,14 +61,13 @@ const Category = () => {
             <UiContent />
             <div className="page-content">
                 <Container fluid>
-                    <BreadCrumb title="Category"  />
+                    <BreadCrumb title="Category  ApiDe Search yok"  />
                     <div className='m-3'>
                       <CategoryTable
-                            columns={(columns )}
-                            data={(categories)}
+                            columns={(columns || [])}
+                            data={(categories || [])}
                             isGlobalFilter={true}
                             customPageSize={5}
-                            SearchPlaceholder='Search...'
                       />                      
                     </div>
 

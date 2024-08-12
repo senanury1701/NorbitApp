@@ -1,22 +1,79 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Input, Label, Form, FormFeedback, Button } from 'reactstrap';
-import { addInventories,fetchCompanies, fetchCategory,fetchEmployeeManangement  } from '../../slices/thunks';
-import { useAppDispatch  } from '../hooks';
-import { useSelector } from 'react-redux';
+import { addInventories,fetchCompanies, fetchCategory, fetchEmployeeManangement  } from '../../slices/thunks';
+import { useSelector, useDispatch } from "react-redux";
+import { components } from 'react-select';
+import AsyncSelect from 'react-select/async';
 
-const InventoriesAdd = () => {
-    const dispatch = useAppDispatch();
-    const { companies } = useSelector((state:any) => state.company);
-    const { categories } = useSelector((state:any) => state.category)
-    const { employeeManangement } = useSelector((state:any) => state.employeeManangement)
+interface InventoriesAddModalProps {
+    toggleAdd: () => void;
+    pageZero: () => void;
+}
+
+const InventoriesAdd: React.FC<InventoriesAddModalProps> = ({ toggleAdd ,pageZero}) => {
+    const dispatch = useDispatch<any>();
+    const { companies, count: companyCount } = useSelector((state: any) => state.company);
+    const { employeeManangement , count: employeeManangementCount } = useSelector((state:any) => state.employeeManangement)
+    const { categories } = useSelector((state: any) => state.category);
+    const [searchInput, setSearchInput] = useState<string>('');
+    const [searchInputEmployeeManangement, setSearchInputEmployeeManangement] = useState<string>('');
+    const [pageCompanies, setPageCompanies] = useState<number>(1);
+    const [pageEmployeeManangement, setPageEmployeeManangement] = useState<number>(1);
+    const [isFetching, setIsFetching] = useState<boolean>(false);
+
+    const maxPageCompanies = Math.ceil(companyCount / 5);
+    const maxPageEmployeeManangement = Math.ceil(employeeManangementCount / 5);
+
+    const handleCompanySearchChange = async (inputValue: string) => {
+        setSearchInput(inputValue);
+        setPageCompanies(1);
+        const fetchedCompanies = await dispatch(fetchCompanies(1, inputValue));
+        return fetchedCompanies.map((company: any) => ({
+            value: company.id,
+            label: company.company_name,
+        }));
+    };
+
+    const loadCompanies = async (page: number) => {
+        if (isFetching) return;
+        setIsFetching(true);
+        await dispatch(fetchCompanies(page, searchInput));
+        setIsFetching(false);
+    };
+
     useEffect(() => {
-        dispatch(fetchCompanies());
-        dispatch(fetchCategory());
-        dispatch(fetchEmployeeManangement());
-    }, [dispatch]);
+        loadCompanies(pageCompanies);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [pageCompanies, searchInput, dispatch]);
+
+    const handleEmployeeManangementSearchChange = async (inputValue: string) => {
+        setSearchInputEmployeeManangement(inputValue);
+        setPageEmployeeManangement(1);
+        const fetchedEmployeeManangement = await dispatch(fetchEmployeeManangement(1, inputValue));
+        return fetchedEmployeeManangement.map((ems: any) => ({
+            value: ems.id,
+            label: ems.username,
+        }));
+    };
+
+    const loadEmployeeManangement = async (page: number) => {
+        if (isFetching) return;
+        setIsFetching(true);
+        await dispatch(fetchEmployeeManangement(page, searchInputEmployeeManangement));
+        setIsFetching(false);
+    };
+
+    useEffect(() => {
+        loadEmployeeManangement(pageEmployeeManangement);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [pageEmployeeManangement, searchInputEmployeeManangement, dispatch]);
+
     
+
+
+
     const validation = useFormik({
         initialValues: {
             project: [],
@@ -50,8 +107,48 @@ const InventoriesAdd = () => {
         onSubmit: async (values, { resetForm }) => {
             console.log(values);
             dispatch(addInventories(values));
+            resetForm();
+            pageZero()
+            toggleAdd()
         },
     });
+
+    useEffect(() => {
+        dispatch(fetchCompanies(1, searchInput));
+    }, [dispatch, searchInput]);
+
+    useEffect(() => {
+        dispatch(fetchEmployeeManangement(1, searchInputEmployeeManangement));
+    }, [dispatch, searchInputEmployeeManangement]);
+
+    const Menu = (props: any) => {
+        const isEmployeeManangementCountSearch = Boolean(props.selectProps.inputValue);
+        const currentPage = isEmployeeManangementCountSearch ? pageEmployeeManangement : pageCompanies;
+        const maxPage = isEmployeeManangementCountSearch ? maxPageEmployeeManangement : maxPageCompanies;
+        const setPage = isEmployeeManangementCountSearch ? setPageEmployeeManangement : setPageCompanies;
+
+        return (
+            <components.Menu {...props}>
+                {currentPage > 1 && (
+                    <div
+                        style={{ cursor: 'pointer', padding: '8px', textAlign: 'center' }}
+                        onClick={() => setPage((prevPage: number) => Math.max(prevPage - 1, 1))}
+                    >
+                        ▲ Previous Page
+                    </div>
+                )}
+                {props.children}
+                {currentPage < maxPage && (
+                    <div
+                        style={{ cursor: 'pointer', padding: '8px', textAlign: 'center' }}
+                        onClick={() => setPage((prevPage: number) => Math.min(prevPage + 1, maxPage))}
+                    >
+                        ▼ Next Page
+                    </div>
+                )}
+            </components.Menu>
+        );
+    };
 
     return (
         <div>
@@ -80,46 +177,47 @@ const InventoriesAdd = () => {
                 </div>
 
                 <div className="mb-3">
-                    <Label htmlFor="ordering_person" className="form-label">Owner</Label>
-                    <Input
+                    <Label className="form-label" htmlFor="ordering_person">Ordering Person Name<span className="text-danger">*</span></Label>
+                    <AsyncSelect
+                        id="ordering_person"
                         name="ordering_person"
-                        className="form-control"
-                        type="select"
-                        onChange={e => validation.setFieldValue('ordering_person', [parseInt(e.target.value)])}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.ordering_person[0] || ''}
-                        invalid={validation.touched.ordering_person && !!validation.errors.ordering_person}
-                    >
-                        <option  value="">Select a Owner</option>
-                        {employeeManangement.map((employeeManangement:any) => (
-                            <option key={employeeManangement.id} value={employeeManangement.id}>{employeeManangement.username}</option>
-                        ))}
-                    </Input>
-                    {validation.touched.ordering_person && validation.errors.ordering_person && (
+                        cacheOptions
+                        loadOptions={handleEmployeeManangementSearchChange}
+                        defaultOptions={employeeManangement.map((ems: any) => ({
+                            value: ems.id,
+                            label: ems.username,
+                        }))}
+                        onChange={(selectedOption: any) =>
+                            validation.setFieldValue('ordering_person', selectedOption?.value)
+                        }
+                        components={{ Menu }}
+                    />
+                    {validation.touched.ordering_person && validation.errors.ordering_person ? (
                         <FormFeedback type="invalid">{validation.errors.ordering_person}</FormFeedback>
-                    )}
+                    ) : null}
                 </div>
 
                 <div className="mb-3">
-                    <Label htmlFor="responsible_person" className="form-label">Responsible Person</Label>
-                    <Input
+                    <Label className="form-label" htmlFor="responsible_person">Ordering Person Name<span className="text-danger">*</span></Label>
+                    <AsyncSelect
+                        id="responsible_person"
                         name="responsible_person"
-                        className="form-control"
-                        type="select"
-                        onChange={e => validation.setFieldValue('responsible_person', parseInt(e.target.value))}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.responsible_person || ''}
-                        invalid={validation.touched.responsible_person && !!validation.errors.responsible_person}
-                    >
-                        <option  value="">Select a Responsible Person</option>
-                        {employeeManangement.map((employeeManangement:any) => (
-                            <option key={employeeManangement.id} value={employeeManangement.id}>{employeeManangement.username}</option>
-                        ))}
-                    </Input>
-                    {validation.touched.responsible_person && validation.errors.responsible_person && (
+                        cacheOptions
+                        loadOptions={handleEmployeeManangementSearchChange}
+                        defaultOptions={employeeManangement.map((ems: any) => ({
+                            value: ems.id,
+                            label: ems.username,
+                        }))}
+                        onChange={(selectedOption: any) =>
+                            validation.setFieldValue('responsible_person', selectedOption?.value)
+                        }
+                        components={{ Menu }}
+                    />
+                    {validation.touched.responsible_person && validation.errors.responsible_person ? (
                         <FormFeedback type="invalid">{validation.errors.responsible_person}</FormFeedback>
-                    )}
+                    ) : null}
                 </div>
+
 
                 <div className="mb-3">
                     <Label htmlFor="project" className="form-label">project</Label>
@@ -209,25 +307,24 @@ const InventoriesAdd = () => {
                 </div>
 
                 <div className="mb-3">
-                    <Label htmlFor="company" className="form-label">Company Name</Label>
-                    <Input
+                    <Label className="form-label" htmlFor="company">Company Name<span className="text-danger">*</span></Label>
+                    <AsyncSelect
                         id="company"
                         name="company"
-                        type="select"
-                        className="form-control"
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.company || ""}
-                        invalid={validation.touched.company && !!validation.errors.company}
-                    >
-                        <option  value="">Select a company</option>
-                        {companies.map((company:any) => (
-                            <option key={company.id} value={company.id}>{company.company_name}</option>
-                        ))}
-                    </Input>
-                    {validation.touched.company && validation.errors.company && (
+                        cacheOptions
+                        loadOptions={handleCompanySearchChange}
+                        defaultOptions={companies.map((company: any) => ({
+                            value: company.id,
+                            label: company.company_name,
+                        }))}
+                        onChange={(selectedOption: any) =>
+                            validation.setFieldValue('company', selectedOption?.value)
+                        }
+                        components={{ Menu }}
+                    />
+                    {validation.touched.company && validation.errors.company ? (
                         <FormFeedback type="invalid">{validation.errors.company}</FormFeedback>
-                    )}
+                    ) : null}
                 </div>
 
 

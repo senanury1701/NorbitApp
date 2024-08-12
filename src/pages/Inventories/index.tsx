@@ -4,7 +4,7 @@ import UiContent from 'Components/Common/UiContent';
 import BreadCrumb from 'Components/Common/BreadCrumb';
 import InventoryTable from '../../Components/Inventory/InventoryTable'
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchInventories, fetchAllInventories } from '../../slices/thunks';
+import { fetchInventories } from '../../slices/thunks';
 const Inventories = () => {
   
 
@@ -68,14 +68,8 @@ const Inventories = () => {
 
   const dispatch = useDispatch<any>();
 
-  const { inventories, status, error, count } = useSelector((state:any) => state.inventories);
+  const { inventories, status, error } = useSelector((state:any) => state.inventories);
 
-  useEffect(() => {
-    if (count > 5){
-      dispatch(fetchAllInventories(count))
-    }
-  
-  }, [count, dispatch])
   
   useEffect(() => {
     dispatch(fetchInventories());

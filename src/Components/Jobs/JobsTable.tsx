@@ -26,10 +26,10 @@ import {  useSelector } from 'react-redux';
 
 const Filter = ({
   column
-}: {
+  }: {
   column: Column<any, unknown>;
   table: ReactTable<any>;
-}) => {
+  }) => {
   const columnFilterValue = column.getFilterValue();
 
   return (
@@ -50,13 +50,13 @@ const Filter = ({
 const DebouncedInput = ({
   value: initialValue,
   onChange,
-  debounce = 500,
+  debounce = 1000, 
   ...props
-}: {
+  }: {
   value: string | number;
   onChange: (value: string | number) => void;
   debounce?: number;
-} & Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'>) => {
+  } & Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'>) => {
   const [value, setValue] = useState(initialValue);
 
   useEffect(() => {
@@ -72,9 +72,10 @@ const DebouncedInput = ({
   }, [debounce, onChange, value]);
 
   return (
-    <input {...props} value={value} id="search-bar-0" className="form-control border-0 search" onChange={e => setValue(e.target.value)} />
+    <input {...props} value={value} onChange={e => setValue(e.target.value)} />
   );
 };
+
 
 interface TableContainerProps {
   columns?: any;
@@ -90,7 +91,7 @@ interface TableContainerProps {
   divClass?: any;
   SearchPlaceholder?: any;
   handleLeadClick?: any;
-  handleCamponyClick?: any;
+  handleCompanyClick?: any;
   handleContactClick?: any;
   handleTicketClick?: any;
   isBordered?: any;
@@ -113,7 +114,7 @@ const JobsTable = ({
   const [globalFilter, setGlobalFilter] = useState('');
   const dispatch = useAppDispatch();
   const { count } = useSelector((state:any) => state.jobs);
-  
+
 
   const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
     const itemRank = rankItem(row.getValue(columnId), value);
@@ -169,14 +170,15 @@ const JobsTable = ({
     }));
   };
 
+
   const [modalEditOpen, setModalEditOpen] = useState(false);
   const [modalAddOpen, setModalAddOpen] = useState(false);
   const [modalViewOpen, setModalViewOpen] = useState(false);
   const [selectedRowData, setSelectedRowData] = useState(null);
   const [selectedRowId, setSelectedRowId] = useState(null);
   const [page, setPage] = useState(0);
-  const [search, setSearch] = useState('');
- const pageSize = 5; 
+  const [search, setSearch] = useState<string>('');
+  const pageSize = 5; 
   const totalPages = Math.ceil(count / pageSize);
 
   const getCanPreviousPage = () => page > 0;

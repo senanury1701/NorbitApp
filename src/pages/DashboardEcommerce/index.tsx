@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { Row, Col, CardBody, Card, Alert, Container, Input, Label, Form, FormFeedback, Button, Spinner } from "reactstrap";
+import { Row, Col, CardBody, Card,  Container, Input, Label, Form, FormFeedback, Button, Spinner } from "reactstrap";
 import * as Yup from "yup";
 import { useFormik } from "formik";
-import { ToastContainer, toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { registerUser, resetRegisterFlag, fetchCompanies, fetchJobs } from "../../slices/thunks";
 import { useSelector, useDispatch } from "react-redux";
@@ -48,6 +48,7 @@ const Dashboard = () => {
 
     useEffect(() => {
         loadCompanies(pageCompanies);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [pageCompanies, searchInput, dispatch]);
 
     const handleJobsSearchChange = async (inputValue: string) => {
@@ -69,6 +70,7 @@ const Dashboard = () => {
 
     useEffect(() => {
         loadJobs(pageJobs);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [pageJobs, searchInputJobs, dispatch]);
 
     const validation = useFormik({

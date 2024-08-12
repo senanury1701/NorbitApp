@@ -2,7 +2,7 @@ import React, { Fragment, useEffect, useState } from "react";
 import { Modal, ModalFooter, ModalBody, ModalHeader, CardBody, Col, Row, Table, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from "reactstrap";
 import { Link } from "react-router-dom";
 import {   InputGroupText } from "reactstrap";
-import { fetchCompanies } from '../../slices/thunks';
+import { fetchAccountInformation } from '../../slices/thunks';
 
 import {
   Column,
@@ -18,11 +18,11 @@ import {
   PaginationState,
 } from '@tanstack/react-table';
 import { rankItem } from '@tanstack/match-sorter-utils';
-import CompanyEditModal from '../Company/CompanyEditModal'; 
-import CompanyAddModal from '../Company/CompanyAddModal';
-import CompanyViewModal from '../Company/CompanyViewModal';
+import AccountInformationEditModal from '../AccountInformation/AccountInformationEdit'; 
+import AccountInformationAddModal from '../AccountInformation/AccountInformationAdd';
+import AccountInformationViewModal from '../AccountInformation/AccountInformationView';
 import { useAppDispatch } from '../hooks';
-import { deleteCompany } from '../../slices/company/thunks';
+import { deleteAccountInformation } from '../../slices/accountInformation/thunks';
 import {  useSelector } from 'react-redux';
 
 const Filter = ({
@@ -114,7 +114,7 @@ const ComponyTable = ({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState('');
   const dispatch = useAppDispatch();
-  const { count } = useSelector((state:any) => state.company);
+  const { count } = useSelector((state:any) => state.accountInformation);
 
 
   const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
@@ -198,13 +198,13 @@ const ComponyTable = ({
 
 
   useEffect(() => {
-    dispatch(fetchCompanies(page + 1, search));
+    dispatch(fetchAccountInformation(page + 1, search));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, page]);
 
   useEffect(() => {
     setPage(0);
-    dispatch(fetchCompanies(page + 1, search));
+    dispatch(fetchAccountInformation(page + 1, search));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [search]);
 
@@ -242,7 +242,7 @@ const ComponyTable = ({
   };
 
   const onClickDelete = (id: any) => {
-    dispatch(deleteCompany(id));
+    dispatch(deleteAccountInformation(id));
     setPage(0)
   };
 
@@ -384,7 +384,7 @@ const ComponyTable = ({
       <Modal isOpen={modalEditOpen} toggle={toggleEdit} modalClassName="zoomIn" centered tabIndex={-1}>
         <ModalHeader className="p-3 bg-success-subtle"> Edit </ModalHeader>
         <ModalBody className='z-2'>
-          <CompanyEditModal rowData={selectedRowData} toggleEdit={toggleEdit} />
+          <AccountInformationEditModal rowData={selectedRowData} toggleEdit={toggleEdit} />
         </ModalBody>
         <ModalFooter>
           <button onClick={toggleEdit}>Close</button>
@@ -395,7 +395,7 @@ const ComponyTable = ({
         <ModalHeader className="p-3 bg-success-subtle"> Add </ModalHeader>
         <ModalBody>
           <div>
-            <CompanyAddModal toggleAdd={toggleAdd} pageZero={pageZero}/>
+            <AccountInformationAddModal toggleAdd={toggleAdd} pageZero={pageZero}/>
           </div>
         </ModalBody>
         <ModalFooter>
@@ -406,7 +406,7 @@ const ComponyTable = ({
       <Modal isOpen={modalViewOpen} toggle={toggleView} modalClassName="zoomIn" centered tabIndex={-1}>
         <ModalHeader className="p-3 bg-success-subtle"> View </ModalHeader>
         <ModalBody style={{ minHeight: '500px' }}>
-          <CompanyViewModal rowId={selectedRowId}/>
+          <AccountInformationViewModal rowId={selectedRowId}/>
         </ModalBody>
         <ModalFooter>
           <button onClick={toggleView}>Close</button>

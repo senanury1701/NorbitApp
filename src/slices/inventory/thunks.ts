@@ -3,9 +3,9 @@ import {getInventories, updateStatus , setError,} from './reducers'
 
 
 
-export const fetchInventories = (page = 1) => async (dispatch: any) => {
+export const fetchInventories = (page:any = 1, search = '') => async (dispatch: any) => {
   try {
-      const response = await axiosInstance.get(`inventory/list/?page=${page}`);
+      const response = await axiosInstance.get(`inventory/list/?page=${page}&search=${search}`);
       dispatch(getInventories(response.data));
       
       return response.data.results;
@@ -15,24 +15,7 @@ export const fetchInventories = (page = 1) => async (dispatch: any) => {
   }
 };
 
-export const fetchAllInventories = (count:any) => async (dispatch: any) => {
-  const limit = 5;
-  const totalPages = Math.ceil(count / limit);
-  let allData:any = [];
 
-  for (let page = 1; page <= totalPages; page++) {
-    try {
-      const data = await fetchInventories(page)(dispatch);
-      allData = [...allData, ...data];
-      
-    } catch (error: any) {
-
-      break;
-    }
-  }
-  
-  dispatch(getInventories(allData));
-};
   
 export const addInventories = (values:any) => async (dispatch: any)  => {
   try {

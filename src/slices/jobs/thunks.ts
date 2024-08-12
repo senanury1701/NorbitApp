@@ -15,24 +15,6 @@ export const fetchJobs = (page:any = 1, search = '') => async (dispatch: any) =>
   }
 };
 
-export const fetchAllJobs = (count:any) => async (dispatch: any) => {
-  const limit = 5;
-  const totalPages = Math.ceil(count / limit);
-  let allData:any = [];
-
-  for (let page = 1; page <= totalPages; page++) {
-    try {
-      const data = await fetchJobs(page)(dispatch);
-      allData = [...allData, ...data];
-      
-    } catch (error: any) {
-
-      break;
-    }
-  }
-  
-  dispatch(getJobs(allData));
-};
   
 export const addJobs = (jobs_name:any) => async (dispatch: any)  => {
   try {

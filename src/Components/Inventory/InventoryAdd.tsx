@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Input, Label, Form, FormFeedback, Button } from 'reactstrap';
-import { addInventories,fetchCompanies, fetchCategory, fetchEmployeeManangement  } from '../../slices/thunks';
+import { addInventories,fetchCompanies, fetchCategory, fetchEmployeeManangement, fetchProject  } from '../../slices/thunks';
 import { useSelector, useDispatch } from "react-redux";
 import { components } from 'react-select';
 import AsyncSelect from 'react-select/async';
@@ -17,14 +17,41 @@ const InventoriesAdd: React.FC<InventoriesAddModalProps> = ({ toggleAdd ,pageZer
     const { companies, count: companyCount } = useSelector((state: any) => state.company);
     const { employeeManangement , count: employeeManangementCount } = useSelector((state:any) => state.employeeManangement)
     const { categories } = useSelector((state: any) => state.category);
+    const { projects, count: projectCount } = useSelector((state: any) => state.project);
     const [searchInput, setSearchInput] = useState<string>('');
     const [searchInputEmployeeManangement, setSearchInputEmployeeManangement] = useState<string>('');
+    const [searchProject, setSearchProject] = useState<string>('');
     const [pageCompanies, setPageCompanies] = useState<number>(1);
+    const [pageProject, setPageProject] = useState<number>(1);
     const [pageEmployeeManangement, setPageEmployeeManangement] = useState<number>(1);
     const [isFetching, setIsFetching] = useState<boolean>(false);
 
     const maxPageCompanies = Math.ceil(companyCount / 5);
     const maxPageEmployeeManangement = Math.ceil(employeeManangementCount / 5);
+    const maxPageProject = Math.ceil(projectCount / 5);
+
+    const handleProjectSearchChange = async (inputValue: string) => {
+        setSearchInput(inputValue);
+        setPageProject(1);
+        const fetchedProject = await dispatch(fetchProject(1, inputValue));
+        return fetchedProject.map((Project: any) => ({
+            value: Project.id,
+            label: Project.Project_name,
+        }));
+    };
+
+    const loadProject = async (page: number) => {
+        if (isFetching) return;
+        setIsFetching(true);
+        await dispatch(fetchProject(page, searchInput));
+        setIsFetching(false);
+    };
+
+    useEffect(() => {
+        loadCompanies(pageProject);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [pageProject, searchInput, dispatch]);
+
 
     const handleCompanySearchChange = async (inputValue: string) => {
         setSearchInput(inputValue);
@@ -122,10 +149,10 @@ const InventoriesAdd: React.FC<InventoriesAddModalProps> = ({ toggleAdd ,pageZer
     }, [dispatch, searchInputEmployeeManangement]);
 
     const Menu = (props: any) => {
-        const isEmployeeManangementCountSearch = Boolean(props.selectProps.inputValue);
-        const currentPage = isEmployeeManangementCountSearch ? pageEmployeeManangement : pageCompanies;
-        const maxPage = isEmployeeManangementCountSearch ? maxPageEmployeeManangement : maxPageCompanies;
-        const setPage = isEmployeeManangementCountSearch ? setPageEmployeeManangement : setPageCompanies;
+        const isPropsCountSearch = Boolean(props.selectProps.inputValue);
+        const currentPage = isPropsCountSearch ? pageEmployeeManangement : pageCompanies : pageProject ;
+        const maxPage = isPropsCountSearch ? maxPageEmployeeManangement : maxPageCompanies : maxPageProject;
+        const setPage = isPropsCountSearch ? setPageEmployeeManangement : setPageCompanies : setPageProject;
 
         return (
             <components.Menu {...props}>

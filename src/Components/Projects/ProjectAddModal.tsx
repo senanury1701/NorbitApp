@@ -73,8 +73,7 @@ const ProjectAddModal: React.FC<ProjectAddModalProps> = ({ toggleAdd, pageZero }
       const projectEndDate = new Date(values.project_end_date);
       const formattedDateStart = ProjectStartDate.toISOString();
       const formattedDateEnd = projectEndDate.toISOString();
-      console.log(formattedDateStart);
-      console.log(formattedDateEnd);
+
       const formattedValues = {
         ...values,
         project_start_date: formattedDateStart,

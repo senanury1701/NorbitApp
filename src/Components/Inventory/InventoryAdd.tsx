@@ -31,7 +31,7 @@ const InventoriesAdd: React.FC<InventoriesAddModalProps> = ({ toggleAdd ,pageZer
     const maxPageEmployeeManangement = Math.ceil(employeeManangementCount / 5);
     const maxPageProject = Math.ceil(projectCount / 5);
     const maxPageCategories = Math.ceil(categoryCount / 5);
-
+//
     const handleCategorySearchChange = async (inputValue: string) => {
         console.log(maxPageCategories);
         
@@ -123,16 +123,15 @@ const InventoriesAdd: React.FC<InventoriesAddModalProps> = ({ toggleAdd ,pageZer
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [pageEmployeeManangement, searchInputEmployeeManangement, dispatch]);
 
-    
-
-
+//    
 
     const validation = useFormik({
+        enableReinitialize: true,
         initialValues: {
             project: [],
             category: [],
             product_name: '',
-            satin_alinan_tarih: new Date().toISOString(),
+            satin_alinan_tarih: '',
             count: '',
             price: '',
             description: '',
@@ -146,35 +145,42 @@ const InventoriesAdd: React.FC<InventoriesAddModalProps> = ({ toggleAdd ,pageZer
         validationSchema: Yup.object({
             product_name: Yup.string().required("Please Enter Product Name"),
             project: Yup.array().of(Yup.number()).required("Please Enter Project Name"),
-            price: Yup.number().required("Please Enter Price"),
-            where_in_the_office: Yup.string().required("Please Enter Where in the Office"),
-            account: Yup.string().required("Please Enter Account"),
-            e_commerce_site: Yup.string().url('Enter a valid URL').required("Please Enter E-commerce Site"),
-            company: Yup.number().required("Please Enter Company"),
-            ordering_person: Yup.array().of(Yup.number()).required("Please Enter Owner"),
-            responsible_person: Yup.number().required("Please Enter Responsible Person"),
+            price: Yup.number(),
+            where_in_the_office: Yup.string(),
+            account: Yup.string(),
+            e_commerce_site: Yup.string().url('Enter a valid URL'),
+            company: Yup.number(),
+            ordering_person: Yup.array().of(Yup.number()),
+            responsible_person: Yup.number(),
             category: Yup.array().of(Yup.number()).required("Please Enter Category"),
             description: Yup.string().required("Please Enter Description"),
             count: Yup.number().required("Please Enter Count"),
+            satin_alinan_tarih: Yup.date(),
           }),
           
           onSubmit: async (values, { resetForm }) => {
-            console.log('Form gönderildi:', values); // Bu satır, form submit edildiğinde çalışmalıdır.
-            try {
-                await dispatch(addInventories(values));
-                resetForm(); 
-                pageZero(); 
-                toggleAdd(); 
-            } catch (error) {
-                console.error('Failed to add inventory:', error); // Hata mesajını konsola yazar.
-            }
+            const inventoryDate = new Date(values.satin_alinan_tarih);
+            const formattedDate = inventoryDate.toISOString();
+            const formattedValues = {
+                ...values,
+                satin_alinan_tarih: formattedDate,
+              };
+              console.log(formattedValues);
+            console.log('Form gönderildi:', values); 
+          try {
+              await dispatch(addInventories(values));
+              resetForm(); 
+              pageZero(); 
+              toggleAdd(); 
+          } catch (error) {
+              console.error('Failed to add inventory:', error); 
+          }
         },
         
     });
-    validation.handleSubmit = async (e) => {
-        console.log("handleSubmit tetiklendi"); // Bu log görünüyor mu?
-       
-    };
+
+    const { isSubmitting } = validation;
+    console.log('Is submitting?', isSubmitting);
 
     const Menu = (props: any) => {
         let currentPage:any, maxPage:any, setPage:any;
@@ -233,12 +239,11 @@ const InventoriesAdd: React.FC<InventoriesAddModalProps> = ({ toggleAdd ,pageZer
             <Form
                 onSubmit={(e) => {
                     e.preventDefault();
+                    validation.handleSubmit();  
+                    console.log(validation.values);                 
                     
-                    validation.handleSubmit();
-                    console.log(validation.values);
                 }}
-                action="#"
-            >
+                >
 
                 <div className="mb-3">
                     <Label htmlFor="product_name" className="form-label">Product Name</Label>
@@ -258,7 +263,7 @@ const InventoriesAdd: React.FC<InventoriesAddModalProps> = ({ toggleAdd ,pageZer
                 </div>
 
                 <div className="mb-3">
-                    <Label className="form-label" htmlFor="ordering_person">Ordering Person Name<span className="text-danger">*</span></Label>
+                    <Label className="form-label" htmlFor="ordering_person">Ordering Person Name</Label>
                     <AsyncSelect
                         id="ordering_person"
                         name="ordering_person"
@@ -269,8 +274,9 @@ const InventoriesAdd: React.FC<InventoriesAddModalProps> = ({ toggleAdd ,pageZer
                             label: ems.username,
                         }))}
                         onChange={(selectedOption: any) =>
-                            validation.setFieldValue('ordering_person', selectedOption?.value)
+                            validation.setFieldValue('ordering_person', selectedOption ? selectedOption.map((option: any) => option.value) : [])
                         }
+                        isMulti
                         components={{ Menu }}
                     />
                     {validation.touched.ordering_person && validation.errors.ordering_person ? (
@@ -279,7 +285,7 @@ const InventoriesAdd: React.FC<InventoriesAddModalProps> = ({ toggleAdd ,pageZer
                 </div>
 
                 <div className="mb-3">
-                    <Label className="form-label" htmlFor="responsible_person">Ordering Person Name<span className="text-danger">*</span></Label>
+                    <Label className="form-label" htmlFor="responsible_person">Ordering Person Name</Label>
                     <AsyncSelect
                         id="responsible_person"
                         name="responsible_person"
@@ -299,21 +305,22 @@ const InventoriesAdd: React.FC<InventoriesAddModalProps> = ({ toggleAdd ,pageZer
                     ) : null}
                 </div>
 
-
                 <div className="mb-3">
                     <Label className="form-label" htmlFor="project">Project Name<span className="text-danger">*</span></Label>
                     <AsyncSelect
                         id="project"
                         name="project"
                         cacheOptions
+                        onBlur={validation.handleBlur}
                         loadOptions={handleProjectSearchChange}
                         defaultOptions={projects.map((project: any) => ({
                             value: project.id,
                             label: project.project_name,
                         }))}
                         onChange={(selectedOption: any) =>
-                            validation.setFieldValue('project', selectedOption?.value)
+                            validation.setFieldValue('project', selectedOption ? selectedOption.map((option: any) => option.value) : [])
                         }
+                        isMulti
                         components={{ Menu }}
                     />
                     {validation.touched.project && validation.errors.project ? (
@@ -390,11 +397,12 @@ const InventoriesAdd: React.FC<InventoriesAddModalProps> = ({ toggleAdd ,pageZer
                 </div>
 
                 <div className="mb-3">
-                    <Label className="form-label" htmlFor="company">Company Name<span className="text-danger">*</span></Label>
+                    <Label className="form-label" htmlFor="company">Company Name</Label>
                     <AsyncSelect
                         id="company"
                         name="company"
                         cacheOptions
+                        onBlur={validation.handleBlur}
                         loadOptions={handleCompanySearchChange}
                         defaultOptions={companies.map((company: any) => ({
                             value: company.id,
@@ -410,6 +418,21 @@ const InventoriesAdd: React.FC<InventoriesAddModalProps> = ({ toggleAdd ,pageZer
                     ) : null}
                 </div>
 
+                <div className="mb-3">
+                    <Label htmlFor="satin_alinan_tarih" className="form-label">Buy Day</Label>
+                    <Input
+                        name="satin_alinan_tarih"
+                        className="form-control"
+                        placeholder="Enter project Start Date"
+                        type="date"
+                        onChange={validation.handleChange}
+                        onBlur={validation.handleBlur}
+                        value={validation.values.satin_alinan_tarih}
+                        invalid={validation.touched.satin_alinan_tarih && !!validation.errors.satin_alinan_tarih}
+                    />
+                    <FormFeedback>{validation.errors.satin_alinan_tarih}</FormFeedback>
+                </div>
+
 
                 <div className="mb-3">
                     <Label className="form-label" htmlFor="categories">Category Name<span className="text-danger">*</span></Label>
@@ -417,14 +440,16 @@ const InventoriesAdd: React.FC<InventoriesAddModalProps> = ({ toggleAdd ,pageZer
                         id="categories"
                         name="categories"
                         cacheOptions
+                        onBlur={validation.handleBlur}
                         loadOptions={handleCategorySearchChange}
                         defaultOptions={categories.map((categories: any) => ({
                             value: categories.id,
                             label: categories.name,
                         }))}
                         onChange={(selectedOption: any) =>
-                            validation.setFieldValue('category', selectedOption?.value)
+                            validation.setFieldValue('category', selectedOption ? selectedOption.map((option: any) => option.value) : [])
                         }
+                        isMulti
                         components={{ Menu }}
                     />
                     {validation.touched.category && validation.errors.category ? (

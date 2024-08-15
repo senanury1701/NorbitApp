@@ -20,7 +20,6 @@ export const loginUser = (user : any, history : any) => async (dispatch : any) =
       const userDataResponse = await axiosInstance.get('accounts/user/');
 
       const authUser = JSON.stringify(userDataResponse.data);
-      console.log(authUser);
       
       dispatch(loginSuccess(authUser));
       sessionStorage.setItem('authUser', authUser);

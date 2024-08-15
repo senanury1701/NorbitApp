@@ -21,16 +21,6 @@ const Inventories = () => {
         enableColumnFilter: false,
       },
       {
-          header: "Project",
-          accessorKey: "project",
-          enableColumnFilter: false,
-      },
-      {
-          header: "Category",
-          accessorKey: "category",
-          enableColumnFilter: false,
-      },
-      {
           header: "Product Name",
           accessorKey: "product_name",
           enableColumnFilter: false,

@@ -150,22 +150,31 @@ const InventoriesAdd: React.FC<InventoriesAddModalProps> = ({ toggleAdd ,pageZer
             where_in_the_office: Yup.string().required("Please Enter Where in the Office"),
             account: Yup.string().required("Please Enter Account"),
             e_commerce_site: Yup.string().url('Enter a valid URL').required("Please Enter E-commerce Site"),
-            company: Yup.string().required("Please Enter Company"),
+            company: Yup.number().required("Please Enter Company"),
             ordering_person: Yup.array().of(Yup.number()).required("Please Enter Owner"),
             responsible_person: Yup.number().required("Please Enter Responsible Person"),
             category: Yup.array().of(Yup.number()).required("Please Enter Category"),
             description: Yup.string().required("Please Enter Description"),
             count: Yup.number().required("Please Enter Count"),
-        }),
-        onSubmit: async (values, { resetForm }) => {
-            console.log(values);
-            dispatch(addInventories(values));
-            resetForm();
-            pageZero()
-            toggleAdd()
+          }),
+          
+          onSubmit: async (values, { resetForm }) => {
+            console.log('Form gönderildi:', values); // Bu satır, form submit edildiğinde çalışmalıdır.
+            try {
+                await dispatch(addInventories(values));
+                resetForm(); 
+                pageZero(); 
+                toggleAdd(); 
+            } catch (error) {
+                console.error('Failed to add inventory:', error); // Hata mesajını konsola yazar.
+            }
         },
+        
     });
-
+    validation.handleSubmit = async (e) => {
+        console.log("handleSubmit tetiklendi"); // Bu log görünüyor mu?
+       
+    };
 
     const Menu = (props: any) => {
         let currentPage:any, maxPage:any, setPage:any;
@@ -224,10 +233,13 @@ const InventoriesAdd: React.FC<InventoriesAddModalProps> = ({ toggleAdd ,pageZer
             <Form
                 onSubmit={(e) => {
                     e.preventDefault();
+                    
                     validation.handleSubmit();
-                    return false;
+                    console.log(validation.values);
                 }}
+                action="#"
             >
+
                 <div className="mb-3">
                     <Label htmlFor="product_name" className="form-label">Product Name</Label>
                     <Input
@@ -291,8 +303,8 @@ const InventoriesAdd: React.FC<InventoriesAddModalProps> = ({ toggleAdd ,pageZer
                 <div className="mb-3">
                     <Label className="form-label" htmlFor="project">Project Name<span className="text-danger">*</span></Label>
                     <AsyncSelect
-                        id="projects"
-                        name="projects"
+                        id="project"
+                        name="project"
                         cacheOptions
                         loadOptions={handleProjectSearchChange}
                         defaultOptions={projects.map((project: any) => ({
@@ -300,7 +312,7 @@ const InventoriesAdd: React.FC<InventoriesAddModalProps> = ({ toggleAdd ,pageZer
                             label: project.project_name,
                         }))}
                         onChange={(selectedOption: any) =>
-                            validation.setFieldValue('projects', selectedOption?.value)
+                            validation.setFieldValue('project', selectedOption?.value)
                         }
                         components={{ Menu }}
                     />

@@ -21,6 +21,7 @@ const ProjectAddModal: React.FC<ProjectAddModalProps> = ({ toggleAdd, pageZero }
   const [searchInput, setSearchInput] = useState<string>('');
 
   const handleCompanySearchChange = async (inputValue: string) => {
+    setSearchInput(inputValue)
     dispatch(fetchCompanies(1, inputValue));
     const companiess = companies
   

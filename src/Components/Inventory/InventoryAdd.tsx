@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { Input, Label, Form, FormFeedback, Button } from 'reactstrap';
-import { addInventories,fetchCompanies, fetchCategory, fetchEmployeeManangement, fetchProject  } from '../../slices/thunks';
+import { addInventories,fetchCompanies, fetchCategory, fetchEmployeeManangement, fetchProjects  } from '../../slices/thunks';
 import { useSelector, useDispatch } from "react-redux";
 import { components } from 'react-select';
 import AsyncSelect from 'react-select/async';
@@ -16,41 +16,67 @@ const InventoriesAdd: React.FC<InventoriesAddModalProps> = ({ toggleAdd ,pageZer
     const dispatch = useDispatch<any>();
     const { companies, count: companyCount } = useSelector((state: any) => state.company);
     const { employeeManangement , count: employeeManangementCount } = useSelector((state:any) => state.employeeManangement)
-    const { categories } = useSelector((state: any) => state.category);
+    const { categories, count: categoryCount } = useSelector((state: any) => state.category);
     const { projects, count: projectCount } = useSelector((state: any) => state.project);
     const [searchInput, setSearchInput] = useState<string>('');
     const [searchInputEmployeeManangement, setSearchInputEmployeeManangement] = useState<string>('');
     const [searchProject, setSearchProject] = useState<string>('');
     const [pageCompanies, setPageCompanies] = useState<number>(1);
     const [pageProject, setPageProject] = useState<number>(1);
+    const [pageCategories, setPageCategories] = useState<number>(1);
     const [pageEmployeeManangement, setPageEmployeeManangement] = useState<number>(1);
     const [isFetching, setIsFetching] = useState<boolean>(false);
 
     const maxPageCompanies = Math.ceil(companyCount / 5);
     const maxPageEmployeeManangement = Math.ceil(employeeManangementCount / 5);
     const maxPageProject = Math.ceil(projectCount / 5);
+    const maxPageCategories = Math.ceil(categoryCount / 5);
+
+    const handleCategorySearchChange = async (inputValue: string) => {
+        console.log(maxPageCategories);
+        
+        setPageCategories(1);
+        const fetchedCategories = await dispatch(fetchCategory(1));
+        return fetchedCategories.map((category: any) => ({
+            value: category.id,
+            label: category.name,
+        }));
+    };
+
+    const loadCategories = async (page: number) => {
+        if (isFetching) return;
+        setIsFetching(true);
+        await dispatch(fetchCategory(page));
+        setIsFetching(false);
+    };
+
+    useEffect(() => {
+        loadCategories(pageCategories);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [pageCategories,  dispatch]);
 
     const handleProjectSearchChange = async (inputValue: string) => {
-        setSearchInput(inputValue);
+        setSearchProject(inputValue);
         setPageProject(1);
-        const fetchedProject = await dispatch(fetchProject(1, inputValue));
-        return fetchedProject.map((Project: any) => ({
-            value: Project.id,
-            label: Project.Project_name,
+        const fetchedProject = await dispatch(fetchProjects(1, inputValue));
+        
+        return fetchedProject.map((project: any) => ({
+            value: project.id,
+            label: project.project_name,
         }));
     };
 
     const loadProject = async (page: number) => {
         if (isFetching) return;
         setIsFetching(true);
-        await dispatch(fetchProject(page, searchInput));
+        await dispatch(fetchProjects(page, searchProject));
         setIsFetching(false);
     };
 
     useEffect(() => {
-        loadCompanies(pageProject);
+        loadProject(pageProject);
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [pageProject, searchInput, dispatch]);
+    }, [pageProject, searchProject, dispatch]);
 
 
     const handleCompanySearchChange = async (inputValue: string) => {
@@ -140,19 +166,35 @@ const InventoriesAdd: React.FC<InventoriesAddModalProps> = ({ toggleAdd ,pageZer
         },
     });
 
-    useEffect(() => {
-        dispatch(fetchCompanies(1, searchInput));
-    }, [dispatch, searchInput]);
-
-    useEffect(() => {
-        dispatch(fetchEmployeeManangement(1, searchInputEmployeeManangement));
-    }, [dispatch, searchInputEmployeeManangement]);
 
     const Menu = (props: any) => {
-        const isPropsCountSearch = Boolean(props.selectProps.inputValue);
-        const currentPage = isPropsCountSearch ? pageEmployeeManangement : pageCompanies : pageProject ;
-        const maxPage = isPropsCountSearch ? maxPageEmployeeManangement : maxPageCompanies : maxPageProject;
-        const setPage = isPropsCountSearch ? setPageEmployeeManangement : setPageCompanies : setPageProject;
+        let currentPage:any, maxPage:any, setPage:any;
+
+        switch (props.selectProps.name) {
+            case "projects":
+                currentPage = pageProject;
+                maxPage = maxPageProject;
+                setPage = setPageProject;
+                break;
+            case "company":
+                currentPage = pageCompanies;
+                maxPage = maxPageCompanies;
+                setPage = setPageCompanies;
+                break;
+            case "categories":
+                currentPage = pageCategories;
+                maxPage = maxPageCategories;
+                setPage = setPageCategories;
+                break;
+            case "ordering_person":
+            case "responsible_person":
+                currentPage = pageEmployeeManangement;
+                maxPage = maxPageEmployeeManangement;
+                setPage = setPageEmployeeManangement;
+                break;
+            default:
+                break;
+        }
 
         return (
             <components.Menu {...props}>
@@ -247,22 +289,24 @@ const InventoriesAdd: React.FC<InventoriesAddModalProps> = ({ toggleAdd ,pageZer
 
 
                 <div className="mb-3">
-                    <Label htmlFor="project" className="form-label">project</Label>
-                    <Input
-                        name="project"
-                        className="form-control"
-                        type="select"
-                        onChange={e => validation.setFieldValue('project', [parseInt(e.target.value)])}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.project[0] || ''}
-                        invalid={validation.touched.project && !!validation.errors.project}
-                    >
-                        <option >---------</option>
-                        <option value="1">sec2</option>
-                    </Input>
-                    {validation.touched.project && validation.errors.project && (
+                    <Label className="form-label" htmlFor="project">Project Name<span className="text-danger">*</span></Label>
+                    <AsyncSelect
+                        id="projects"
+                        name="projects"
+                        cacheOptions
+                        loadOptions={handleProjectSearchChange}
+                        defaultOptions={projects.map((project: any) => ({
+                            value: project.id,
+                            label: project.project_name,
+                        }))}
+                        onChange={(selectedOption: any) =>
+                            validation.setFieldValue('projects', selectedOption?.value)
+                        }
+                        components={{ Menu }}
+                    />
+                    {validation.touched.project && validation.errors.project ? (
                         <FormFeedback type="invalid">{validation.errors.project}</FormFeedback>
-                    )}
+                    ) : null}
                 </div>
 
                 <div className="mb-3">
@@ -356,25 +400,24 @@ const InventoriesAdd: React.FC<InventoriesAddModalProps> = ({ toggleAdd ,pageZer
 
 
                 <div className="mb-3">
-                    <Label htmlFor="category" className="form-label">category Name</Label>
-                    <Input
-                        id="category"
-                        name="category"
-                        type="select"
-                        className="form-control"
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.category || ""}
-                        invalid={validation.touched.category && !!validation.errors.category}
-                    >
-                        <option  value="">Select a category</option>
-                        {categories.map((category:any) => (
-                            <option key={category.id} value={category.id}>{category.name}</option>
-                        ))}
-                    </Input>
-                    {validation.touched.category && validation.errors.category && (
+                    <Label className="form-label" htmlFor="categories">Category Name<span className="text-danger">*</span></Label>
+                    <AsyncSelect
+                        id="categories"
+                        name="categories"
+                        cacheOptions
+                        loadOptions={handleCategorySearchChange}
+                        defaultOptions={categories.map((categories: any) => ({
+                            value: categories.id,
+                            label: categories.name,
+                        }))}
+                        onChange={(selectedOption: any) =>
+                            validation.setFieldValue('category', selectedOption?.value)
+                        }
+                        components={{ Menu }}
+                    />
+                    {validation.touched.category && validation.errors.category ? (
                         <FormFeedback type="invalid">{validation.errors.category}</FormFeedback>
-                    )}
+                    ) : null}
                 </div>
 
                 <div className="mb-3">

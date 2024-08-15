@@ -26,10 +26,10 @@ import {  useSelector } from 'react-redux';
 
 const Filter = ({
   column
-}: {
+  }: {
   column: Column<any, unknown>;
   table: ReactTable<any>;
-}) => {
+  }) => {
   const columnFilterValue = column.getFilterValue();
 
   return (
@@ -45,18 +45,20 @@ const Filter = ({
       <div className="h-1" />
     </>
   );
-};
+  };
 
-const DebouncedInput = ({
+
+
+  const DebouncedInput = ({
   value: initialValue,
   onChange,
   debounce = 1000, 
   ...props
-}: {
+  }: {
   value: string | number;
   onChange: (value: string | number) => void;
   debounce?: number;
-} & Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'>) => {
+  } & Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange'>) => {
   const [value, setValue] = useState(initialValue);
 
   useEffect(() => {
@@ -74,10 +76,11 @@ const DebouncedInput = ({
   return (
     <input {...props} value={value} onChange={e => setValue(e.target.value)} />
   );
-};
+  };
 
 
-interface TableContainerProps {
+
+  interface TableContainerProps {
   columns?: any;
   data?: any;
   isGlobalFilter?: any;

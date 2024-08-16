@@ -14,9 +14,7 @@ interface InventoryEditModalProps {
   
 const InventoryEditModal: React.FC<InventoryEditModalProps> = ({ rowData, toggleEdit }) => {
     const dispatch = useDispatch<any>();
-    const data = rowData
-    console.log(data);
-    
+    const data = rowData   
     const { companies, count: companyCount } = useSelector((state: any) => state.company);
     const { employeeManangement , count: employeeManangementCount } = useSelector((state:any) => state.employeeManangement)
     const { categories, count: categoryCount } = useSelector((state: any) => state.category);
@@ -29,15 +27,15 @@ const InventoryEditModal: React.FC<InventoryEditModalProps> = ({ rowData, toggle
     const [pageCategories, setPageCategories] = useState<number>(1);
     const [pageEmployeeManangement, setPageEmployeeManangement] = useState<number>(1);
     const [isFetching, setIsFetching] = useState<boolean>(false);
+    const [defaultCompany, setDefaultCompany] = useState<any>(null); 
+
 
     const maxPageCompanies = Math.ceil(companyCount / 5);
     const maxPageEmployeeManangement = Math.ceil(employeeManangementCount / 5);
     const maxPageProject = Math.ceil(projectCount / 5);
     const maxPageCategories = Math.ceil(categoryCount / 5);
 //
-    const handleCategorySearchChange = async (inputValue: string) => {
-        console.log(maxPageCategories);
-        
+    const handleCategorySearchChange = async (inputValue: string) => {        
         setPageCategories(1);
         const fetchedCategories = await dispatch(fetchCategory(1));
         return fetchedCategories.map((category: any) => ({
@@ -84,25 +82,34 @@ const InventoryEditModal: React.FC<InventoryEditModalProps> = ({ rowData, toggle
 
     const handleCompanySearchChange = async (inputValue: string) => {
         setSearchInput(inputValue);
-        setPageCompanies(1);
         const fetchedCompanies = await dispatch(fetchCompanies(1, inputValue));
         return fetchedCompanies.map((company: any) => ({
-            value: company.id,
-            label: company.company_name,
+          value: company.id,
+          label: company.company_name,
         }));
     };
-
+    
     const loadCompanies = async (page: number) => {
         if (isFetching) return;
-        setIsFetching(true);
         await dispatch(fetchCompanies(page, searchInput));
-        setIsFetching(false);
     };
-
+    
     useEffect(() => {
         loadCompanies(pageCompanies);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [pageCompanies, searchInput, dispatch]);
+
+    useEffect(() => {
+        if (data.company) {
+          const selectedCompany = companies.find((company: any) => company.id === data.company);
+          if (selectedCompany) {
+            setDefaultCompany({
+              value: selectedCompany.id,
+              label: selectedCompany.company_name,
+            });
+          }
+        }
+      }, [data.company, companies]);
 
     const handleEmployeeManangementSearchChange = async (inputValue: string) => {
         setSearchInputEmployeeManangement(inputValue);
@@ -127,6 +134,7 @@ const InventoryEditModal: React.FC<InventoryEditModalProps> = ({ rowData, toggle
     }, [pageEmployeeManangement, searchInputEmployeeManangement, dispatch]);
 
 //    
+
 
     const validation = useFormik({
         enableReinitialize: true,
@@ -178,9 +186,25 @@ const InventoryEditModal: React.FC<InventoryEditModalProps> = ({ rowData, toggle
         },
         
     });
+    
+    const defaultEmployeeOptions = validation.values.ordering_person.map((employeeId: any) => {
+        const employee = employeeManangement.find((emp: any) => emp.id === employeeId);
+        return employee ? { value: employee.id, label: employee.username } : null;
+    }).filter(Boolean);
 
-    const { isSubmitting } = validation;
-    console.log('Is submitting?', isSubmitting);
+    const defaultProjectOptions = validation.values.project.map((prjectId: any) => {
+        const project = projects.find((project: any) => project.id === prjectId);
+        return project ? { value: project.id, label: project.project_name } : null;
+    }).filter(Boolean);
+
+    const defaultCategoryOptions = validation.values.category.map((categoryId: any) => {
+        const category = categories.find((category: any) => category.id === categoryId);
+        return category ? { value: category.id, label: category.name } : null;
+    }).filter(Boolean);
+
+    
+    const defaultEmployeeResponsibleOption = employeeManangement.find((emp: any) => emp.id === validation.values.responsible_person);
+
 
     const Menu = (props: any) => {
         let currentPage:any, maxPage:any, setPage:any;
@@ -269,6 +293,7 @@ const InventoryEditModal: React.FC<InventoryEditModalProps> = ({ rowData, toggle
                         name="ordering_person"
                         cacheOptions
                         loadOptions={handleEmployeeManangementSearchChange}
+                        value={defaultEmployeeOptions}
                         defaultOptions={employeeManangement.map((ems: any) => ({
                             value: ems.id,
                             label: ems.username,
@@ -285,7 +310,7 @@ const InventoryEditModal: React.FC<InventoryEditModalProps> = ({ rowData, toggle
                 </div>
 
                 <div className="mb-3">
-                    <Label className="form-label" htmlFor="responsible_person">Ordering Person Name</Label>
+                    <Label className="form-label" htmlFor="responsible_person">Responsible Person Name</Label>
                     <AsyncSelect
                         id="responsible_person"
                         name="responsible_person"
@@ -296,8 +321,9 @@ const InventoryEditModal: React.FC<InventoryEditModalProps> = ({ rowData, toggle
                             label: ems.username,
                         }))}
                         onChange={(selectedOption: any) =>
-                            validation.setFieldValue('responsible_person', selectedOption?.value)
+                            validation.setFieldValue('responsible_person', selectedOption ? selectedOption.map((option: any) => option.value) : [])
                         }
+                        value={defaultEmployeeResponsibleOption}
                         components={{ Menu }}
                     />
                     {validation.touched.responsible_person && validation.errors.responsible_person ? (
@@ -306,19 +332,19 @@ const InventoryEditModal: React.FC<InventoryEditModalProps> = ({ rowData, toggle
                 </div>
 
                 <div className="mb-3">
-                    <Label className="form-label" htmlFor="project">Project Name<span className="text-danger">*</span></Label>
+                    <Label className="form-label" htmlFor="project">Project Name</Label>
                     <AsyncSelect
                         id="project"
                         name="project"
                         cacheOptions
-                        onBlur={validation.handleBlur}
                         loadOptions={handleProjectSearchChange}
+                        value={defaultProjectOptions}
                         defaultOptions={projects.map((project: any) => ({
                             value: project.id,
                             label: project.project_name,
                         }))}
                         onChange={(selectedOption: any) =>
-                            validation.setFieldValue('project', selectedOption ? selectedOption.map((option: any) => option.value) : [])
+                            validation.setFieldValue('projects', selectedOption ? selectedOption.map((option: any) => option.value) : [])
                         }
                         isMulti
                         components={{ Menu }}
@@ -327,6 +353,7 @@ const InventoryEditModal: React.FC<InventoryEditModalProps> = ({ rowData, toggle
                         <FormFeedback type="invalid">{String(validation.errors.project)}</FormFeedback>
                     ) : null}
                 </div>
+
 
                 <div className="mb-3">
                     <Label htmlFor="price" className="form-label">Price</Label>
@@ -396,6 +423,27 @@ const InventoryEditModal: React.FC<InventoryEditModalProps> = ({ rowData, toggle
                     )}
                 </div>
 
+
+                <div className="mb-3">
+                  <Label htmlFor="company" className="form-label">Company Name</Label>
+                  <AsyncSelect
+                    cacheOptions
+                    defaultOptions={companies.map((company: any) => ({
+                      value: company.id,
+                      label: company.company_name,
+                    }))}
+                    loadOptions={handleCompanySearchChange}
+                    onChange={(selectedOption) => validation.setFieldValue('company', selectedOption ? selectedOption.value : '')}
+                    onBlur={validation.handleBlur}
+                    value={defaultCompany}
+                        components={{ Menu }}
+
+                  />
+                  {validation.touched.company && validation.errors.company && (
+                    <FormFeedback type="invalid">{String(validation.errors.company)}</FormFeedback>
+                  )}
+                </div>
+
                 <div className="mb-3">
                     <Label className="form-label" htmlFor="company">Company Name</Label>
                     <AsyncSelect
@@ -440,7 +488,7 @@ const InventoryEditModal: React.FC<InventoryEditModalProps> = ({ rowData, toggle
                         id="categories"
                         name="categories"
                         cacheOptions
-                        onBlur={validation.handleBlur}
+                        value={defaultCategoryOptions}
                         loadOptions={handleCategorySearchChange}
                         defaultOptions={categories.map((categories: any) => ({
                             value: categories.id,

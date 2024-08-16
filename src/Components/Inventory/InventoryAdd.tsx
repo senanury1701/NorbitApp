@@ -155,20 +155,18 @@ const InventoriesAdd: React.FC<InventoriesAddModalProps> = ({ toggleAdd ,pageZer
             category: Yup.array().of(Yup.number()).required("Please Enter Category"),
             description: Yup.string().required("Please Enter Description"),
             count: Yup.number().required("Please Enter Count"),
-            satin_alinan_tarih: Yup.date(),
+            satin_alinan_tarih: Yup.date().nullable(),
           }),
           
           onSubmit: async (values, { resetForm }) => {
-            const inventoryDate = new Date(values.satin_alinan_tarih);
+            const inventoryDate = new Date(values.satin_alinan_tarih); 
             const formattedDate = inventoryDate.toISOString();
             const formattedValues = {
                 ...values,
                 satin_alinan_tarih: formattedDate,
-              };
-              console.log(formattedValues);
-            console.log('Form gönderildi:', values); 
+            };
           try {
-              await dispatch(addInventories(values));
+              await dispatch(addInventories(formattedValues));
               resetForm(); 
               pageZero(); 
               toggleAdd(); 

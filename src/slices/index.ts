@@ -17,6 +17,7 @@ import employeeManangementReducer from "./employeeManangement/reducers";
 import projectReducer from "./project/reducers";
 import accountInformationReducer from "./accountInformation/reducers";
 import permissionReducer from "./permission/reducers";
+import knowhowReducer from "./knowhow/reducers";
 
 
 const rootReducer = combineReducers({
@@ -34,6 +35,7 @@ const rootReducer = combineReducers({
     project: projectReducer,
     accountInformation: accountInformationReducer,
     permission: permissionReducer,
+    knowhow: knowhowReducer,
 
 });
 

@@ -148,14 +148,20 @@ const Navdata = () => {
             link: "/jobs",
         },
         {
+            id: "knowhow",
+            label: "Knowhow",
+            icon: <FeatherIcon icon="clipboard" className="icon-dual" />,
+            link: "/knowhow",
+        },
+        {
             id: "dataSheet",
-            label: "dataSheet",
+            label: "Data Sheet",
             icon: <FeatherIcon icon="briefcase" className="icon-data" />,
             link: "/dataSheet",
         },
         {
             id: "project",
-            label: "project",
+            label: "Project",
             icon: <FeatherIcon icon="briefcase" className="icon-project" />,
             link: "/project",
         },

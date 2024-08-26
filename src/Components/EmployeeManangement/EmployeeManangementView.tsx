@@ -23,6 +23,15 @@ interface EmployeeManangement {
 const EmployeeManangementViewModal = (id: any) => {
   const [EmployeeManangement, setEmployeeManangement] = useState<EmployeeManangement | null>(null);
   
+  const formatDate = (dateString: any) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = (`0${date.getMonth() + 1}`).slice(-2);
+    const day = (`0${date.getDate()}`).slice(-2);
+    return `${year}-${month}-${day}`;
+  };
+
   useEffect(() => {
     const fetchEmployeeManangement = async () => {
       try {
@@ -40,7 +49,6 @@ const EmployeeManangementViewModal = (id: any) => {
   if (!EmployeeManangement) {
     return <div>Loading...</div>;
   }
-
   return (
     <div>
       <p>Job Titles: {EmployeeManangement.job_title.join(', ')}</p>
@@ -54,10 +62,10 @@ const EmployeeManangementViewModal = (id: any) => {
       <p>Skills: {EmployeeManangement.skills}</p>
       <p>About: {EmployeeManangement.about}</p>
       <p>Links: {EmployeeManangement.links}</p>
-      <p>Job Start Date: {EmployeeManangement.job_start_date}</p>
-      <p>Job End Date: {EmployeeManangement.job_end_date}</p>
-      <p>Created At: {EmployeeManangement.created_at}</p>
-      <p>Updated At: {EmployeeManangement.updated_at}</p>
+      <p>Job Start Date: {formatDate(EmployeeManangement.job_start_date)}</p>
+      <p>Job End Date: {formatDate(EmployeeManangement.job_end_date)}</p>
+      <p>Created At: {formatDate(EmployeeManangement.created_at)}</p>
+      <p>Updated At: {formatDate(EmployeeManangement.updated_at)}</p>
     </div>
   );
 };

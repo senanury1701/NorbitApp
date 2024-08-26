@@ -30,6 +30,15 @@ interface EmployeeManangementEditModalProps {
     toggleEdit: () => void;
 }
 
+const formatDate = (dateString: any) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    const year = date.getFullYear();
+    const month = (`0${date.getMonth() + 1}`).slice(-2);
+    const day = (`0${date.getDate()}`).slice(-2);
+    return `${year}-${month}-${day}`;
+  };
+
 const EmployeeManangementEditModal: React.FC<EmployeeManangementEditModalProps> = ({ rowData, toggleEdit }) => {
     const dispatch = useAppDispatch();
     console.log(rowData);
@@ -48,8 +57,8 @@ const EmployeeManangementEditModal: React.FC<EmployeeManangementEditModalProps> 
             skills: rowData.skills || '',
             about: rowData.about || '',
             links: rowData.links || '',
-            job_start_date: rowData.job_start_date || '',
-            job_end_date: rowData.job_end_date || '',
+            job_start_date: formatDate(rowData.job_start_date) || '',
+            job_end_date: formatDate(rowData.job_end_date) || '',
         },
         validationSchema: Yup.object({
             username: Yup.string().required("Please Enter Username"),
@@ -62,7 +71,13 @@ const EmployeeManangementEditModal: React.FC<EmployeeManangementEditModalProps> 
         }),
         onSubmit: async (values, { resetForm }) => {
             try {
-                await dispatch(editEmployeeManangement(values));
+                const formattedValues = {
+                    id: rowData.id,
+                    ...values,
+                    job_start_date: new Date(values.job_start_date).toISOString(),
+                    job_end_date: new Date(values.job_end_date).toISOString(),
+                  };
+                await dispatch(editEmployeeManangement(formattedValues));
                 resetForm();
                 toggleEdit();
             } catch (error) {
@@ -137,6 +152,7 @@ const EmployeeManangementEditModal: React.FC<EmployeeManangementEditModalProps> 
                         className="form-control"
                         placeholder="Enter Email"
                         type="email"
+                        value={validation.values.email}
                         invalid={validation.touched.email && !!validation.errors.email}
                     />
                     <FormFeedback>{validation.errors.email}</FormFeedback>
@@ -225,37 +241,39 @@ const EmployeeManangementEditModal: React.FC<EmployeeManangementEditModalProps> 
                     <FormFeedback>{validation.errors.links}</FormFeedback>
                 </div>
 
-                {/* Job Start Date */}
                 <div className="mb-3">
-                    <Label htmlFor="job_start_date" className="form-label">Job Start Date</Label>
-                    <Input
-                        name="job_start_date"
-                        className="form-control"
-                        placeholder="Enter Job Start Date"
-                        type="date"
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.job_start_date}
-                        invalid={validation.touched.job_start_date && !!validation.errors.job_start_date}
-                    />
-                    <FormFeedback>{validation.errors.job_start_date}</FormFeedback>
+                  <Label htmlFor="job_start_date" className="form-label">job Start Date</Label>
+                  <Input
+                    name="job_start_date"
+                    className="form-control"
+                    placeholder="Enter job start date"
+                    type="date"
+                    onChange={validation.handleChange}
+                    onBlur={validation.handleBlur}
+                    value={validation.values.job_start_date}
+                    invalid={validation.touched.job_start_date && !!validation.errors.job_start_date}
+                  />
+                  {validation.touched.job_start_date && validation.errors.job_start_date && (
+                    <FormFeedback>{String(validation.errors.job_start_date)}</FormFeedback>
+                  )}
+                </div>
+                <div className="mb-3">
+                  <Label htmlFor="job_end_date" className="form-label">job End Date</Label>
+                  <Input
+                    name="job_end_date"
+                    className="form-control"
+                    placeholder="Enter job end date"
+                    type="date"
+                    onChange={validation.handleChange}
+                    onBlur={validation.handleBlur}
+                    value={validation.values.job_end_date}
+                    invalid={validation.touched.job_end_date && !!validation.errors.job_end_date}
+                  />
+                  {validation.touched.job_end_date && validation.errors.job_end_date && (
+                    <FormFeedback>{String(validation.errors.job_end_date)}</FormFeedback>
+                  )}
                 </div>
 
-                {/* Job End Date */}
-                <div className="mb-3">
-                    <Label htmlFor="job_end_date" className="form-label">Job End Date</Label>
-                    <Input
-                        name="job_end_date"
-                        className="form-control"
-                        placeholder="Enter Job End Date"
-                        type="date"
-                        onChange={validation.handleChange}
-                        onBlur={validation.handleBlur}
-                        value={validation.values.job_end_date}
-                        invalid={validation.touched.job_end_date && !!validation.errors.job_end_date}
-                    />
-                    <FormFeedback>{validation.errors.job_end_date}</FormFeedback>
-                </div>
 
                 <Button type="submit" color="primary">Edit Employee Management</Button>
             </Form>

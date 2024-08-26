@@ -111,13 +111,6 @@ const Navdata = () => {
             
         },
         {
-            id: "category",
-            label: "Category",
-            icon: <FeatherIcon icon="list" className="icon-dual" />,
-            link: "/category",
-            
-        },
-        {
             id: "emplooyeManangement",
             label: "EmplooyeManangement",
             icon: <FeatherIcon icon="users" className="icon-dual" />,
@@ -136,16 +129,17 @@ const Navdata = () => {
             link: "/accountInformation",
         },
         {
+            id: "category",
+            label: "Category",
+            icon: <FeatherIcon icon="list" className="icon-dual" />,
+            link: "/category",
+            
+        },
+        {
             id: "company",
             label: "Company",
             icon: <FeatherIcon icon="briefcase" className="icon-dual" />,
             link: "/company",
-        },
-        {
-            id: "project",
-            label: "project",
-            icon: <FeatherIcon icon="briefcase" className="icon-project" />,
-            link: "/project",
         },
         {
             id: "jobs",
@@ -153,6 +147,19 @@ const Navdata = () => {
             icon: <FeatherIcon icon="clipboard" className="icon-dual" />,
             link: "/jobs",
         },
+        {
+            id: "dataSheet",
+            label: "dataSheet",
+            icon: <FeatherIcon icon="briefcase" className="icon-data" />,
+            link: "/dataSheet",
+        },
+        {
+            id: "project",
+            label: "project",
+            icon: <FeatherIcon icon="briefcase" className="icon-project" />,
+            link: "/project",
+        },
+
         {
             id: "inventories",
             label: "Inventories",

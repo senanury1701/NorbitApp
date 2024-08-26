@@ -15,6 +15,8 @@ interface InventoryEditModalProps {
 const InventoryEditModal: React.FC<InventoryEditModalProps> = ({ rowData, toggleEdit }) => {
     const dispatch = useDispatch<any>();
     const data = rowData   
+    console.log(data);
+    
     const { companies, count: companyCount } = useSelector((state: any) => state.company);
     const { employeeManangement , count: employeeManangementCount } = useSelector((state:any) => state.employeeManangement)
     const { categories, count: categoryCount } = useSelector((state: any) => state.category);
@@ -109,6 +111,8 @@ const InventoryEditModal: React.FC<InventoryEditModalProps> = ({ rowData, toggle
             });
           }
         }
+        console.log(defaultCompany);
+        
       }, [data.company, companies]);
 
     const handleEmployeeManangementSearchChange = async (inputValue: string) => {
@@ -173,6 +177,7 @@ const InventoryEditModal: React.FC<InventoryEditModalProps> = ({ rowData, toggle
             const inventoryDate = new Date(values.satin_alinan_tarih); 
             const formattedDate = inventoryDate.toISOString();
             const formattedValues = {
+                id: data.id,
                 ...values,
                 satin_alinan_tarih: formattedDate,
             };
@@ -425,26 +430,6 @@ const InventoryEditModal: React.FC<InventoryEditModalProps> = ({ rowData, toggle
 
 
                 <div className="mb-3">
-                  <Label htmlFor="company" className="form-label">Company Name</Label>
-                  <AsyncSelect
-                    cacheOptions
-                    defaultOptions={companies.map((company: any) => ({
-                      value: company.id,
-                      label: company.company_name,
-                    }))}
-                    loadOptions={handleCompanySearchChange}
-                    onChange={(selectedOption) => validation.setFieldValue('company', selectedOption ? selectedOption.value : '')}
-                    onBlur={validation.handleBlur}
-                    value={defaultCompany}
-                        components={{ Menu }}
-
-                  />
-                  {validation.touched.company && validation.errors.company && (
-                    <FormFeedback type="invalid">{String(validation.errors.company)}</FormFeedback>
-                  )}
-                </div>
-
-                <div className="mb-3">
                     <Label className="form-label" htmlFor="company">Company Name</Label>
                     <AsyncSelect
                         id="company"
@@ -539,7 +524,7 @@ const InventoryEditModal: React.FC<InventoryEditModalProps> = ({ rowData, toggle
                     )}
                 </div>
 
-                <Button type="submit" color="primary">Add Inventory</Button>
+                <Button type="submit" color="primary">Edit Inventory</Button>
             </Form>
         </div>
     );

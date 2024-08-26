@@ -19,7 +19,7 @@ export const fetchInventories = (page:any = 1, search = '') => async (dispatch: 
   
 export const addInventories = (values:any) => async (dispatch: any)  => {
   try {
-    console.log(values);
+      console.log(values);
     
       const response = await axiosInstance.post('/inventory/create/', values);
       dispatch(updateStatus());      

@@ -191,6 +191,7 @@ const ProjectEditModal: React.FC<ProjectEditModalProps> = ({ rowData, toggleEdit
             <FormFeedback>{String(validation.errors.project_name)}</FormFeedback>
           )}
         </div>
+
         <div className="mb-3">
           <Label htmlFor="description" className="form-label">
             Description
@@ -209,6 +210,7 @@ const ProjectEditModal: React.FC<ProjectEditModalProps> = ({ rowData, toggleEdit
             <FormFeedback>{String(validation.errors.description)}</FormFeedback>
           )}
         </div>
+
         <div className="mb-3">
           <Label htmlFor="customer" className="form-label">
             Customer
@@ -227,6 +229,7 @@ const ProjectEditModal: React.FC<ProjectEditModalProps> = ({ rowData, toggleEdit
             <FormFeedback>{String(validation.errors.customer)}</FormFeedback>
           )}
         </div>
+
         <div className="mb-3">
           <Label htmlFor="project_start_date" className="form-label">Project Start Date</Label>
           <Input
@@ -243,6 +246,7 @@ const ProjectEditModal: React.FC<ProjectEditModalProps> = ({ rowData, toggleEdit
             <FormFeedback>{String(validation.errors.project_start_date)}</FormFeedback>
           )}
         </div>
+        
         <div className="mb-3">
           <Label htmlFor="project_end_date" className="form-label">Project End Date</Label>
           <Input

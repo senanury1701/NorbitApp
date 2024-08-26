@@ -13,6 +13,7 @@ import Inventories from '../pages/Inventories/index'
 import Purchases from '../pages/Purchases/index'
 import Category from '../pages/Category/index'
 import Project from '../pages/Project/index'
+import DataSheet from '../pages/DataSheet/index'
 
 //AuthenticationInner pages
 import Basic404 from '../pages/AuthenticationInner/Errors/Basic404';
@@ -43,6 +44,7 @@ const authProtectedRoutes = [
   { path: "/purchases", component: <Purchases /> },
   { path: "/category", component: <Category /> },
   { path: "/project", component: <Project /> },
+  { path: "/dataSheet", component: <DataSheet /> },
 
 
 

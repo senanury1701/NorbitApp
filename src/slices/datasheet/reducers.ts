@@ -15,9 +15,9 @@ const datasheetSlice = createSlice({
     name: 'datasheet',
     initialState,
     reducers: {
-        getDatasheet(state, action) {
+        getDataSheet(state, action) {
             state.status = 'success';
-            state.datasheet = action.payload;
+            state.datasheet = action.payload.results;
             state.count = action.payload.count;
             state.previous = action.payload.previous;
             state.next = action.payload.next;
@@ -36,7 +36,7 @@ const datasheetSlice = createSlice({
 });
 
 export const {
-    getDatasheet,
+    getDataSheet,
     updateStatus,
     setError,
     editStatus,

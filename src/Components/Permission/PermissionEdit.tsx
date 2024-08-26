@@ -20,11 +20,11 @@ const PermissonEditModal: React.FC<PermissonEditModalProps> = ({ rowData, toggle
   const validation = useFormik({
       enableReinitialize: true,
       initialValues: {
-          Permisson_name: props.Permisson_name || '',
+        username: props.username || '',
           id: props.id
       },
       validationSchema: Yup.object({
-          Permisson_name: Yup.string().required("Please Enter Your Permisson Name"),
+          username: Yup.string().required("Please Enter Your Permisson Name"),
       }),
       onSubmit: async (values, { resetForm }) => {
           try {
@@ -49,22 +49,22 @@ const PermissonEditModal: React.FC<PermissonEditModalProps> = ({ rowData, toggle
               action="#"
           >
               <div className="mb-3">
-                  <Label htmlFor="Permisson_name" className="form-label">Permisson Name</Label>
+                  <Label htmlFor="username" className="form-label">Permisson Name</Label>
                   <Input
-                      name="Permisson_name"
+                      name="username"
                       className="form-control"
                       placeholder="Enter Permisson name"
                       type="text"
                       onChange={validation.handleChange}
                       onBlur={validation.handleBlur}
-                      value={validation.values.Permisson_name }
-                      invalid={validation.touched.Permisson_name && !!validation.errors.Permisson_name}
+                      value={validation.values.username }
+                      invalid={validation.touched.username && !!validation.errors.username}
                   />
-                  {validation.touched.Permisson_name && validation.errors.Permisson_name && (
+                  {validation.touched.username && validation.errors.username && (
                     <FormFeedback>
-                      {typeof validation.errors.Permisson_name === 'object'
-                        ? Object.values(validation.errors.Permisson_name).join(', ')
-                        : validation.errors.Permisson_name}
+                      {typeof validation.errors.username === 'object'
+                        ? Object.values(validation.errors.username).join(', ')
+                        : validation.errors.username}
                     </FormFeedback>
                   )}   
               </div>

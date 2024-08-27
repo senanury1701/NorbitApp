@@ -18,7 +18,7 @@ const KnowhowEditModal: React.FC<KnowhowEditModalProps> = ({ rowData, toggleEdit
     if (file instanceof File || file instanceof Blob) {
       return URL.createObjectURL(file);
     }
-    return typeof file === 'string' ? file : null; // Eğer string (URL) ise, direkt kullanıyoruz
+    return typeof file === 'string' ? file : null; 
   };
 
   const [filePreviews, setFilePreviews] = useState({
@@ -29,37 +29,30 @@ const KnowhowEditModal: React.FC<KnowhowEditModalProps> = ({ rowData, toggleEdit
 
   const validationSchema = Yup.object({
     problem: Yup.string()
-      .min(1, 'Problem must be at least 1 character')
-      .max(50, 'Problem must be at most 50 characters')
-      .required('Please enter the problem description'),
+      .min(1, 'Knowhow name must be at least 1 character')
+      .max(50, 'Knowhow name must be at most 50 characters')
+      .required('Please enter your Knowhow name'),
     solve_text: Yup.string()
-      .required('Please enter the solution description'),
-    file_1: Yup.mixed()
-      .notRequired()
+      .required('Please enter the solve text'),
+    file_1: Yup.mixed().notRequired(),
+    file_2: Yup.mixed().notRequired()
       .test('fileSize', 'File size must be less than 2MB', (value) => {
-        if (!value) return true;
-        const file = value as File;
-        return file.size <= 2 * 1024 * 1024;
+        if (!value) return true; 
+        const file = value as File; 
+        return file.size <= 2 * 1024 * 1024; 
       }),
-    file_2: Yup.mixed()
-      .notRequired()
+    file_3: Yup.mixed().notRequired()
       .test('fileSize', 'File size must be less than 2MB', (value) => {
-        if (!value) return true;
-        const file = value as File;
-        return file.size <= 2 * 1024 * 1024;
-      }),
-    file_3: Yup.mixed()
-      .notRequired()
-      .test('fileSize', 'File size must be less than 2MB', (value) => {
-        if (!value) return true;
-        const file = value as File;
-        return file.size <= 2 * 1024 * 1024;
+        if (!value) return true; 
+        const file = value as File; 
+        return file.size <= 2 * 1024 * 1024; 
       }),
   });
 
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
+      id: props.id, 
       problem: props.problem || '',
       solve_text: props.solve_text || '',
       file_1: props.file_1 || null,
@@ -68,22 +61,16 @@ const KnowhowEditModal: React.FC<KnowhowEditModalProps> = ({ rowData, toggleEdit
     },
     validationSchema,
     onSubmit: async (values, { resetForm }) => {
-      const formData = new FormData();
-      formData.append('problem', values.problem);
-      formData.append('solve_text', values.solve_text);
-      if (values.file_1) formData.append('file_1', values.file_1);
-      if (values.file_2) formData.append('file_2', values.file_2);
-      if (values.file_3) formData.append('file_3', values.file_3);
-
       try {
-        await dispatch(editKnowhow(formData));
+        await dispatch(editKnowhow(values)); 
         resetForm();
-        toggleEdit();
+        toggleEdit(); 
       } catch (error) {
         console.error('Failed to edit knowhow:', error);
       }
     },
   });
+  
 
   useEffect(() => {
     if (formik.values.file_1) {

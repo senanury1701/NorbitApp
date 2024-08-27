@@ -16,3 +16,6 @@ export * from "./accountInformation/thunks";
 export * from "./permission/thunks";
 export * from "./datasheet/thunks";
 export * from "./knowhow/thunks";
+export * from "./file/thunks";
+export * from "./drive/thunks";
+export * from "./cloud/thunks";

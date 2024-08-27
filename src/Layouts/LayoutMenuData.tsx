@@ -108,13 +108,12 @@ const Navdata = () => {
             label: "Dashboards",
             icon: <FeatherIcon icon="bar-chart" className="icon-dual" />,
             link: "/",
-            
         },
         {
-            id: "emplooyeManangement",
-            label: "EmplooyeManangement",
+            id: "employeeManagement",
+            label: "Employee Management",
             icon: <FeatherIcon icon="users" className="icon-dual" />,
-            link: "/employeeManangement",
+            link: "/employeeManagement",
         },
         {
             id: "permissions",
@@ -124,8 +123,8 @@ const Navdata = () => {
         },
         {
             id: "accountInformation",
-            label: "AccountInformation",
-            icon: <FeatherIcon icon="users" className="icon-dual" />,
+            label: "Account Information",
+            icon: <FeatherIcon icon="user" className="icon-dual" />,
             link: "/accountInformation",
         },
         {
@@ -133,7 +132,6 @@ const Navdata = () => {
             label: "Category",
             icon: <FeatherIcon icon="list" className="icon-dual" />,
             link: "/category",
-            
         },
         {
             id: "company",
@@ -148,24 +146,41 @@ const Navdata = () => {
             link: "/jobs",
         },
         {
+            id: "drive",
+            label: "Drive",
+            icon: <FeatherIcon icon="hard-drive" className="icon-dual" />,
+            link: "/drive",
+        },
+        {
+            id: "file",
+            label: "File",
+            icon: <FeatherIcon icon="file" className="icon-dual" />,
+            link: "/file",
+        },
+        {
+            id: "cloud",
+            label: "Cloud",
+            icon: <FeatherIcon icon="cloud" className="icon-dual" />,
+            link: "/cloud",
+        },
+        {
             id: "knowhow",
             label: "Knowhow",
-            icon: <FeatherIcon icon="clipboard" className="icon-dual" />,
+            icon: <FeatherIcon icon="book" className="icon-dual" />,
             link: "/knowhow",
         },
         {
             id: "dataSheet",
             label: "Data Sheet",
-            icon: <FeatherIcon icon="briefcase" className="icon-data" />,
+            icon: <FeatherIcon icon="file-text" className="icon-dual" />,
             link: "/dataSheet",
         },
         {
             id: "project",
             label: "Project",
-            icon: <FeatherIcon icon="briefcase" className="icon-project" />,
+            icon: <FeatherIcon icon="layers" className="icon-dual" />,
             link: "/project",
         },
-
         {
             id: "inventories",
             label: "Inventories",

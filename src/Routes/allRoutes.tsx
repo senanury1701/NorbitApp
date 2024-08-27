@@ -15,6 +15,9 @@ import Category from '../pages/Category/index'
 import Project from '../pages/Project/index'
 import DataSheet from '../pages/DataSheet/index'
 import Knowhow from '../pages/Knowhow/index'
+import Drive from '../pages/Drive/index'
+import Cloud from '../pages/Cloud/index'
+import File from '../pages/File/index'
 
 //AuthenticationInner pages
 import Basic404 from '../pages/AuthenticationInner/Errors/Basic404';
@@ -47,6 +50,9 @@ const authProtectedRoutes = [
   { path: "/project", component: <Project /> },
   { path: "/dataSheet", component: <DataSheet /> },
   { path: "/knowhow", component: <Knowhow /> },
+  { path: "/cloud", component: <Cloud /> },
+  { path: "/drive", component: <Drive /> },
+  { path: "/file", component: <File /> },
 
 
 

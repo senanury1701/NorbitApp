@@ -18,6 +18,9 @@ import projectReducer from "./project/reducers";
 import accountInformationReducer from "./accountInformation/reducers";
 import permissionReducer from "./permission/reducers";
 import knowhowReducer from "./knowhow/reducers";
+import driveReducer from "./drive/reducers";
+import fileReducer from "./file/reducers";
+import cloudReducer from "./cloud/reducers";
 
 
 const rootReducer = combineReducers({
@@ -36,6 +39,9 @@ const rootReducer = combineReducers({
     accountInformation: accountInformationReducer,
     permission: permissionReducer,
     knowhow: knowhowReducer,
+    drive: driveReducer,
+    file: fileReducer,
+    cloud: cloudReducer,
 
 });
 

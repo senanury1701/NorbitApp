@@ -36,6 +36,12 @@ const FileAddModal: React.FC<FileAddModalProps> = ({ toggleAdd, pageZero }) => {
     file: Yup.mixed().notRequired()
   });
 
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>, field: string) => {
+    if (event.currentTarget.files) {
+      formik.setFieldValue(field, event.currentTarget.files[0]);
+    }
+  };
+
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
@@ -54,7 +60,8 @@ const FileAddModal: React.FC<FileAddModalProps> = ({ toggleAdd, pageZero }) => {
       if (values.file) {
         formData.append('file', values.file);
       }
-  
+      console.log(formData);
+      
       try {
         await dispatch(addFile(formData));
         resetForm();
@@ -65,8 +72,6 @@ const FileAddModal: React.FC<FileAddModalProps> = ({ toggleAdd, pageZero }) => {
       }
     },
   });
-
-  console.log('Validation Errors:', formik.errors);
 
   const handleEmployeeManangementSearchChange = async (inputValue: string) => {
     setSearchInputEmployeeManangement(inputValue);
@@ -102,11 +107,6 @@ const FileAddModal: React.FC<FileAddModalProps> = ({ toggleAdd, pageZero }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageDrive, dispatch]);
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>, field: string) => {
-    if (event.currentTarget.files) {
-      formik.setFieldValue(field, event.currentTarget.files[0]);
-    }
-  };
 
   const Menu = (props: any) => {
     let currentPage: number, maxPage: number, setPage: React.Dispatch<React.SetStateAction<number>>;

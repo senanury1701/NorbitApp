@@ -1,7 +1,6 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { Modal, ModalFooter, ModalBody, ModalHeader, CardBody, Col, Row, Table, Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from "reactstrap";
 import { Link } from "react-router-dom";
-import { InputGroupText } from "reactstrap";
 import { fetchDrive } from '../../slices/thunks';
 
 import {
@@ -177,7 +176,6 @@ const DriveTable = ({
   const [selectedRowData, setSelectedRowData] = useState(null);
   const [selectedRowId, setSelectedRowId] = useState(null);
   const [page, setPage] = useState(0);
-  const [search, setSearch] = useState('');
  const pageSize = 5; 
   const totalPages = Math.ceil(count / pageSize);
 
@@ -206,9 +204,7 @@ const DriveTable = ({
   const pageZero = () => {
     setPage(0)
   }
-  const handleSearchChange = (value: string | number) => {
-    setSearch(value.toString());
-  };
+
 
   const handleEdit = (rowData:any) => {
     setSelectedRowData(rowData);

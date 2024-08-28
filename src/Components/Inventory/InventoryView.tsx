@@ -95,10 +95,7 @@ const InventoryView = ({ rowId }: { rowId: any }) => {
           const categoriesPromises = inventoryData.category.map((id: number) => axiosInstance.get(`/category/${id}`));
           const categoriesResponses = await Promise.all(categoriesPromises);
           setCategories(categoriesResponses.map(response => response.data));
-        }
-        console.log(responsiblePerson);
-        console.log(orderingPerson);
-        
+        }      
         
       } catch (error) {
         console.error("Error fetching inventory details:", error);

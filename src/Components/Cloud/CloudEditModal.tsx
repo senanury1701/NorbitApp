@@ -3,6 +3,7 @@ import * as Yup from 'yup';
 import { useFormik } from 'formik';
 import { Input, Label, Form, Button, FormFeedback } from 'reactstrap';
 import AsyncSelect from 'react-select/async';
+import Select from 'react-select';
 import { components } from 'react-select';
 import { useAppDispatch } from '../hooks'; 
 import { editCloud, fetchEmployeeManangement, fetchDrive } from '../../slices/thunks';
@@ -88,18 +89,24 @@ const CloudEditModal: React.FC<CloudEditModalProps> = ({ rowData, toggleEdit }) 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pageDrive, dispatch]);
 
+  const defaultEmployeeOption = employeeManangement.find((emp: any) => emp.id === formik.values.owner_id);
+  const defaultDriveOptions = drive.filter((drv: any) => formik.values.driver.includes(drv.id)).map((drv: any) => ({
+    value: drv.id,
+    label: drv.name,
+  }));
+
   const Menu = (props: any) => {
     let currentPage: any, maxPage: any, setPage: any;
 
     switch (props.selectProps.name) {
       case 'driver':
         currentPage = pageDrive;
-        maxPage = Math.ceil(drive.length / 5); // Adjust this according to your data
+        maxPage = Math.ceil(drive.length / 5);
         setPage = setPageDrive;
         break;
       case 'owner_id':
         currentPage = pageEmployeeManangement;
-        maxPage = Math.ceil(employeeManangement.length / 5); // Adjust this according to your data
+        maxPage = Math.ceil(employeeManangement.length / 5);
         setPage = setPageEmployeeManangement;
         break;
       default:
@@ -148,7 +155,7 @@ const CloudEditModal: React.FC<CloudEditModalProps> = ({ rowData, toggleEdit }) 
             onChange={(selectedOption: any) =>
               formik.setFieldValue('owner_id', selectedOption ? selectedOption.value : '')
             }
-            value={employeeManangement.find((ems: any) => ems.id === formik.values.owner_id) || null}
+            value={defaultEmployeeOption ? { value: defaultEmployeeOption.id, label: defaultEmployeeOption.username } : null}
             components={{ Menu }}
           />
           {formik.touched.owner_id && formik.errors.owner_id ? (
@@ -198,21 +205,17 @@ const CloudEditModal: React.FC<CloudEditModalProps> = ({ rowData, toggleEdit }) 
           <Label className="form-label" htmlFor="driver">
             Driver
           </Label>
-          <AsyncSelect
+          <Select
             id="driver"
             name="driver"
-            cacheOptions
-            defaultOptions={drive.map((drv: any) => ({
+            options={drive.map((drv: any) => ({
               value: drv.id,
               label: drv.name,
             }))}
-            onChange={(selectedOption: any) =>
-              formik.setFieldValue('driver', selectedOption ? selectedOption.map((option: any) => option.value) : [])
+            onChange={(selectedOptions: any) =>
+              formik.setFieldValue('driver', selectedOptions ? selectedOptions.map((option: any) => option.value) : [])
             }
-            value={drive.filter((drv: any) => formik.values.driver.includes(drv.id)).map((drv: any) => ({
-              value: drv.id,
-              label: drv.name,
-            }))}
+            value={defaultDriveOptions}
             isMulti
             components={{ Menu }}
           />

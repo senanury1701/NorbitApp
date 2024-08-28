@@ -1,9 +1,12 @@
-import React, { useState, useEffect } from "react";
-import * as Yup from "yup";
-import { useFormik } from "formik";
+import React, { useState, useEffect } from 'react';
+import * as Yup from 'yup';
+import { useFormik } from 'formik';
 import { Input, Label, Form, Button, FormFeedback } from 'reactstrap';
+import AsyncSelect from 'react-select/async';
+import { components } from 'react-select';
 import { useAppDispatch } from '../hooks'; 
-import { editDrive } from '../../slices/thunks';
+import { editDrive, fetchEmployeeManangement, fetchCloud } from '../../slices/thunks';
+import { useSelector } from 'react-redux';
 
 interface DriveEditModalProps {
   rowData: any;
@@ -12,52 +15,31 @@ interface DriveEditModalProps {
 
 const DriveEditModal: React.FC<DriveEditModalProps> = ({ rowData, toggleEdit }) => {
   const dispatch = useAppDispatch();
-  const props = rowData;
-
-  const getFilePreview = (file: any) => {
-    if (file instanceof File || file instanceof Blob) {
-      return URL.createObjectURL(file);
-    }
-    return typeof file === 'string' ? file : null; 
-  };
-
-  const [filePreviews, setFilePreviews] = useState({
-    file_1: getFilePreview(props.file_1),
-    file_2: getFilePreview(props.file_2),
-    file_3: getFilePreview(props.file_3),
-  });
+  const { employeeManangement } = useSelector((state: any) => state.employeeManangement);
+  const { cloud } = useSelector((state: any) => state.cloud);
+  const [pageEmployeeManangement, setPageEmployeeManangement] = useState<number>(1);
+  const [searchInputEmployeeManangement, setSearchInputEmployeeManangement] = useState<string>('');
+  const [pageCloud, setPageCloud] = useState<number>(1);
+  const [isFetching, setIsFetching] = useState<boolean>(false);
 
   const validationSchema = Yup.object({
-    problem: Yup.string()
+    owner_id: Yup.string().required('Please select an owner'),
+    cloud: Yup.string().notRequired(),
+    name: Yup.string()
       .min(1, 'Drive name must be at least 1 character')
       .max(50, 'Drive name must be at most 50 characters')
       .required('Please enter your Drive name'),
-    solve_text: Yup.string()
-      .required('Please enter the solve text'),
-    file_1: Yup.mixed().notRequired(),
-    file_2: Yup.mixed().notRequired()
-      .test('fileSize', 'File size must be less than 2MB', (value) => {
-        if (!value) return true; 
-        const file = value as File; 
-        return file.size <= 2 * 1024 * 1024; 
-      }),
-    file_3: Yup.mixed().notRequired()
-      .test('fileSize', 'File size must be less than 2MB', (value) => {
-        if (!value) return true; 
-        const file = value as File; 
-        return file.size <= 2 * 1024 * 1024; 
-      }),
+    description: Yup.string(),
   });
 
   const formik = useFormik({
     enableReinitialize: true,
     initialValues: {
-      id: props.id, 
-      problem: props.problem || '',
-      solve_text: props.solve_text || '',
-      file_1: props.file_1 || null,
-      file_2: props.file_2 || null,
-      file_3: props.file_3 || null,
+      id: rowData.id,
+      name: rowData.name || '',
+      description: rowData.description || '',
+      cloud: rowData.cloud || '',
+      owner_id: rowData.owner_id || '',
     },
     validationSchema,
     onSubmit: async (values, { resetForm }) => {
@@ -70,130 +52,172 @@ const DriveEditModal: React.FC<DriveEditModalProps> = ({ rowData, toggleEdit }) 
       }
     },
   });
-  
+
+  const handleEmployeeManangementSearchChange = async (inputValue: string) => {
+    setSearchInputEmployeeManangement(inputValue);
+    setPageEmployeeManangement(1);
+    const fetchedEmployeeManangement = await dispatch(fetchEmployeeManangement(1, inputValue));
+    return fetchedEmployeeManangement.map((ems: any) => ({
+      value: ems.id,
+      label: ems.username,
+    }));
+  };  
+  const loadEmployeeManangement = async (page: number) => {
+    if (isFetching) return;
+    setIsFetching(true);
+    await dispatch(fetchEmployeeManangement(page, searchInputEmployeeManangement));
+    setIsFetching(false);
+  };
 
   useEffect(() => {
-    if (formik.values.file_1) {
-      setFilePreviews(prev => ({
-        ...prev,
-        file_1: getFilePreview(formik.values.file_1),
-      }));
+    loadEmployeeManangement(pageEmployeeManangement);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pageEmployeeManangement, searchInputEmployeeManangement, dispatch]);
+
+  const loadCloud = async (page: number) => {
+    if (isFetching) return;
+    setIsFetching(true);
+    await dispatch(fetchCloud(page));
+    setIsFetching(false);
+  };
+  console.log(formik.errors);
+  
+  useEffect(() => {
+    loadCloud(pageCloud);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pageCloud, dispatch]);
+
+  const defaultEmployeeOption = employeeManangement.find((emp: any) => emp.id === formik.values.owner_id);
+  const defaultCloudOption = cloud.find((cld: any) => cld.id === formik.values.cloud);
+
+
+  const Menu = (props: any) => {
+    let currentPage: any, maxPage: any, setPage: any;
+
+    switch (props.selectProps.name) {
+      case 'cloud':
+        currentPage = pageCloud;
+        maxPage = Math.ceil(cloud.length / 5);
+        setPage = setPageCloud;
+        break;
+      case 'owner_id':
+        currentPage = pageEmployeeManangement;
+        maxPage = Math.ceil(employeeManangement.length / 5);
+        setPage = setPageEmployeeManangement;
+        break;
+      default:
+        break;
     }
-    if (formik.values.file_2) {
-      setFilePreviews(prev => ({
-        ...prev,
-        file_2: getFilePreview(formik.values.file_2),
-      }));
-    }
-    if (formik.values.file_3) {
-      setFilePreviews(prev => ({
-        ...prev,
-        file_3: getFilePreview(formik.values.file_3),
-      }));
-    }
-  }, [formik.values.file_1, formik.values.file_2, formik.values.file_3]);
+
+    return (
+      <components.Menu {...props}>
+        {currentPage > 1 && (
+          <div
+            style={{ cursor: 'pointer', padding: '8px', textAlign: 'center' }}
+            onClick={() => setPage((prevPage: number) => Math.max(prevPage - 1, 1))}
+          >
+            ▲ Previous Page
+          </div>
+        )}
+        {props.children}
+        {currentPage < maxPage && (
+          <div
+            style={{ cursor: 'pointer', padding: '8px', textAlign: 'center' }}
+            onClick={() => setPage((prevPage: number) => Math.min(prevPage + 1, maxPage))}
+          >
+            ▼ Next Page
+          </div>
+        )}
+      </components.Menu>
+    );
+  };
 
   return (
     <div>
       <Form onSubmit={formik.handleSubmit}>
         <div className="mb-3">
-          <Label htmlFor="problem" className="form-label">Problem</Label>
+          <Label className="form-label" htmlFor="owner_id">
+            Owner Name
+          </Label>
+          <AsyncSelect
+            id="owner_id"
+            name="owner_id"
+            cacheOptions
+            loadOptions={handleEmployeeManangementSearchChange}
+            defaultOptions={employeeManangement.map((ems: any) => ({
+              value: ems.id,
+              label: ems.username,
+            }))}
+            onChange={(selectedOption: any) =>
+              formik.setFieldValue('owner_id', selectedOption ? selectedOption.value : '')
+            }
+            value={defaultEmployeeOption ? { value: defaultEmployeeOption.id, label: defaultEmployeeOption.username } : null}
+            />
+          {formik.touched.owner_id && formik.errors.owner_id ? (
+            <FormFeedback>{String(formik.errors.owner_id)}</FormFeedback>
+          ) : null}
+        </div>
+
+        <div className="mb-3">
+          <Label htmlFor="name" className="form-label">
+            Drive Name
+          </Label>
           <Input
-            name="problem"
+            name="name"
             className="form-control"
-            placeholder="Enter problem"
+            placeholder="Enter Drive name"
             type="text"
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            value={formik.values.problem}
-            invalid={formik.touched.problem && !!formik.errors.problem}
+            value={formik.values.name}
+            invalid={formik.touched.name && !!formik.errors.name}
           />
-          {formik.touched.problem && formik.errors.problem && (
-            <FormFeedback>{String(formik.errors.problem)}</FormFeedback>
+          {formik.touched.name && formik.errors.name && (
+            <FormFeedback>{String(formik.errors.name)}</FormFeedback>
           )}
         </div>
 
         <div className="mb-3">
-          <Label htmlFor="solve_text" className="form-label">Solution Description</Label>
+          <Label htmlFor="description" className="form-label">
+            Description
+          </Label>
           <Input
-            name="solve_text"
+            name="description"
             className="form-control"
-            placeholder="Enter solution description"
+            placeholder="Enter Drive description"
             type="textarea"
             onChange={formik.handleChange}
             onBlur={formik.handleBlur}
-            value={formik.values.solve_text}
-            invalid={formik.touched.solve_text && !!formik.errors.solve_text}
+            value={formik.values.description}
+            invalid={formik.touched.description && !!formik.errors.description}
           />
-          {formik.touched.solve_text && formik.errors.solve_text && (
-            <FormFeedback>{String(formik.errors.solve_text)}</FormFeedback>
+          {formik.touched.description && formik.errors.description && (
+            <FormFeedback>{String(formik.errors.description)}</FormFeedback>
           )}
         </div>
 
-        {/* File 1 */}
         <div className="mb-3">
-          <Label htmlFor="file_1" className="form-label">File 1</Label>
-          <Input
-            name="file_1"
-            className="form-control"
-            type="file"
-            onChange={(event) => formik.setFieldValue("file_1", event.currentTarget.files?.[0])}
-            onBlur={formik.handleBlur}
-            invalid={formik.touched.file_1 && !!formik.errors.file_1}
+          <Label className="form-label" htmlFor="cloud">
+            Cloud
+          </Label>
+          <AsyncSelect
+            id="cloud"
+            name="cloud"
+            cacheOptions
+            defaultOptions={cloud.map((cld: any) => ({
+              value: cld.id,
+              label: cld.name,
+            }))}
+            onChange={(selectedOption: any) =>
+              formik.setFieldValue('cloud', selectedOption ? selectedOption.value : '')
+            }
+            value={defaultCloudOption ? { value: defaultCloudOption.id, label: defaultCloudOption.name } : null}
+            components={{ Menu }}
+            
           />
-          {formik.touched.file_1 && formik.errors.file_1 && (
-            <FormFeedback>{String(formik.errors.file_1)}</FormFeedback>
-          )}
-          {/* Dosya önizleme */}
-          {filePreviews.file_1 && (
-            <div className="mt-2">
-              <img src={filePreviews.file_1} alt="File 1 Preview" style={{ maxHeight: '100px', maxWidth: '100px' }} />
-            </div>
-          )}
-        </div>
-
-        {/* File 2 */}
-        <div className="mb-3">
-          <Label htmlFor="file_2" className="form-label">File 2</Label>
-          <Input
-            name="file_2"
-            className="form-control"
-            type="file"
-            onChange={(event) => formik.setFieldValue("file_2", event.currentTarget.files?.[0])}
-            onBlur={formik.handleBlur}
-            invalid={formik.touched.file_2 && !!formik.errors.file_2}
-          />
-          {formik.touched.file_2 && formik.errors.file_2 && (
-            <FormFeedback>{String(formik.errors.file_2)}</FormFeedback>
-          )}
-          {/* Dosya önizleme */}
-          {filePreviews.file_2 && (
-            <div className="mt-2">
-              <img src={filePreviews.file_2} alt="File 2 Preview" style={{ maxHeight: '100px', maxWidth: '100px' }} />
-            </div>
-          )}
-        </div>
-
-        {/* File 3 */}
-        <div className="mb-3">
-          <Label htmlFor="file_3" className="form-label">File 3</Label>
-          <Input
-            name="file_3"
-            className="form-control"
-            type="file"
-            onChange={(event) => formik.setFieldValue("file_3", event.currentTarget.files?.[0])}
-            onBlur={formik.handleBlur}
-            invalid={formik.touched.file_3 && !!formik.errors.file_3}
-          />
-          {formik.touched.file_3 && formik.errors.file_3 && (
-            <FormFeedback>{String(formik.errors.file_3)}</FormFeedback>
-          )}
-          {/* Dosya önizleme */}
-          {filePreviews.file_3 && (
-            <div className="mt-2">
-              <img src={filePreviews.file_3} alt="File 3 Preview" style={{ maxHeight: '100px', maxWidth: '100px' }} />
-            </div>
-          )}
+          {formik.touched.cloud && formik.errors.cloud ? (
+            <FormFeedback>{String(formik.errors.cloud)}</FormFeedback>
+          ) : null}
         </div>
 
         <Button type="submit" color="primary" className="mt-3">

@@ -18,7 +18,6 @@ const Navdata = () => {
     const [isCharts, setIsCharts] = useState<boolean>(false);
     const [isIcons, setIsIcons] = useState<boolean>(false);
     const [isMaps, setIsMaps] = useState<boolean>(false);
-    const [isMultiLevel, setIsMultiLevel] = useState<boolean>(false);
 
 
 
@@ -95,7 +94,7 @@ const Navdata = () => {
         isCharts,
         isIcons,
         isMaps,
-        isMultiLevel
+        
     ]);
 
     const menuItems: any = [
@@ -113,7 +112,7 @@ const Navdata = () => {
             id: "employeeManagement",
             label: "Employee Management",
             icon: <FeatherIcon icon="users" className="icon-dual" />,
-            link: "/employeeManagement",
+            link: "/employeeManangement",
         },
         {
             id: "permissions",

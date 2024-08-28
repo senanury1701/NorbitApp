@@ -97,25 +97,7 @@ interface TableContainerProps {
   isBordered?: any;
 }
 
-interface EmployeeManangement {
-  id: number;
-  job_title: number[];
-  company_name: number[];
-  username: string;
-  first_name: string;
-  last_name: string;
-  email: string;
-  user: string;
-  profile_pic: string | null;
-  skills: string;
-  about: string;
-  files: string | null;
-  links: string;
-  job_start_date: string | null;
-  job_end_date: string | null;
-  created_at: string;
-  updated_at: string;
-}
+
 
 const EmployeeManangementTable = ({
   columns,

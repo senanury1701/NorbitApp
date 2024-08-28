@@ -64,7 +64,7 @@ const Cloud = () => {
             <div className="page-content">
                 <Container fluid>
                     <BreadCrumb title="Cloud APi deSearch yok"  />
-                    <p>Api Sıkıntılı</p>
+                    <p>delete yapilmiyor</p>
                     <div className='m-3'>
                       <CloudTable
                             columns={(columns || [])}

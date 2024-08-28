@@ -37,11 +37,11 @@ const DriveAddModal: React.FC<DriveAddModalProps> = ({ toggleAdd, pageZero }) =>
     },
     validationSchema: Yup.object({
       owner_id: Yup.string().required('Please select an owner'),
-      cloud: Yup.array().of(Yup.string()).min(1, 'Please select at least one cloud'),
+      cloud: Yup.string().min(1, 'Please select at least one cloud'),
       name: Yup.string()
-        .min(1, 'Cloud name must be at least 1 character')
-        .max(50, 'Cloud name must be at most 50 characters')
-        .required('Please enter your Cloud name'),
+        .min(1, 'dRIVE name must be at least 1 character')
+        .max(50, 'dRIVE name must be at most 50 characters')
+        .required('Please enter your dRIVE name'),
       description: Yup.string(),
     }),
     onSubmit: async (values, { resetForm }) => {
@@ -166,7 +166,7 @@ const DriveAddModal: React.FC<DriveAddModalProps> = ({ toggleAdd, pageZero }) =>
 
         <div className="mb-3">
           <Label htmlFor="name" className="form-label">
-            Cloud Name
+            Drive Name
           </Label>
           <Input
             name="name"
@@ -213,9 +213,8 @@ const DriveAddModal: React.FC<DriveAddModalProps> = ({ toggleAdd, pageZero }) =>
               label: drive.name,
             }))}
             onChange={(selectedOption: any) =>
-              validation.setFieldValue('cloud', selectedOption ? selectedOption.map((option: any) => option.value) : [])
+              validation.setFieldValue('cloud', selectedOption ? selectedOption.value : '')
             }
-            isMulti
             components={{ Menu }}
           />
           {validation.touched.cloud && validation.errors.cloud ? (

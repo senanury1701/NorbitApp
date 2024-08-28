@@ -6,7 +6,7 @@ import ProjectTable from '../../Components/Projects/ProjectTable'
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchProjects } from '../../slices/thunks';
 
-const Purchase = () => {
+const PurchaseRequest = () => {
   
 
   const columns = useMemo(
@@ -63,7 +63,7 @@ const Purchase = () => {
             <UiContent />
             <div className="page-content">
                 <Container fluid>
-                    <BreadCrumb title="Purchase"  />
+                    <BreadCrumb title="Purchase Request"  />
                     <div className='m-3'>
                       <ProjectTable
                             columns={(columns || [])}
@@ -81,4 +81,4 @@ const Purchase = () => {
     );
 };
 
-export default Purchase;
+export default PurchaseRequest;

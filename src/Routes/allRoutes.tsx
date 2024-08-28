@@ -18,6 +18,7 @@ import Knowhow from '../pages/Knowhow/index'
 import Drive from '../pages/Drive/index'
 import Cloud from '../pages/Cloud/index'
 import File from '../pages/File/index'
+import PurchaseRequest from '../pages/PurchaseRequest/index'
 
 //AuthenticationInner pages
 import Basic404 from '../pages/AuthenticationInner/Errors/Basic404';
@@ -32,7 +33,6 @@ import Offlinepage from "../pages/AuthenticationInner/Errors/Offlinepage";
 import Login from "../pages/Authentication/Login";
 import ForgetPasswordPage from "../pages/Authentication/ForgetPassword";
 import Logout from "../pages/Authentication/Logout";
-
 
 
 
@@ -53,6 +53,7 @@ const authProtectedRoutes = [
   { path: "/cloud", component: <Cloud /> },
   { path: "/drive", component: <Drive /> },
   { path: "/file", component: <File /> },
+  { path: "/purchase-request", component: <PurchaseRequest /> },
 
 
 

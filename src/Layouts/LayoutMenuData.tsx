@@ -8,7 +8,7 @@ const Navdata = () => {
     const history = useNavigate();
     //state data
     const [isDashboard, setIsDashboard] = useState<boolean>(false);
-    const [isApps, setIsApps] = useState<boolean>(false);
+    const [ispurchases, setIsPurchases] = useState<boolean>(false);
     const [isAuth, setIsAuth] = useState<boolean>(false);
     const [isPages, setIsPages] = useState<boolean>(false);
     const [isBaseUi, setIsBaseUi] = useState<boolean>(false);
@@ -46,8 +46,8 @@ const Navdata = () => {
         if (iscurrentState !== 'Dashboard') {
             setIsDashboard(false);
         }
-        if (iscurrentState !== 'Apps') {
-            setIsApps(false);
+        if (iscurrentState !== 'purchases') {
+            setIsPurchases(false);
         }
         if (iscurrentState !== 'Auth') {
             setIsAuth(false);
@@ -84,7 +84,7 @@ const Navdata = () => {
         history,
         iscurrentState,
         isDashboard,
-        isApps,
+        ispurchases,
         isAuth,
         isPages,
         isBaseUi,
@@ -187,37 +187,30 @@ const Navdata = () => {
             link: "/inventories",
         },
         {
-            id: "apps",
-            label: "Apps",
+            id: "purchases",
+            label: "Purchases",
             icon: <FeatherIcon icon="grid" className="icon-dual" />,
             link: "/#",
             click: function (e: any) {
                 e.preventDefault();
-                setIsApps(!isApps);
-                setIscurrentState('Apps');
+                setIsPurchases(!ispurchases);
+                setIscurrentState('purchases');
                 updateIconSidebar(e);
             },
-            stateVariables: isApps,
+            stateVariables: ispurchases,
             subItems: [
                 {
-                    id: "chat",
-                    label: "Chat",
+                    id: "purchase",
+                    label: "Purchase",
                     link: "/purchases",
-                    parentId: "apps",
+                    parentId: "purchases",
                 },
                 {
-                    id: "chat2",
-                    label: "Chat",
-                    link: "/apps-chat",
-                    parentId: "apps",
+                    id: "purchaseRequest",
+                    label: "Purchase request",
+                    link: "/purchase-request",
+                    parentId: "purchases",
                 },
-                {
-                    id: "chat3",
-                    label: "Chat",
-                    link: "/apps-chat",
-                    parentId: "apps",
-                },
-
 
             ],
         },

@@ -100,34 +100,68 @@ const ProjectViewModal = ( id:any ) => {
   }
 
   return (
-    <div>
-      <p>Project Name: {project.project_name}</p>
-      <p>Description: {project.description || 'N/A'}</p>
-      <p>Customer: {project.customer}</p>
-      <p>Project Start Date: {project.project_start_date || 'N/A'}</p>
-      <p>Project End Date: {project.project_end_date || 'N/A'}</p>
-      <p>
-        Company:{' '}
-        {company ? (
-          company.company_name
-        ) : (
-          <span>{companyError || 'Loading company information...'}</span>
-        )}
-      </p>
-      <p>employess:</p>
-      {employess.length > 0 ? (
-        <ul>
-          {employess.map((employee) => (
-            <li key={employee.id}>
-              {employee.first_name} {employee.last_name}
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <span>{employessError || 'Loading employess information...'}</span>
-      )}
-      <p>Created At: {new Date(project.created_at).toLocaleString()}</p>
-      <p>Updated At: {new Date(project.updated_at).toLocaleString()}</p>
+    <div className="container my-4">
+      <div className="card">
+        <div className="card-header bg-primary text-white">
+          <h2 className="mb-0">Project Details</h2>
+        </div>
+        <div className="card-body">
+          <div className="row mb-3">
+            <div className="col-md-4 font-weight-bold">Project Name:</div>
+            <div className="col-md-8">{project.project_name}</div>
+          </div>
+          <div className="row mb-3">
+            <div className="col-md-4 font-weight-bold">Description:</div>
+            <div className="col-md-8">{project.description || 'N/A'}</div>
+          </div>
+          <div className="row mb-3">
+            <div className="col-md-4 font-weight-bold">Customer:</div>
+            <div className="col-md-8">{project.customer}</div>
+          </div>
+          <div className="row mb-3">
+            <div className="col-md-4 font-weight-bold">Project Start Date:</div>
+            <div className="col-md-8">{project.project_start_date || 'N/A'}</div>
+          </div>
+          <div className="row mb-3">
+            <div className="col-md-4 font-weight-bold">Project End Date:</div>
+            <div className="col-md-8">{project.project_end_date || 'N/A'}</div>
+          </div>
+          <div className="row mb-3">
+            <div className="col-md-4 font-weight-bold">Company:</div>
+            <div className="col-md-8">
+              {company ? company.company_name : companyError || 'Loading company information...'}
+            </div>
+          </div>
+          <div className="row mb-3">
+            <div className="col-md-4 font-weight-bold">Employees:</div>
+            <div className="col-md-8">
+              {employess.length > 0 ? (
+                <ul className="list-unstyled">
+                  {employess.map((employee) => (
+                    <li key={employee.id}>
+                      {employee.first_name} {employee.last_name}
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                employessError || 'Loading employees information...'
+              )}
+            </div>
+          </div>
+          <div className="row mb-3">
+            <div className="col-md-4 font-weight-bold">Created At:</div>
+            <div className="col-md-8">
+              {new Date(project.created_at).toLocaleString()}
+            </div>
+          </div>
+          <div className="row mb-3">
+            <div className="col-md-4 font-weight-bold">Updated At:</div>
+            <div className="col-md-8">
+              {new Date(project.updated_at).toLocaleString()}
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   );
 };

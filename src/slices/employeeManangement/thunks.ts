@@ -30,7 +30,7 @@ export const addEmployeeManangement = (EmployeeManangement_name:any) => async (d
 
 
   export const deleteEmployeeManangement = (id: number) => async (dispatch: any) => {
-    await axiosInstance.delete(`EmployeeManangement/${id}/`);
+    await axiosInstance.delete(`ems/employee/${id}/`);
     dispatch(fetchEmployeeManangement()); 
     return id;
   };
@@ -39,7 +39,7 @@ export const addEmployeeManangement = (EmployeeManangement_name:any) => async (d
     const { id, ...updatedEmployeeManangement  } = values; 
     try {
       
-      const response = await axiosInstance.put(`/EmployeeManangement/${id}/`, updatedEmployeeManangement );
+      const response = await axiosInstance.put(`/ems/employee/${id}/`, updatedEmployeeManangement );
       
       dispatch(fetchEmployeeManangement());
       return response.data;

@@ -83,7 +83,7 @@ const Dashboard = () => {
             user_type: '',
             first_name: '',
             last_name: '',
-            company: '',
+            company_name: '',
             job_title: '',
             job_start_date: ''
         },
@@ -97,7 +97,7 @@ const Dashboard = () => {
             user_type: Yup.string().required("Please select your user type"),
             first_name: Yup.string().required("Please enter your first name"),
             last_name: Yup.string().required("Please enter your last name"),
-            company: Yup.number().required("Please select your company name"),
+            company_name: Yup.string().required("Please select your company name"), // Change to Yup.string()
             job_title: Yup.number().required("Please select your job title"),
             job_start_date: Yup.date().required("Please enter your job start date"),
         }),
@@ -118,7 +118,7 @@ const Dashboard = () => {
 
     useEffect(() => {
         if (success) {
-            setTimeout(() => history("/login"), 3000);
+            setTimeout(() => history("/employeeManangement"), 3000);
         }
 
         setTimeout(() => {
@@ -128,11 +128,15 @@ const Dashboard = () => {
 
     useEffect(() => {
         dispatch(fetchCompanies(1, searchInput));
+        
     }, [dispatch, searchInput]);
 
     useEffect(() => {
         dispatch(fetchJobs(1, searchInputJobs));
     }, [dispatch, searchInputJobs]);
+
+    console.log("Formik Values:", validation.values);
+    console.log("Formik Errors:", validation.errors);
 
     const Menu = (props: any) => {
         const isJobSearch = Boolean(props.selectProps.inputValue);
@@ -203,6 +207,7 @@ const Dashboard = () => {
                                                         <FormFeedback type="invalid">{validation.errors.username}</FormFeedback>
                                                     ) : null}
                                                 </div>
+
                                                 <div className="mb-3">
                                                     <Label className="form-label" htmlFor="email">Email<span className="text-danger">*</span></Label>
                                                     <Input
@@ -221,6 +226,7 @@ const Dashboard = () => {
                                                         <FormFeedback type="invalid">{validation.errors.email}</FormFeedback>
                                                     ) : null}
                                                 </div>
+
                                                 <div className="mb-3">
                                                     <Label className="form-label" htmlFor="password1">Password<span className="text-danger">*</span></Label>
                                                     <Input
@@ -239,6 +245,7 @@ const Dashboard = () => {
                                                         <FormFeedback type="invalid">{validation.errors.password1}</FormFeedback>
                                                     ) : null}
                                                 </div>
+
                                                 <div className="mb-3">
                                                     <Label className="form-label" htmlFor="password2">Confirm Password<span className="text-danger">*</span></Label>
                                                     <Input
@@ -257,6 +264,7 @@ const Dashboard = () => {
                                                         <FormFeedback type="invalid">{validation.errors.password2}</FormFeedback>
                                                     ) : null}
                                                 </div>
+
                                                 <div className="mb-3">
                                                     <Label className="form-label" htmlFor="user_type">User Type<span className="text-danger">*</span></Label>
                                                     <Input
@@ -272,14 +280,14 @@ const Dashboard = () => {
                                                         }
                                                     >
                                                         <option value="">Select User Type</option>
-                                                        <option value="Admin">Admin</option>
-                                                        <option value="Company">Company</option>
-                                                        <option value="Candidate">Candidate</option>
+                                                        <option value="AU">Admin</option>
+                                                        <option value="NU">Normal </option>
                                                     </Input>
                                                     {validation.touched.user_type && validation.errors.user_type ? (
                                                         <FormFeedback type="invalid">{validation.errors.user_type}</FormFeedback>
                                                     ) : null}
                                                 </div>
+
                                                 <div className="mb-3">
                                                     <Label className="form-label" htmlFor="first_name">First Name<span className="text-danger">*</span></Label>
                                                     <Input
@@ -298,6 +306,7 @@ const Dashboard = () => {
                                                         <FormFeedback type="invalid">{validation.errors.first_name}</FormFeedback>
                                                     ) : null}
                                                 </div>
+
                                                 <div className="mb-3">
                                                     <Label className="form-label" htmlFor="last_name">Last Name<span className="text-danger">*</span></Label>
                                                     <Input
@@ -316,26 +325,29 @@ const Dashboard = () => {
                                                         <FormFeedback type="invalid">{validation.errors.last_name}</FormFeedback>
                                                     ) : null}
                                                 </div>
+
                                                 <div className="mb-3">
-                                                    <Label className="form-label" htmlFor="company">Company Name<span className="text-danger">*</span></Label>
+                                                    <Label className="form-label" htmlFor="company_name">company Name<span className="text-danger">*</span></Label>
                                                     <AsyncSelect
-                                                        id="company"
-                                                        name="company"
+                                                        id="company_name"
+                                                        name="company_name"
                                                         cacheOptions
                                                         loadOptions={handleCompanySearchChange}
                                                         defaultOptions={companies.map((company: any) => ({
                                                             value: company.id,
                                                             label: company.company_name,
                                                         }))}
-                                                        onChange={(selectedOption: any) =>
-                                                            validation.setFieldValue('company', selectedOption?.value)
-                                                        }
+                                                        onChange={(selectedOption: any) => {
+                                                            console.log("Selected Company Option:", selectedOption);
+                                                            validation.setFieldValue('company_name', selectedOption?.value);
+                                                        }}
                                                         components={{ Menu }}
                                                     />
-                                                    {validation.touched.company && validation.errors.company ? (
-                                                        <FormFeedback type="invalid">{validation.errors.company}</FormFeedback>
+                                                    {validation.touched.company_name && validation.errors.company_name ? (
+                                                        <FormFeedback type="invalid">{validation.errors.company_name}</FormFeedback>
                                                     ) : null}
                                                 </div>
+
                                                 <div className="mb-3">
                                                     <Label className="form-label" htmlFor="job_title">Job Title<span className="text-danger">*</span></Label>
                                                     <AsyncSelect
@@ -356,6 +368,7 @@ const Dashboard = () => {
                                                         <FormFeedback type="invalid">{validation.errors.job_title}</FormFeedback>
                                                     ) : null}
                                                 </div>
+
                                                 <div className="mb-3">
                                                     <Label className="form-label" htmlFor="job_start_date">Job Start Date<span className="text-danger">*</span></Label>
                                                     <Input
@@ -374,6 +387,7 @@ const Dashboard = () => {
                                                         <FormFeedback type="invalid">{validation.errors.job_start_date}</FormFeedback>
                                                     ) : null}
                                                 </div>
+
                                                 <div className="text-center mt-4">
                                                     <Button color="primary" type="submit">Register</Button>
                                                 </div>

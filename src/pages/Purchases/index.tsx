@@ -2,9 +2,9 @@ import React, {  useMemo, useEffect  } from 'react';
 import {  Container,  } from "reactstrap";
 import UiContent from 'Components/Common/UiContent';
 import BreadCrumb from 'Components/Common/BreadCrumb';
-import ProjectTable from '../../Components/Projects/ProjectTable'
+import PurchaseTable from '../../Components/Purchase/PurchaseTable'
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchProjects } from '../../slices/thunks';
+import { fetchPurchase } from '../../slices/thunks';
 
 const Purchase = () => {
   
@@ -22,10 +22,11 @@ const Purchase = () => {
         enableColumnFilter: false,
       },
       {
-          header: "Project Name",
-          accessorKey: "project_name",
+          header: "Product Name",
+          accessorKey: "product_name",
           enableColumnFilter: false,
       },
+
       {
           header: "Created At",
           accessorKey: "created_at",
@@ -36,19 +37,23 @@ const Purchase = () => {
           accessorKey: "updated_at",
           enableColumnFilter: false,
       },
-
+      {
+          header: "Status",
+          accessorKey: "status",
+          enableColumnFilter: false,
+      },
     ],
     []
   );
 
   const dispatch = useDispatch<any>();
-  const { projects, status, error, } = useSelector((state:any) => state.project);
+  const { purchase, status, error, } = useSelector((state:any) => state.purchase);
 
 
 
   
   useEffect(() => {
-    dispatch(fetchProjects());
+    dispatch(fetchPurchase());
   }, [dispatch]);
   
   if (status === 'idle') {
@@ -65,9 +70,9 @@ const Purchase = () => {
                 <Container fluid>
                     <BreadCrumb title="Purchase"  />
                     <div className='m-3'>
-                      <ProjectTable
+                      <PurchaseTable
                             columns={(columns || [])}
-                            data={(projects || [])}
+                            data={(purchase || [])}
                             isGlobalFilter={true}
                             customPageSize={5}
                             SearchPlaceholder='Search...'

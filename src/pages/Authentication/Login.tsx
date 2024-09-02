@@ -177,9 +177,6 @@ const Login = (props: any) => {
                                     </CardBody>
                                 </Card>
 
-                                <div className="mt-4 text-center">
-                                    <p className="mb-0">Don't have an account ? <Link to="/register" className="fw-semibold text-primary text-decoration-underline"> Signup </Link> </p>
-                                </div>
 
                             </Col>
                         </Row>

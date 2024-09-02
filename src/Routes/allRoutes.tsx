@@ -19,6 +19,7 @@ import Drive from '../pages/Drive/index'
 import Cloud from '../pages/Cloud/index'
 import File from '../pages/File/index'
 import PurchaseRequest from '../pages/PurchaseRequest/index'
+import Profile from '../pages/Authentication/user-profile'
 
 //AuthenticationInner pages
 import Basic404 from '../pages/AuthenticationInner/Errors/Basic404';
@@ -75,6 +76,7 @@ const publicRoutes : any= [
   { path: "/logout", component: <Logout /> },
   { path: "/login", component: <Login /> },
   { path: "/forgot-password", component: <ForgetPasswordPage /> },
+  { path: "/profile", component: <Profile /> },
 
   //AuthenticationInner pages
 

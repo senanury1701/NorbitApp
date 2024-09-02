@@ -87,7 +87,7 @@ const InventoryEditModal: React.FC<InventoryEditModalProps> = ({ rowData, toggle
         const fetchedCompanies = await dispatch(fetchCompanies(1, inputValue));
         return fetchedCompanies.map((company: any) => ({
           value: company.id,
-          label: company.company_name,
+          label: company.name,
         }));
     };
     
@@ -107,7 +107,7 @@ const InventoryEditModal: React.FC<InventoryEditModalProps> = ({ rowData, toggle
           if (selectedCompany) {
             setDefaultCompany({
               value: selectedCompany.id,
-              label: selectedCompany.company_name,
+              label: selectedCompany.name,
             });
           }
         }
@@ -439,7 +439,7 @@ const InventoryEditModal: React.FC<InventoryEditModalProps> = ({ rowData, toggle
                         loadOptions={handleCompanySearchChange}
                         defaultOptions={companies.map((company: any) => ({
                             value: company.id,
-                            label: company.company_name,
+                            label: company.name,
                         }))}
                         onChange={(selectedOption: any) =>
                             validation.setFieldValue('company', selectedOption?.value)

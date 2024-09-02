@@ -3,13 +3,13 @@ import axiosInstance from '../../../config/axiosConfig'
 
 import { loginSuccess, logoutUserSuccess, apiError, reset_login_flag } from './reducer';
 
-export const loginUser = (user : any, history : any) => async (dispatch : any) => {
+export const loginUser = (user: any, history: any) => async (dispatch: any) => {
   try {
-
     const response = await axiosInstance.post('accounts/login/', {
       username: user.username,
       password: user.password,
     });
+
     if (response.status === 200) {
       sessionStorage.setItem('accessToken', response.data.key);
       
@@ -18,20 +18,24 @@ export const loginUser = (user : any, history : any) => async (dispatch : any) =
       }
 
       const userDataResponse = await axiosInstance.get('accounts/user/');
+      const userData = userDataResponse.data;
 
-      const authUser = JSON.stringify(userDataResponse.data);
-      
+      const userType = userData.isAdmin ? 'AdminUser' : 'NormalUser'; // Assuming isAdmin is a field in user data
+
+      const authUser = {
+        ...userData,
+        userType
+      };
       dispatch(loginSuccess(authUser));
-      sessionStorage.setItem('authUser', authUser);
-      history('/dashboard')
+      sessionStorage.setItem('authUser', JSON.stringify(authUser));
+      history.push(userType === 'AdminUser' ? '/admin-dashboard' : '/profile');
     } else {
       throw new Error('Login request failed');
     }
-  } catch (error:any) {
+  } catch (error: any) {
     dispatch(apiError(error.message));
   }
 };
-
 
 export const logoutUser = () => async (dispatch : any) => {
   try {

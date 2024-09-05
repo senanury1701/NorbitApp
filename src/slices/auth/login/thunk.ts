@@ -12,7 +12,7 @@ export const loginUser = (user: any, history: any) => async (dispatch: any) => {
 
     if (response.status === 200) {
       sessionStorage.setItem('accessToken', response.data.key);
-      
+
       if (!response.data.key) {
         throw new Error('Access token not found in sessionStorage');
       }
@@ -20,15 +20,15 @@ export const loginUser = (user: any, history: any) => async (dispatch: any) => {
       const userDataResponse = await axiosInstance.get('accounts/user/');
       const userData = userDataResponse.data;
 
-      const userType = userData.isAdmin ? 'AdminUser' : 'NormalUser'; // Assuming isAdmin is a field in user data
+      const userType = userData.user_type; 
+      console.log(userType);
 
-      const authUser = {
-        ...userData,
-        userType
-      };
+      const authUser = { ...userData };
       dispatch(loginSuccess(authUser));
       sessionStorage.setItem('authUser', JSON.stringify(authUser));
-      history.push(userType === 'AdminUser' ? '/admin-dashboard' : '/profile');
+      
+      // Corrected navigation
+      history(userType === 'AdminUser' ? '/dashboard' : '/profile');
     } else {
       throw new Error('Login request failed');
     }
@@ -36,6 +36,7 @@ export const loginUser = (user: any, history: any) => async (dispatch: any) => {
     dispatch(apiError(error.message));
   }
 };
+
 
 export const logoutUser = () => async (dispatch : any) => {
   try {

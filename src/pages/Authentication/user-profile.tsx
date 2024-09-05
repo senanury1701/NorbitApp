@@ -76,7 +76,6 @@ const UserProfile = () => {
     enableReinitialize: true,
     initialValues: {
       first_name: userName || 'Admin',
-      idx: idx || '',
     },
     validationSchema: Yup.object({
       first_name: Yup.string().required("Please Enter Your UserName"),
@@ -109,9 +108,8 @@ const UserProfile = () => {
                     </div>
                     <div className="flex-grow-1 align-self-center">
                       <div className="text-muted">
-                        <h5>{userName || "Admin"}</h5>
+                        <h5>{userName}</h5>
                         <p className="mb-1">Email Id : {email}</p>
-                        <p className="mb-0">Id No : #{idx}</p>
                       </div>
                     </div>
                   </div>

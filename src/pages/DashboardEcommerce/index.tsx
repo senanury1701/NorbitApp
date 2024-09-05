@@ -135,9 +135,6 @@ const Dashboard = () => {
         dispatch(fetchJobs(1, searchInputJobs));
     }, [dispatch, searchInputJobs]);
 
-    console.log("Formik Values:", validation.values);
-    console.log("Formik Errors:", validation.errors);
-
     const Menu = (props: any) => {
         const isJobSearch = Boolean(props.selectProps.inputValue);
         const currentPage = isJobSearch ? pageJobs : pageCompanies;

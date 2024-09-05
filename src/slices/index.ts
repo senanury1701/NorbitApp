@@ -26,7 +26,7 @@ import purchaseReducer from "./purchase/reducers";
 
 const rootReducer = combineReducers({
     Layout: LayoutReducer,
-    Login: LoginReducer,
+    login: LoginReducer,
     Account: AccountReducer,
     ForgetPassword: ForgetPasswordReducer,
     Profile: ProfileReducer,

@@ -19,7 +19,6 @@ import Drive from '../pages/Drive/index'
 import Cloud from '../pages/Cloud/index'
 import File from '../pages/File/index'
 import PurchaseRequest from '../pages/PurchaseRequest/index'
-import Profile from '../pages/Authentication/user-profile'
 
 //AuthenticationInner pages
 import Basic404 from '../pages/AuthenticationInner/Errors/Basic404';
@@ -35,13 +34,19 @@ import Login from "../pages/Authentication/Login";
 import ForgetPasswordPage from "../pages/Authentication/ForgetPassword";
 import Logout from "../pages/Authentication/Logout";
 
-
+const UnauthorizedPage = () => {
+  return (
+    <div>
+      <h1>Unauthorized Access</h1>
+      <p>You do not have permission to view this page.</p>
+    </div>
+  );
+};
 
 
 const authProtectedRoutes = [
   { path: "/dashboard", component: <DashboardEcommerce /> },
-  { path: "/employeeManangement", component: <EmployeeManangement /> },
-  { path: "/permissions", component: <Permissions /> },
+  { path: "/permissions", component: <Permissions />, allowedRoles: ['admin'] },
   { path: "/accountInformation", component: <AccountInformation /> },
   { path: "/company", component: <Company /> },
   { path: "/jobs", component: <Jobs /> },
@@ -51,32 +56,27 @@ const authProtectedRoutes = [
   { path: "/project", component: <Project /> },
   { path: "/dataSheet", component: <DataSheet /> },
   { path: "/knowhow", component: <Knowhow /> },
-  { path: "/cloud", component: <Cloud /> },
-  { path: "/drive", component: <Drive /> },
-  { path: "/file", component: <File /> },
+  { path: "/profile", component: <UserProfile /> },
+  { path: "/employeeManangement", component: <EmployeeManangement />, allowedRoles: ['admin'] },
+  { path: "/cloud", component: <Cloud />, allowedRoles: ['admin'] },
+  { path: "/drive", component: <Drive />, allowedRoles: ['admin'] },
+  { path: "/file", component: <File />, allowedRoles: ['admin'] },
   { path: "/purchase-request", component: <PurchaseRequest /> },
 
-
-
-  //User Profile
-  { path: "/profile", component: <UserProfile /> },
-
   // this route should be at the end of all other routes
-  // eslint-disable-next-line react/display-name
-  {
-    path: "/",
-    exact: true,
-    component: <Navigate to="/dashboard" />,
-  },
+  { path: "/", exact: true, component: <Navigate to="/dashboard" /> },
   { path: "*", component: <Navigate to="/dashboard" /> },
 ];
+
 
 const publicRoutes : any= [
   // Authentication Page
   { path: "/logout", component: <Logout /> },
   { path: "/login", component: <Login /> },
   { path: "/forgot-password", component: <ForgetPasswordPage /> },
-  { path: "/profile", component: <Profile /> },
+  { path: "/unauthorized", component: <UnauthorizedPage /> },
+
+
 
   //AuthenticationInner pages
 

@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Dropdown, DropdownItem, DropdownMenu, DropdownToggle } from 'reactstrap';
+import { logoutUser } from "../../slices/auth/login/thunk";
+import { useDispatch } from "react-redux";
 
 // Import images
 import avatar1 from "../../assets/images/users/avatar-1.jpg";
 
 const ProfileDropdown = () => {
-
-
+    const dispatch = useDispatch<any>();
+    const navigate = useNavigate();
     const [userName, setUserName] = useState("Admin");
 
     useEffect(() => {
@@ -22,6 +24,11 @@ const ProfileDropdown = () => {
     const [isProfileDropdown, setIsProfileDropdown] = useState(false);
     const toggleProfileDropdown = () => {
         setIsProfileDropdown(!isProfileDropdown);
+    };
+
+    const handleLogout = () => {
+        dispatch(logoutUser() as any);
+        navigate('/login'); // Redirect to login after logout
     };
 
     return (
@@ -50,15 +57,8 @@ const ProfileDropdown = () => {
                         </Link>
                     </DropdownItem>
                     <div className="dropdown-divider"></div>
-                    <DropdownItem className='p-0'>
-                        <Link to="/auth-lockscreen-basic" className="dropdown-item">
-                            <i className="mdi mdi-lock text-muted fs-16 align-middle me-1"></i> <span className="align-middle">Lock screen</span>
-                        </Link>
-                    </DropdownItem>
-                    <DropdownItem className='p-0'>
-                        <Link to="/logout" className="dropdown-item">
-                            <i className="mdi mdi-logout text-muted fs-16 align-middle me-1"></i> <span className="align-middle" data-key="t-logout">Logout</span>
-                        </Link>
+                    <DropdownItem className='p-0' onClick={handleLogout}>
+                        <i className="mdi mdi-logout text-muted fs-16 align-middle me-1"></i> <span className="align-middle" data-key="t-logout">Logout</span>
                     </DropdownItem>
                 </DropdownMenu>
             </Dropdown>

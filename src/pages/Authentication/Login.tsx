@@ -25,8 +25,8 @@ const Login = (props: any) => {
         selectLayoutState,
         (state) => ({
             user: state.Account.user,
-            error: state.Login.error,
-            errorMsg: state.Login.errorMsg,
+            error: state.login.error,
+            errorMsg: state.login.errorMsg,
         })
     );
     // Inside your component

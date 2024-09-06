@@ -5,29 +5,31 @@ import { useDispatch } from "react-redux";
 import { useSelector } from 'react-redux';
 import { logoutUser } from "../slices/auth/login/thunk";
 
-const AuthProtected = (props:any) => {
+const AuthProtected = ({ children, allowedRoles = [] }: { children: React.ReactNode, allowedRoles?: string[] }) => {
   const dispatch = useDispatch();
-  const { loading } = useSelector((state:any) => state.login);
+  const { loading, user } = useSelector((state: any) => state.login);
 
-  // sessionStorage'dan kullanıcı bilgilerini al
-  const userItem = sessionStorage.getItem('authUser');
   const accessToken = sessionStorage.getItem('accessToken');
-  const user = userItem ? JSON.parse(userItem) : null;
+  const currentUser = user || (sessionStorage.getItem('authUser') ? JSON.parse(sessionStorage.getItem('authUser') || '{}') : null);
 
   useEffect(() => {
-    if (user && accessToken) {
+    if (currentUser && accessToken) {
       setAuthorization(accessToken);
-    } else if (!user && !loading && !accessToken) {
-      dispatch(logoutUser() as any);    }
-  }, [accessToken, user, loading, dispatch]);
+    } else if (!currentUser && !loading && !accessToken) {
+      dispatch(logoutUser() as any);
+    }
+  }, [accessToken, currentUser, loading, dispatch]);
 
-
-
-  if (!user && !loading && !accessToken) {
+  if (!currentUser && !loading && !accessToken) {
     return <Navigate to="/login" />;
   }
 
-  return <>{props.children}</>;
+  if (allowedRoles.length && !allowedRoles.includes(currentUser.role)) {
+    // Redirect to an unauthorized page or another route if the user doesn't have permission
+    return <Navigate to="/unauthorized" />;
+  }
+
+  return <>{children}</>;
 };
 
 export default AuthProtected;

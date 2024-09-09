@@ -16,7 +16,6 @@ const CategoryView = (id:any) => {
       try {
         const response = await axiosInstance.get(`/category/${id.rowId}`);
         setCategory(response.data); 
-        console.log(response.data);
         
       } catch (error) {
         console.log("Error fetching Category:", error);

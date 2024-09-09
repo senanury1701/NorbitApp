@@ -1,6 +1,5 @@
 import React, { useEffect } from "react";
 import { Navigate } from "react-router-dom";
-import { setAuthorization } from "../helpers/api_helper";
 import { useDispatch } from "react-redux";
 import { useSelector } from 'react-redux';
 import { logoutUser } from "../slices/auth/login/thunk";
@@ -14,7 +13,7 @@ const AuthProtected = ({ children, allowedRoles = [] }: { children: React.ReactN
 
   useEffect(() => {
     if (currentUser && accessToken) {
-      setAuthorization(accessToken);
+      
     } else if (!currentUser && !loading && !accessToken) {
       dispatch(logoutUser() as any);
     }
@@ -25,7 +24,6 @@ const AuthProtected = ({ children, allowedRoles = [] }: { children: React.ReactN
   }
 
   if (allowedRoles.length && !allowedRoles.includes(currentUser.role)) {
-    // Redirect to an unauthorized page or another route if the user doesn't have permission
     return <Navigate to="/unauthorized" />;
   }
 

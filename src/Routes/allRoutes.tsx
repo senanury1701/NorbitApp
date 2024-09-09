@@ -31,7 +31,6 @@ import Offlinepage from "../pages/AuthenticationInner/Errors/Offlinepage";
 
 //login
 import Login from "../pages/Authentication/Login";
-import ForgetPasswordPage from "../pages/Authentication/ForgetPassword";
 import Logout from "../pages/Authentication/Logout";
 
 const UnauthorizedPage = () => {
@@ -46,7 +45,7 @@ const UnauthorizedPage = () => {
 
 const authProtectedRoutes = [
   { path: "/dashboard", component: <DashboardEcommerce /> },
-  { path: "/permissions", component: <Permissions />, allowedRoles: ['admin'] },
+  { path: "/permissions", component: <Permissions />,  },
   { path: "/accountInformation", component: <AccountInformation /> },
   { path: "/company", component: <Company /> },
   { path: "/jobs", component: <Jobs /> },
@@ -57,15 +56,15 @@ const authProtectedRoutes = [
   { path: "/dataSheet", component: <DataSheet /> },
   { path: "/knowhow", component: <Knowhow /> },
   { path: "/profile", component: <UserProfile /> },
-  { path: "/employeeManangement", component: <EmployeeManangement />, allowedRoles: ['admin'] },
-  { path: "/cloud", component: <Cloud />, allowedRoles: ['admin'] },
-  { path: "/drive", component: <Drive />, allowedRoles: ['admin'] },
-  { path: "/file", component: <File />, allowedRoles: ['admin'] },
+  { path: "/employeeManangement", component: <EmployeeManangement />,  },
+  { path: "/cloud", component: <Cloud />,  },
+  { path: "/drive", component: <Drive />, },
+  { path: "/file", component: <File />,  },
   { path: "/purchase-request", component: <PurchaseRequest /> },
 
   // this route should be at the end of all other routes
   { path: "/", exact: true, component: <Navigate to="/dashboard" /> },
-  { path: "*", component: <Navigate to="/dashboard" /> },
+  { path: "*", component: <Navigate to="/login" /> },
 ];
 
 
@@ -73,7 +72,6 @@ const publicRoutes : any= [
   // Authentication Page
   { path: "/logout", component: <Logout /> },
   { path: "/login", component: <Login /> },
-  { path: "/forgot-password", component: <ForgetPasswordPage /> },
   { path: "/unauthorized", component: <UnauthorizedPage /> },
 
 

@@ -29,8 +29,7 @@ const companySlice = createSlice({
         },
         setError(state, action) {
             state.error = action.payload;
-            console.log(state.error);
-            
+           
         },
         editStatus(state) {
             state.editStatus = 'success';

@@ -96,8 +96,7 @@ const DataSheetAddModal: React.FC<ProjectAddModalProps> = ({ toggleAdd, pageZero
     }),
     onSubmit: async (values, { resetForm }) => {
       const formattedDateStart = new Date(values.purchasing_date).toISOString();
-      console.log(values);
-      
+     
       const formattedValues = {
         ...values,
         purchasing_date: formattedDateStart,

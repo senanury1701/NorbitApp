@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 
 const axiosInstance = axios.create({
   baseURL: "https://backend.norbit.com.tr/",
@@ -25,8 +24,8 @@ axiosInstance.interceptors.response.use(
     if (error.response && error.response.status === 401) {
       sessionStorage.removeItem('userAuth');
       sessionStorage.removeItem('accessToken');
-      const navigate = useNavigate();
-      navigate('/login');
+      
+      window.location.href = '/login';  
     } else {
       return Promise.reject(error);
     }

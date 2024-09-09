@@ -14,7 +14,7 @@ import {
 import * as Yup from "yup";
 import { useFormik } from "formik";
 import { useDispatch, useSelector } from "react-redux";
-import { editProfile, resetProfileFlag } from "../../slices/thunks";
+import {  resetProfileFlag } from "../../slices/thunks";
 import { toast, ToastContainer } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -74,7 +74,7 @@ const UserProfileEdit = () => {
       email: Yup.string().email("Invalid email format").required("Please Enter Your Email"),
     }),
     onSubmit: (values) => {
-      dispatch(editProfile(values));
+console.log(values);
     },
   });
 

@@ -15,6 +15,15 @@ import {  resetProfileFlag } from "../../slices/thunks";
 import { toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import  { components } from 'react-select';
+import PasswordChange from '../../Components/PasswordChange/password'
+
+interface Jobs {
+  id: number;
+  job_title: string ;
+  created_at: string;
+  updated_at: string;
+}
+
 
 const Settings = () => {
   const dispatch = useDispatch<any>();
@@ -68,9 +77,6 @@ const Settings = () => {
       dispatch(resetProfileFlag());
     }, 3000);
   }, [dispatch, success, error]);
-
-
-
 
   const validation = useFormik({
     enableReinitialize: true,
@@ -134,7 +140,6 @@ const Settings = () => {
     },
   });
 
-
   const [activeTab, setActiveTab] = useState("1");
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>, field: string) => {
     if (event.currentTarget.files) {
@@ -145,14 +150,15 @@ const Settings = () => {
       if (activeTab !== tab) setActiveTab(tab);
   };
   const [searchInput, setSearchInput] = useState<string>('');
+  const [userJobs, setUserJobs] = useState<Jobs | null>(null);
   const [isFetching, setIsFetching] = useState<boolean>(false);
   const { companies, count: companyCount } = useSelector((state: any) => state.company);
 
-  const { jobs, count: jobsCount } = useSelector((state: any) => state.jobs);
+  const { jobs, count: jobsCount } = useSelector((state: any) => state.jobs);  
   const [searchInputJobs, setSearchInputJobs] = useState<string>('');
   const [pageCompanies, setPageCompanies] = useState<number>(1);
   const [pageJobs, setPageJobs] = useState<number>(1);
-
+  
   const maxPageCompanies = Math.ceil(companyCount / 5);
   const maxPageJobs = Math.ceil(jobsCount / 5);
 
@@ -209,7 +215,22 @@ const Settings = () => {
       dispatch(fetchJobs(1, searchInputJobs));
   }, [dispatch, searchInputJobs]);
 
+  useEffect(() => {
+    const fetchJobs = async () => {
+        try {
+            const response = await axiosInstance.get(`/jobs/${userData.job_title}`);
+            setUserJobs(response.data);
+        } catch (error) {
+            console.error("Error fetching Jobs:", error);
+        }
+    };
 
+    if (userData.job_title) {
+        fetchJobs();
+    }
+}, [userData.job_title]);
+
+  
 
   const Menu = (props: any) => {
     const isJobSearch = Boolean(props.selectProps.inputValue);
@@ -281,9 +302,9 @@ const Settings = () => {
                                                 </Label>
                                             </div>
                                         </div>
-                                        <h5 className="fs-16 mb-1">Anna Adame</h5>
-                                        <p className="text-muted mb-0">Lead Designer / Developer</p>
-                                    </div>
+                                        <h5 className="fs-16 mb-1">{userData.username}</h5>
+                                        <p className="text-muted mb-0">{userJobs?.job_title || '...'}</p>
+                                        </div>
                                 </CardBody>
                             </Card>
                         </Col>
@@ -317,290 +338,176 @@ const Settings = () => {
                                     </Nav>
                                 </CardHeader>
                                 <CardBody className="p-4">
-                                    <TabContent activeTab={activeTab}>
+                                  <TabContent activeTab={activeTab}>
                                     <TabPane tabId="1">
-                                    <Form
-                                      className="form-horizontal"
-                                      onSubmit={(e) => {
-                                        e.preventDefault();
-                                        validation.handleSubmit();
-                                        return false;
-                                      }}
-                                    >
-                                    <div className="form-group">
-                                      <Label>First Name</Label>
-                                      <Input
-                                        name="first_name"
-                                        type="text"
-                                        onChange={validation.handleChange}
-                                        onBlur={validation.handleBlur}
-                                        value={validation.values.first_name}
-                                        invalid={!!(validation.touched.first_name && validation.errors.first_name)}
-                                      />
-                                      <FormFeedback>{validation.errors.first_name}</FormFeedback>
-                                    </div>
+                                      <Form
+                                        className="form-horizontal"
+                                        onSubmit={(e) => {
+                                          e.preventDefault();
+                                          validation.handleSubmit();
+                                          return false;
+                                        }}
+                                      >
+                                      <div className="form-group">
+                                        <Label>First Name</Label>
+                                        <Input
+                                          name="first_name"
+                                          type="text"
+                                          onChange={validation.handleChange}
+                                          onBlur={validation.handleBlur}
+                                          value={validation.values.first_name}
+                                          invalid={!!(validation.touched.first_name && validation.errors.first_name)}
+                                        />
+                                        <FormFeedback>{validation.errors.first_name}</FormFeedback>
+                                      </div>
 
-                                    <div className="form-group">
-                                      <Label>Last Name</Label>
-                                      <Input
-                                        name="last_name"
-                                        type="text"
-                                        onChange={validation.handleChange}
-                                        onBlur={validation.handleBlur}
-                                        value={validation.values.last_name}
-                                        invalid={!!(validation.touched.last_name && validation.errors.last_name)}
-                                      />
-                                      <FormFeedback>{validation.errors.last_name}</FormFeedback>
-                                    </div>
+                                      <div className="form-group">
+                                        <Label>Last Name</Label>
+                                        <Input
+                                          name="last_name"
+                                          type="text"
+                                          onChange={validation.handleChange}
+                                          onBlur={validation.handleBlur}
+                                          value={validation.values.last_name}
+                                          invalid={!!(validation.touched.last_name && validation.errors.last_name)}
+                                        />
+                                        <FormFeedback>{validation.errors.last_name}</FormFeedback>
+                                      </div>
 
-                                    <div className="form-group">
-                                      <Label>Username</Label>
-                                      <Input
-                                        name="username"
-                                        type="text"
-                                        onChange={validation.handleChange}
-                                        onBlur={validation.handleBlur}
-                                        value={validation.values.username}
-                                        invalid={!!(validation.touched.username && validation.errors.username)}
-                                      />
-                                      <FormFeedback>{validation.errors.username}</FormFeedback>
-                                    </div>
+                                      <div className="form-group">
+                                        <Label>Username</Label>
+                                        <Input
+                                          name="username"
+                                          type="text"
+                                          onChange={validation.handleChange}
+                                          onBlur={validation.handleBlur}
+                                          value={validation.values.username}
+                                          invalid={!!(validation.touched.username && validation.errors.username)}
+                                        />
+                                        <FormFeedback>{validation.errors.username}</FormFeedback>
+                                      </div>
 
-                                    <div className="form-group">
-                                      <Label>Email</Label>
-                                      <Input
-                                        name="email"
-                                        type="email"
-                                        onChange={validation.handleChange}
-                                        onBlur={validation.handleBlur}
-                                        value={validation.values.email}
-                                        invalid={!!(validation.touched.email && validation.errors.email)}
-                                      />
-                                      <FormFeedback>{validation.errors.email}</FormFeedback>
-                                    </div>
+                                      <div className="form-group">
+                                        <Label>Email</Label>
+                                        <Input
+                                          name="email"
+                                          type="email"
+                                          onChange={validation.handleChange}
+                                          onBlur={validation.handleBlur}
+                                          value={validation.values.email}
+                                          invalid={!!(validation.touched.email && validation.errors.email)}
+                                        />
+                                        <FormFeedback>{validation.errors.email}</FormFeedback>
+                                      </div>
 
-                                    <div className="form-group">
-                                      <Label className="form-label" htmlFor="job_title">Job Title<span className="text-danger">*</span></Label>
-                                      <AsyncSelect
-                                          id="job_title"
-                                          name="job_title"
-                                          cacheOptions
-                                          loadOptions={handleJobsSearchChange}
-                                          defaultOptions={jobs.map((job: any) => ({
-                                              value: job.id,
-                                              label: job.job_title,
-                                          }))}
-                                          onChange={(selectedOption: any) =>
-                                              validation.setFieldValue('job_title', selectedOption?.value)
-                                          }
-                                          components={{ Menu }}
-                                      />
-                                      {validation.touched.job_title && validation.errors.job_title ? (
-                                          <FormFeedback type="invalid">{validation.errors.job_title}</FormFeedback>
-                                      ) : null}
-                                    </div>
+                                      <div className="form-group">
+                                        <Label className="form-label" htmlFor="job_title">Job Title<span className="text-danger">*</span></Label>
+                                        <AsyncSelect
+                                            id="job_title"
+                                            name="job_title"
+                                            cacheOptions
+                                            loadOptions={handleJobsSearchChange}
+                                            defaultOptions={jobs.map((job: any) => ({
+                                                value: job.id,
+                                                label: job.job_title,
+                                            }))}
+                                            onChange={(selectedOption: any) =>
+                                                validation.setFieldValue('job_title', selectedOption?.value)
+                                            }
+                                            components={{ Menu }}
+                                        />
+                                        {validation.touched.job_title && validation.errors.job_title ? (
+                                            <FormFeedback type="invalid">{validation.errors.job_title}</FormFeedback>
+                                        ) : null}
+                                      </div>
 
-                                    <div className="form-group">
-                                      <Label className="form-label" htmlFor="company_name">company Name<span className="text-danger">*</span></Label>
-                                      <AsyncSelect
-                                          id="company_name"
-                                          name="company_name"
-                                          cacheOptions
-                                          loadOptions={handleCompanySearchChange}
-                                          defaultOptions={companies.map((company: any) => ({
-                                              value: company.id,
-                                              label: company.company_name,
-                                          }))}
-                                          onChange={(selectedOption: any) => {
-                                              console.log("Selected Company Option:", selectedOption);
-                                              validation.setFieldValue('company_name', selectedOption?.value);
-                                          }}
-                                          components={{ Menu }}
-                                      />
-                                      {validation.touched.company_name && validation.errors.company_name ? (
-                                          <FormFeedback type="invalid">{validation.errors.company_name}</FormFeedback>
-                                      ) : null}
-                                    </div>
+                                      <div className="form-group">
+                                        <Label className="form-label" htmlFor="company_name">company Name<span className="text-danger">*</span></Label>
+                                        <AsyncSelect
+                                            id="company_name"
+                                            name="company_name"
+                                            cacheOptions
+                                            loadOptions={handleCompanySearchChange}
+                                            defaultOptions={companies.map((company: any) => ({
+                                                value: company.id,
+                                                label: company.company_name,
+                                            }))}
+                                            onChange={(selectedOption: any) => {
+                                                console.log("Selected Company Option:", selectedOption);
+                                                validation.setFieldValue('company_name', selectedOption?.value);
+                                            }}
+                                            components={{ Menu }}
+                                        />
+                                        {validation.touched.company_name && validation.errors.company_name ? (
+                                            <FormFeedback type="invalid">{validation.errors.company_name}</FormFeedback>
+                                        ) : null}
+                                      </div>
 
-                                    <div className="form-group">
-                                      <Label>Skills</Label>
-                                      <Input
-                                        name="skills"
-                                        type="text"
-                                        onChange={validation.handleChange}
-                                        onBlur={validation.handleBlur}
-                                        value={validation.values.skills}
-                                        invalid={!!(validation.touched.skills && validation.errors.skills)}
-                                      />
-                                      <FormFeedback>{validation.errors.skills}</FormFeedback>
-                                    </div>
+                                      <div className="form-group">
+                                        <Label>Skills</Label>
+                                        <Input
+                                          name="skills"
+                                          type="text"
+                                          onChange={validation.handleChange}
+                                          onBlur={validation.handleBlur}
+                                          value={validation.values.skills}
+                                          invalid={!!(validation.touched.skills && validation.errors.skills)}
+                                        />
+                                        <FormFeedback>{validation.errors.skills}</FormFeedback>
+                                      </div>
 
-                                    <div className="form-group">
-                                      <Label>About</Label>
-                                      <Input
-                                        name="about"
-                                        type="textarea"
-                                        onChange={validation.handleChange}
-                                        onBlur={validation.handleBlur}
-                                        value={validation.values.about}
-                                        invalid={!!(validation.touched.about && validation.errors.about)}
-                                      />
-                                      <FormFeedback>{validation.errors.about}</FormFeedback>
-                                    </div>
+                                      <div className="form-group">
+                                        <Label>About</Label>
+                                        <Input
+                                          name="about"
+                                          type="textarea"
+                                          onChange={validation.handleChange}
+                                          onBlur={validation.handleBlur}
+                                          value={validation.values.about}
+                                          invalid={!!(validation.touched.about && validation.errors.about)}
+                                        />
+                                        <FormFeedback>{validation.errors.about}</FormFeedback>
+                                      </div>
 
-                                    <div className="form-group">
-                                      <Label>Links</Label>
-                                      <Input
-                                        name="links"
-                                        type="url"
-                                        onChange={validation.handleChange}
-                                        onBlur={validation.handleBlur}
-                                        value={validation.values.links}
-                                        invalid={!!(validation.touched.links && validation.errors.links)}
-                                      />
-                                      <FormFeedback>{validation.errors.links}</FormFeedback>
-                                    </div>
+                                      <div className="form-group">
+                                        <Label>Links</Label>
+                                        <Input
+                                          name="links"
+                                          type="url"
+                                          onChange={validation.handleChange}
+                                          onBlur={validation.handleBlur}
+                                          value={validation.values.links}
+                                          invalid={!!(validation.touched.links && validation.errors.links)}
+                                        />
+                                        <FormFeedback>{validation.errors.links}</FormFeedback>
+                                      </div>
 
-                                    <div className="mb-3">
-                                      <Label htmlFor="files" className="form-label">
-                                        Files 
-                                      </Label>
-                                      <Input
-                                        name="files"
-                                        type="file"
-                                        onChange={(e) => handleFileChange(e, 'files')}
-                                        invalid={validation.touched.files && !!validation.errors.files}
-                                      />
-                                      {validation.touched.files && validation.errors.files && (
-                                        <FormFeedback type="invalid">{validation.errors.files}</FormFeedback>
-                                      )}
-                                    </div>
-                                    
-                                    <div className="text-center mt-4">
-                                      <Button type="submit" color="primary">
-                                        Update Profile
-                                      </Button>
-                                    </div>
-                                    </Form>
-                                        </TabPane>
+                                      <div className="mb-3">
+                                        <Label htmlFor="files" className="form-label">
+                                          Files 
+                                        </Label>
+                                        <Input
+                                          name="files"
+                                          type="file"
+                                          onChange={(e) => handleFileChange(e, 'files')}
+                                          invalid={validation.touched.files && !!validation.errors.files}
+                                        />
+                                        {validation.touched.files && validation.errors.files && (
+                                          <FormFeedback type="invalid">{validation.errors.files}</FormFeedback>
+                                        )}
+                                      </div>
+                                      
+                                      <div className="text-center mt-4">
+                                        <Button type="submit" color="primary">
+                                          Update Profile
+                                        </Button>
+                                      </div>
+                                      </Form>
+                                    </TabPane>
 
-                                        <TabPane tabId="2">
-                                            <Form>
-                                                <Row className="g-2">
-                                                    <Col lg={4}>
-                                                        <div>
-                                                            <Label htmlFor="oldpasswordInput" className="form-label">Old
-                                                                Password*</Label>
-                                                            <Input type="password" className="form-control"
-                                                                id="oldpasswordInput"
-                                                                placeholder="Enter current password" />
-                                                        </div>
-                                                    </Col>
-
-                                                    <Col lg={4}>
-                                                        <div>
-                                                            <Label htmlFor="newpasswordInput" className="form-label">New
-                                                                Password*</Label>
-                                                            <Input type="password" className="form-control"
-                                                                id="newpasswordInput" placeholder="Enter new password" />
-                                                        </div>
-                                                    </Col>
-
-                                                    <Col lg={4}>
-                                                        <div>
-                                                            <Label htmlFor="confirmpasswordInput" className="form-label">Confirm
-                                                                Password*</Label>
-                                                            <Input type="password" className="form-control"
-                                                                id="confirmpasswordInput"
-                                                                placeholder="Confirm password" />
-                                                        </div>
-                                                    </Col>
-
-                                                    <Col lg={12}>
-                                                        <div className="mb-3">
-                                                            <Link to="#"
-                                                                className="link-primary text-decoration-underline">Forgot
-                                                                Password ?</Link>
-                                                        </div>
-                                                    </Col>
-
-                                                    <Col lg={12}>
-                                                        <div className="text-end">
-                                                            <button type="button" className="btn btn-primary">Change
-                                                                Password</button>
-                                                        </div>
-                                                    </Col>
-
-                                                </Row>
-
-                                            </Form>
-                                            <div className="mt-4 mb-3 border-bottom pb-2">
-                                                <div className="float-end">
-                                                    <Link to="#" className="link-secondary">All Logout</Link>
-                                                </div>
-                                                <h5 className="card-title">Login History</h5>
-                                            </div>
-                                            <div className="d-flex align-items-center mb-3">
-                                                <div className="flex-shrink-0 avatar-sm">
-                                                    <div className="avatar-title bg-light text-primary rounded-3 fs-18">
-                                                        <i className="ri-smartphone-line"></i>
-                                                    </div>
-                                                </div>
-                                                <div className="flex-grow-1 ms-3">
-                                                    <h6>iPhone 12 Pro</h6>
-                                                    <p className="text-muted mb-0">Los Angeles, United States - March 16 at
-                                                        2:47PM</p>
-                                                </div>
-                                                <div>
-                                                    <Link to="#">Logout</Link>
-                                                </div>
-                                            </div>
-                                            <div className="d-flex align-items-center mb-3">
-                                                <div className="flex-shrink-0 avatar-sm">
-                                                    <div className="avatar-title bg-light text-primary rounded-3 fs-18">
-                                                        <i className="ri-tablet-line"></i>
-                                                    </div>
-                                                </div>
-                                                <div className="flex-grow-1 ms-3">
-                                                    <h6>Apple iPad Pro</h6>
-                                                    <p className="text-muted mb-0">Washington, United States - November 06
-                                                        at 10:43AM</p>
-                                                </div>
-                                                <div>
-                                                    <Link to="#" className="link-secondary">Logout</Link>
-                                                </div>
-                                            </div>
-                                            <div className="d-flex align-items-center mb-3">
-                                                <div className="flex-shrink-0 avatar-sm">
-                                                    <div className="avatar-title bg-light text-primary rounded-3 fs-18">
-                                                        <i className="ri-smartphone-line"></i>
-                                                    </div>
-                                                </div>
-                                                <div className="flex-grow-1 ms-3">
-                                                    <h6>Galaxy S21 Ultra 5G</h6>
-                                                    <p className="text-muted mb-0">Conneticut, United States - June 12 at
-                                                        3:24PM</p>
-                                                </div>
-                                                <div>
-                                                    <Link to="#" className="link-secondary">Logout</Link>
-                                                </div>
-                                            </div>
-                                            <div className="d-flex align-items-center">
-                                                <div className="flex-shrink-0 avatar-sm">
-                                                    <div className="avatar-title bg-light text-primary rounded-3 fs-18">
-                                                        <i className="ri-macbook-line"></i>
-                                                    </div>
-                                                </div>
-                                                <div className="flex-grow-1 ms-3">
-                                                    <h6>Dell Inspiron 14</h6>
-                                                    <p className="text-muted mb-0">Phoenix, United States - July 26 at
-                                                        8:10AM</p>
-                                                </div>
-                                                <div>
-                                                    <Link to="#" className="link-secondary">Logout</Link>
-                                                </div>
-                                            </div>
-                                        </TabPane>
+                                      <TabPane tabId="2">
+                                        <PasswordChange/>
+                                      </TabPane>
 
                                     </TabContent >
                                 </CardBody >

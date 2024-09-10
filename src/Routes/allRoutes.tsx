@@ -33,16 +33,6 @@ import Offlinepage from "../pages/AuthenticationInner/Errors/Offlinepage";
 import Login from "../pages/Authentication/Login";
 import Logout from "../pages/Authentication/Logout";
 
-const UnauthorizedPage = () => {
-  return (
-    <div>
-      <h1>Unauthorized Access</h1>
-      <p>You do not have permission to view this page.</p>
-    </div>
-  );
-};
-
-
 const authProtectedRoutes = [
   { path: "/dashboard", component: <DashboardEcommerce /> },
   { path: "/permissions", component: <Permissions />,  },
@@ -72,7 +62,6 @@ const publicRoutes : any= [
   // Authentication Page
   { path: "/logout", component: <Logout /> },
   { path: "/login", component: <Login /> },
-  { path: "/unauthorized", component: <UnauthorizedPage /> },
 
 
 
